@@ -27,7 +27,9 @@ Object/Item
   - Time left
   - State
 
-Comments/Reaction (time, parent, author)
+Interaction
+  - Comments
+  - Reaction (time, parent, author)
 
 Prioritizer
   - bin-packing based on min-time, deadline, priority

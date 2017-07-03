@@ -1,20 +1,68 @@
 # Ttl
 
-To start your Phoenix server:
+## What
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Start Phoenix endpoint with `mix phx.server`
+- Goals / things / tasks that want to accomplish
+- Countdown the number of days to accomplish 
+- Schedule the time to do it.
+- Get reminded
+- Encouragement from others who have the same goal
+- Reminder / categorization - groceries, etc based on location
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Goals
+  - Habit (streak based)
+  - Time limit
+    - 40 days (short)
+    - 6 months (medium)
+    - 1 year (long)
+  - Success criteria?
+  - Could be suggested
+  - Breakdown Items + Time
+  - Weekly review
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+Object/Item
+  - Object (jira, email, picture, note, outlook, integrations, comments)
+  - Minimum time needed
+  - Time spent
+  - Time left
+  - State
 
-## Learn more
+Comments/Reaction (time, parent, author)
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+Prioritizer
+  - bin-packing based on min-time, deadline, priority
+  - Every x-y days
+  - Schedule
+  - Deadline
+  - Priority
+
+Journal
+  - day
+  - rating
+  - frequency
+
+Open Times
+  - Scheduling
+
+Tags
+  - project (assoc with work)
+  - podcast (assoc with any)
+  - gardening (assoc with home)
+  - woodworking (assoc with home)
+  - health (assoc with home)
+  - meditation (assoc with home)
+  - reading (assoc with any)
+
+Context
+  - bus
+  - home
+  - work
+  - in transport
+
+State:
+  - stuck
+  - delay
+  - 5min
+  - done
+  - open
+  - started

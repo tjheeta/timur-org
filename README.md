@@ -2,13 +2,14 @@
 
 ## What
 
+- Capture
+- Schedule the time to do it.
+
 - Goals / things / tasks that want to accomplish
 - Countdown the number of days to accomplish 
-- Schedule the time to do it.
 - Get reminded
 - Encouragement from others who have the same goal
 - Reminder / categorization - groceries, etc based on location
-
 
 Object/Item/Task (this is the fundamental unit - could be part of goal or habit)
   - UserId
@@ -99,3 +100,13 @@ State:
   - done
   - open
   - started
+
+
+Mix:
+mix phx.gen.html Accounts User users email:string access_token:string
+
+mix phx.gen.html Things Object objects user_id:references:accounts_users path:array:uuid text:text blob:binary min_time_needed:integer time_spent:integer time_left:integer state:string defer_count:integer is_public:integer
+
+mix phx.gen.html Things Tag tags user_id:references:accounts_users tag:string
+
+created many to many table objects_tags

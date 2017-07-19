@@ -10,6 +10,13 @@
 - Get reminded
 - Encouragement from others who have the same goal
 - Reminder / categorization - groceries, etc based on location
+  - Notifications 
+    - https://github.com/realtime-framework/WebPushNotifications/blob/master/index.js
+    - https://pushcrew.com/pricing/
+    - https://gauntface.github.io/simple-push-demo/
+    - https://github.com/GoogleChrome/samples/tree/gh-pages/push-messaging-and-notifications
+    - https://github.com/web-push-libs/web-push-php
+    - https://elixirforum.com/t/what-is-the-simplest-way-to-send-notification-from-elixir-app-to-android-device/6264/4
 
 Object/Item/Task (this is the fundamental unit - could be part of goal or habit)
   - UserId
@@ -51,6 +58,8 @@ Prioritizer
   - Schedule
   - Deadline
   - Priority
+  - Prior scheduling that worked and was successful
+  - Saves the event and the suggestion
 
 Groups
   - set of users
@@ -74,6 +83,16 @@ Open Times
   - Scheduling
   - Tags associated with times
   - Enum(Tagged - will schedule with tag, Open)
+
+  - Calendar implementation:
+    - user_id + template
+    - template:
+      - { day, date, time, type={"base", "override"}, tag={"work", "sleep", etc} }
+      - {[1-5], nil, [9-17], "base", "work"}
+      - {[1-5], nil, [8-830], "base", "commute"}
+      - {[1-5], nil, [1630-1730], "base", "commute"}
+      - {nil, 2017-07-04, nil, type="override", tag={"offday"}
+
 
 Tags
   - project (assoc with work)
@@ -110,3 +129,5 @@ mix phx.gen.html Things Object objects user_id:references:accounts_users path:ar
 mix phx.gen.html Things Tag tags user_id:references:accounts_users tag:string
 
 created many to many table objects_tags
+
+

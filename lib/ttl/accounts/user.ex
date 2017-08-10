@@ -12,12 +12,20 @@ defmodule Ttl.Accounts.User do
     timestamps()
   end
 
+  defp maybe_downcase_email(changeset) do
+    case changeset.changes[:email] do
+      nil -> changeset
+      _ -> update_change(changeset, :email, &String.downcase/1)
+    end
+  end
+
   @doc false
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, [:email, :access_token])
-    |> update_change(:email, &String.downcase/1)
     |> validate_required([:email])
+    #|> update_change(:email, &String.downcase/1)
+    |> maybe_downcase_email
     |> unique_constraint(:email)
     |> unique_constraint(:access_token)
   end

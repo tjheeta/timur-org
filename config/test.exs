@@ -12,9 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :ttl, Ttl.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "testuser",
-  password: "testpass",
+  username: "postgres",
+  password: "postgres",
   database: "ttl_test",
   hostname: "10.0.2.99",
-  port: 5433,
   pool: Ecto.Adapters.SQL.Sandbox

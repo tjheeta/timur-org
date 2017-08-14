@@ -1,0 +1,101 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= label f, :level, class: "control-label" %>
+    <%= number_input f, :level, class: "form-control" %>
+    <%= error_tag f, :level %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :title, class: "control-label" %>
+    <%= textarea f, :title, class: "form-control" %>
+    <%= error_tag f, :title %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :content, class: "control-label" %>
+    <%= textarea f, :content, class: "form-control" %>
+    <%= error_tag f, :content %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :blob, class: "control-label" %>
+    <%= text_input f, :blob, class: "form-control" %>
+    <%= error_tag f, :blob %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :closed, class: "control-label" %>
+    <%= datetime_select f, :closed, class: "form-control" %>
+    <%= error_tag f, :closed %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :scheduled, class: "control-label" %>
+    <%= datetime_select f, :scheduled, class: "form-control" %>
+    <%= error_tag f, :scheduled %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :deadline, class: "control-label" %>
+    <%= datetime_select f, :deadline, class: "form-control" %>
+    <%= error_tag f, :deadline %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :state, class: "control-label" %>
+    <%= text_input f, :state, class: "form-control" %>
+    <%= error_tag f, :state %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :priority, class: "control-label" %>
+    <%= text_input f, :priority, class: "form-control" %>
+    <%= error_tag f, :priority %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :version, class: "control-label" %>
+    <%= number_input f, :version, class: "form-control" %>
+    <%= error_tag f, :version %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :defer_count, class: "control-label" %>
+    <%= number_input f, :defer_count, class: "form-control" %>
+    <%= error_tag f, :defer_count %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :min_time_needed, class: "control-label" %>
+    <%= number_input f, :min_time_needed, class: "form-control" %>
+    <%= error_tag f, :min_time_needed %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :time_spent, class: "control-label" %>
+    <%= number_input f, :time_spent, class: "form-control" %>
+    <%= error_tag f, :time_spent %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :time_left, class: "control-label" %>
+    <%= number_input f, :time_left, class: "form-control" %>
+    <%= error_tag f, :time_left %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :permissions, class: "control-label" %>
+    <%= number_input f, :permissions, class: "form-control" %>
+    <%= error_tag f, :permissions %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

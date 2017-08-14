@@ -1,0 +1,88 @@
+<h2>Show Object</h2>
+
+<ul>
+
+  <li>
+    <strong>Path:</strong>
+    <%= @object.path %>
+  </li>
+
+  <li>
+    <strong>Level:</strong>
+    <%= @object.level %>
+  </li>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @object.title %>
+  </li>
+
+  <li>
+    <strong>Content:</strong>
+    <%= @object.content %>
+  </li>
+
+  <li>
+    <strong>Blob:</strong>
+    <%= @object.blob %>
+  </li>
+
+  <li>
+    <strong>Closed:</strong>
+    <%= @object.closed %>
+  </li>
+
+  <li>
+    <strong>Scheduled:</strong>
+    <%= @object.scheduled %>
+  </li>
+
+  <li>
+    <strong>Deadline:</strong>
+    <%= @object.deadline %>
+  </li>
+
+  <li>
+    <strong>State:</strong>
+    <%= @object.state %>
+  </li>
+
+  <li>
+    <strong>Priority:</strong>
+    <%= @object.priority %>
+  </li>
+
+  <li>
+    <strong>Version:</strong>
+    <%= @object.version %>
+  </li>
+
+  <li>
+    <strong>Defer count:</strong>
+    <%= @object.defer_count %>
+  </li>
+
+  <li>
+    <strong>Min time needed:</strong>
+    <%= @object.min_time_needed %>
+  </li>
+
+  <li>
+    <strong>Time spent:</strong>
+    <%= @object.time_spent %>
+  </li>
+
+  <li>
+    <strong>Time left:</strong>
+    <%= @object.time_left %>
+  </li>
+
+  <li>
+    <strong>Permissions:</strong>
+    <%= @object.permissions %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: object_path(@conn, :edit, @object) %></span>
+<span><%= link "Back", to: object_path(@conn, :index) %></span>

@@ -18,6 +18,10 @@ defmodule Ttl.Web.Router do
     pipe_through [:browser, Ttl.Accounts.PlugAuth] 
 
     resources "/users", UserController
+    resources "/documents", DocumentController
+    resources "/objects", ObjectController
+    resources "/tags", TagController
+    resources "/properties", PropertyController
     resources "/sessions", SessionController, only: [:new, :create, :show]
     resources "/sessions", SessionController, only: [:delete], singleton: true
     get "/", PageController, :index

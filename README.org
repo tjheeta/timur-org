@@ -177,7 +177,7 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
      #mix phx.gen.html Things Document documents user_id:references:accounts_users name:string objects:array:uuid:references_things_objects
      mix phx.gen.html Things Document documents user_id:references:accounts_users name:string objects:array:uuid
    
-     mix phx.gen.html Things Object objects document_id:references:things_documents path:array:uuid level:integer title:text content:text blob:binary closed:utc_datetime scheduled:utc_datetime deadline:utc_datetime state:string priority:string version:integer defer_count:integer min_time_needed:integer time_spent:integer time_left:integer is_public:integer
+     mix phx.gen.html Things Object objects document_id:references:things_documents path:array:uuid level:integer title:text content:text blob:binary closed:utc_datetime scheduled:utc_datetime deadline:utc_datetime state:string priority:string version:integer defer_count:integer min_time_needed:integer time_spent:integer time_left:integer permissions:integer
 
      mix phx.gen.html Things Tag tags user_id:references:accounts_users tag:string
 
@@ -247,7 +247,8 @@ CLOCK: [2017-08-13 Sun 12:48]--[2017-08-13 Sun 13:13] =>  0:25
 CLOSED: [2017-08-13 Sun 15:00]
 **** implement db schema
 :LOGBOOK:
-CLOCK: [2017-08-14 Mon 15:44]--[2017-08-14 Mon 15:51] =>  0:07
+CLOCK: [2017-08-14 Mon 16:14]
+CLOCK: [2017-08-14 Mon 15:44]--[2017-08-14 Mon 16:09] =>  0:25
 CLOCK: [2017-08-14 Mon 15:09]--[2017-08-14 Mon 15:34] =>  0:25
 :END:
 **** Parse logbook and properties

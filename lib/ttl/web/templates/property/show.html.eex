@@ -1,0 +1,18 @@
+<h2>Show Property</h2>
+
+<ul>
+
+  <li>
+    <strong>Key:</strong>
+    <%= @property.key %>
+  </li>
+
+  <li>
+    <strong>Value:</strong>
+    <%= @property.value %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: property_path(@conn, :edit, @property) %></span>
+<span><%= link "Back", to: property_path(@conn, :index) %></span>

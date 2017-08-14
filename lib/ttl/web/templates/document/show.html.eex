@@ -1,0 +1,18 @@
+<h2>Show Document</h2>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @document.name %>
+  </li>
+
+  <li>
+    <strong>Objects:</strong>
+    <%= @document.objects %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: document_path(@conn, :edit, @document) %></span>
+<span><%= link "Back", to: document_path(@conn, :index) %></span>

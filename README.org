@@ -1,0 +1,271 @@
+* Ttl
+
+** What
+
+- Capture
+- Schedule the time to do it.
+
+- Goals / things / tasks that want to accomplish
+- Countdown the number of days to accomplish 
+- Get reminded
+- Encouragement from others who have the same goal
+- Markdown?
+- Reminder / categorization - groceries, etc based on location
+  - Notifications 
+    - https://github.com/realtime-framework/WebPushNotifications/blob/master/index.js
+    - https://pushcrew.com/pricing/
+    - https://gauntface.github.io/simple-push-demo/
+    - https://github.com/GoogleChrome/samples/tree/gh-pages/push-messaging-and-notifications
+    - https://github.com/web-push-libs/web-push-php
+    - https://elixirforum.com/t/what-is-the-simplest-way-to-send-notification-from-elixir-app-to-android-device/6264/4
+
+Object/Item/Task (this is the fundamental unit - could be part of goal or habit)
+  - UserId
+  - ObjectId
+  - GoalId maybe null
+  - HabitId maybe null
+  - ReferenceId (jira, email, picture, note, outlook, integrations, comments)
+  - Attachments
+  - Properties (likable, commentable, private, etc)
+  - Path - in case there are many subtasks
+  - Blob
+  - Minimum time needed
+  - Time spent
+  - Time left
+  - State
+  - Times deferred
+
+This becomes an adventure in either parsing the document and storing everything as one item. Or having to parse the document itself.
+
+Goals
+  - Habit (streak based)
+  - Time limit
+    - Weekly
+    - 40 days (short)
+    - 6 months (medium)
+    - 1 year (long)
+  - Success criteria?
+  - Could be suggested
+  - Breakdown Items + Time
+  - Weekly review
+  - Reward
+  - Start Date
+  - End Date
+
+Interaction
+  - Comments
+  - Reaction (time, parent, author)
+
+Prioritizer
+  - bin-packing based on min-time, deadline, priority
+  - Every x-y days
+  - Schedule
+  - Deadline
+  - Priority
+  - Prior scheduling that worked and was successful
+  - Saves the event and the suggestion
+
+Groups
+  - set of users
+  - topics
+  - interactions
+
+Interaction
+  - ObjectId
+  - UserId
+  - Comments
+  - Reaction (time, parent, author)
+
+Journal
+  - day
+  - rating
+  - frequency
+
+Open Times
+  - UserId
+  - Calendar
+  - Scheduling
+  - Tags associated with times
+  - Enum(Tagged - will schedule with tag, Open)
+
+  - Calendar implementation:
+    - user_id + template
+    - template:
+      - { day, date, time, type={"base", "override"}, tag={"work", "sleep", etc} }
+      - {[1-5], nil, [9-17], "base", "work"}
+      - {[1-5], nil, [8-830], "base", "commute"}
+      - {[1-5], nil, [1630-1730], "base", "commute"}
+      - {nil, 2017-07-04, nil, type="override", tag={"offday"}
+
+
+Tags
+  - project (assoc with work)
+  - podcast (assoc with any)
+  - gardening (assoc with home)
+  - woodworking (assoc with home)
+  - health (assoc with any)
+  - meditation (assoc with home)
+  - reading (assoc with any)
+  - writing (assoc with any)
+  - hiking (assoc with offday)
+
+Context
+  - bus
+  - home
+  - work
+  - in transport
+  - offday
+
+State:
+  - stuck
+  - delay
+  - 5min
+  - done
+  - open
+  - started
+
+The beautiful thing about org-mode is the customizability. 
+ - org-agenda
+ - org-habit
+ - org-capture
+ - org-journal
+ - org-contacts
+ - timetracking
+ - tables / spreadsheet
+ - org-pomodoro
+ - org-present?
+ - calendar invites
+ - export to html/etc.
+ - fold / unfold
+ - scheduling with other people
+ 
+
+Others:
+https://checkvist.com/checklists/627469-name-your-project-and-press-enter
+
+    
+** UI Interface Thoughts
+
+- If this is for power-users, it has to be able to integrate with org-mode. To import/export out of text mode, there needs to be a UUID for each element.
+
+- If tasks can be shared / commented / etc. each item will have to be independent. Also, inheritance is important here, probably just from the top-level. 
+- How would conflict resolution be handled? Not sure how to merge diffs between different versions except to have a time-clock.
+
+- https://org-web.org/ - is a rudimentary org-web parser
+- http://appsonthemove.com/blog/2017/05/25/borg/
+- http://www.orgzly.com/help#org7fa55de
+- https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
+
+
+** Parsing and db schema:
+  - Can store the entire file and then the tags/headers in separate tables for scheduling
+    - If the agenda is modified on web, item state to done, the file needs to be re-written also. Need to keep both in sync.
+  - Represent the entire file as an AST and then store it
+    - AST table (how to deal with deleted fragments?)
+      - doc | [element_paths, uuid1, uuid2, uuid3]  -> export selects and joins all the elements in the path?
+        object | [ uuid, uid, gid, content ]
+      - how to represent header levels, planning, property, then all the stuff under the header?
+      - [header(level=1, uuid=x, planning, property), section(uuid=x, content), header(level=2, uuid=x, planning, property)
+      - how to represent a list with tags and without tags?
+        - answer: don't. adds complications for now and no point
+      - how to collaborate? have another field with users that have access/edit to it? treat each object as a gco
+      - associated with a single object - header, planning, properties, section, timelog
+      - timelog should have the logbook and the state transitions? or separate tables?
+  #+NAME: DBSCHEMA
+  - Database schema
+
+     #mix phx.gen.html Things Document documents user_id:references:accounts_users name:string objects:array:uuid:references_things_objects
+     mix phx.gen.html Things Document documents user_id:references:accounts_users name:string objects:array:uuid
+   
+     mix phx.gen.html Things Object objects document_id:references:things_documents path:array:uuid level:integer title:text content:text blob:binary closed:utc_datetime scheduled:utc_datetime deadline:utc_datetime state:string priority:string version:integer defer_count:integer min_time_needed:integer time_spent:integer time_left:integer is_public:integer
+
+     mix phx.gen.html Things Tag tags user_id:references:accounts_users tag:string
+
+     Maybe add a type column to these and call it a day?
+     mix phx.gen.html Things Property properties object_id:references:things_objects key:string value:string
+     mix phx.gen.html Things Timelog timelogs object_id:references:things_objects key:string value:string
+ 
+     create many to many table things_objects_tags
+     create many to many table things_objects_properties
+
+     A document is an array of objects, a header has properties, tags, logbook associated with it, and section. Could also make it more of a tree-like structure, but we're not trying to edit the document, we're trying to get the main parts to do some scheduling and be able to regenerate it. 
+
+    - old notes header is essentially an object, but then what is a section? section will be the content of a header
+      what about logbook?
+
+    if we want to get a subtree, we also need to put in the path correctly for the subtree
+    or can generate subtree - from the doc uuid's
+
+  - how to get a particular ordered subtree of a document?
+    we should have a document with a set of uuid's in an order. we need to select up to the last uuid where level = the level we're at
+    CREATE EXTENSION pgcrypto; 
+    CREATE TABLE contacts(  id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT, email TEXT);
+
+    snw=# with x (id_list) as ( values (array['bb8f6873-b2f7-4109-a35f-308930e1d57c', '3ccd8a17-0fac-484c-83ab-feacf88c1812', '2eb23b9f-eb9d-40d0-a46a-24c50aa73173'])) select c.* from contacts c, x where cast(id as text) = any (x.id_list) order by array_position(x.id_list, cast( c.id as text));
+    id                  |      name       | email 
+    --------------------------------------+-----------------+-------
+    bb8f6873-b2f7-4109-a35f-308930e1d57c | Geoff Franks    | geoff
+    3ccd8a17-0fac-484c-83ab-feacf88c1812 | Dr Nic Williams | drnic
+    2eb23b9f-eb9d-40d0-a46a-24c50aa73173 | Jamie Van Dyke  | jamie
+
+
+
+** Workflow:
+  - Have things locally.
+  - Initial sync
+    - Server parses and adds uuid's
+    - Stores in database so can do scheduling, sharing, making lists for other people
+    - Re-exports with additional property information
+  - No conflict resolution between local/remote copies.
+    Should have a time-vector on each element though.
+    Pull down any changes from server and use them. Sync to server overwrites the uploads/changes.
+  - This workflow requires an api:
+    - Import/export whole documents (this can be used by emacs and/or the web editor)
+
+** MVP
+
+*** import/export to api. 
+**** write a parser (not going to do in elisp since may want non-emacs users)
+**** DONE create db schema
+CLOSED: [2017-08-13 Sun 15:01]
+[[DBSCHEMA]]
+**** DONE consolidate sections
+CLOSED: [2017-08-13 Sun 15:00]
+:LOGBOOK:
+CLOCK: [2017-08-13 Sun 12:14]--[2017-08-13 Sun 12:39] =>  0:25
+CLOCK: [2017-08-13 Sun 11:44]--[2017-08-13 Sun 12:09] =>  0:25
+CLOCK: [2017-08-13 Sun 11:14]--[2017-08-13 Sun 11:39] =>  0:25
+CLOCK: [2017-08-13 Sun 07:18]--[2017-08-13 Sun 07:44] =>  0:26
+CLOCK: [2017-08-13 Sun 06:46]--[2017-08-13 Sun 07:12] =>  0:26
+:END:
+**** DONE Need to fix the planning parser to grab the dates
+CLOSED: [2017-08-13 Sun 15:00]
+:LOGBOOK:
+CLOCK: [2017-08-13 Sun 12:48]--[2017-08-13 Sun 13:13] =>  0:25
+:END:
+**** DONE consolidate header (property, planning)
+CLOSED: [2017-08-13 Sun 15:00]
+**** implement db schema
+:LOGBOOK:
+CLOCK: [2017-08-14 Mon 15:44]--[2017-08-14 Mon 15:51] =>  0:07
+CLOCK: [2017-08-14 Mon 15:09]--[2017-08-14 Mon 15:34] =>  0:25
+:END:
+**** Parse logbook and properties
+**** write to database
+**** regenerate file from database
+*** display UI for agenda
+*** additional properties for scheduling + contexts + tags
+*** notifications
+
+
+
+* clocktable
+#+BEGIN: clocktable :maxlevel 2 :scope file
+#+CAPTION: Clock summary at [2017-08-14 Mon 13:30]
+| Headline     | Time   |      |
+|--------------+--------+------|
+| *Total time* | *2:32* |      |
+|--------------+--------+------|
+| Ttl          | 2:32   |      |
+| \_  MVP      |        | 2:32 |
+#+END:

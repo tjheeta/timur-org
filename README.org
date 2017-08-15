@@ -259,6 +259,11 @@ CLOCK: [2017-08-14 Mon 15:09]--[2017-08-14 Mon 15:34] =>  0:25
 :END:
 **** TODO write to database
 :LOGBOOK:
+CLOCK: [2017-08-15 Tue 11:13]--[2017-08-15 Tue 11:38] =>  0:25
+CLOCK: [2017-08-15 Tue 10:44]--[2017-08-15 Tue 11:09] =>  0:25
+CLOCK: [2017-08-15 Tue 10:14]--[2017-08-15 Tue 10:39] =>  0:25
+CLOCK: [2017-08-15 Tue 09:44]--[2017-08-15 Tue 10:09] =>  0:25
+CLOCK: [2017-08-15 Tue 09:11]--[2017-08-15 Tue 09:36] =>  0:25
 CLOCK: [2017-08-14 Mon 19:26]--[2017-08-14 Mon 19:46] =>  0:20
 CLOCK: [2017-08-14 Mon 18:57]--[2017-08-14 Mon 19:26] =>  0:29
 CLOCK: [2017-08-14 Mon 18:31]--[2017-08-14 Mon 18:56] =>  0:25
@@ -266,9 +271,22 @@ CLOCK: [2017-08-14 Mon 18:05]--[2017-08-14 Mon 18:30] =>  0:25
 CLOCK: [2017-08-14 Mon 17:13]--[2017-08-14 Mon 17:38] =>  0:25
 CLOCK: [2017-08-14 Mon 16:44]--[2017-08-14 Mon 17:10] =>  0:26
 :END:
-[[file:lib/ttl/parse/parse.ex::#%20this%20is%20working%20but%20subsequent%20id's%20are%20not%20being%20updated][Current state]]
+      [[file:scratch.ex::###%20Parsing%20date%20regex][last state of regexp]]
+The dates need to be parsed to put into the db
+Turns out they are of many variable formats, need to use regexp
+The scheduler needs to have a few additional fields in db
+***** Parse and cast the dates
+      http://orgmode.org/manual/Timestamps.html#Timestamps
+
+      :LOGBOOK:
+      CLOCK: [2017-08-15 Tue 13:25]--[2017-08-15 Tue 13:50] =>  0:25
+      CLOCK: [2017-08-15 Tue 12:43]--[2017-08-15 Tue 13:25] =>  0:42
+      CLOCK: [2017-08-15 Tue 12:16]--[2017-08-15 Tue 12:41] =>  0:25
+      CLOCK: [2017-08-15 Tue 11:43]--[2017-08-15 Tue 12:08] =>  0:25
+      :END:
 ***** Need to use ecto.multi to make a clean transaction
-**** Parse logbook and properties
+***** Or maybe need to do versioning right now?
+**** Parse logbook and properties to get version and id into object
 **** regenerate file from database
 **** versioning
 - the [[file:lib/ttl/things/things.ex::def%20create_or_update_object(attrs)%20do][create or update function]] needs to be changed 
@@ -280,19 +298,24 @@ CLOCK: [2017-08-14 Mon 16:44]--[2017-08-14 Mon 17:10] =>  0:26
 
 
 
+* Scratch
+
+#+BEGIN_SRC elixir :results output
+2 + 2
+#+END_SRC
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 4 :scope file
-#+CAPTION: Clock summary at [2017-08-14 Mon 19:54]
-| Headline                                        | Time   |      |      |      |
-|-------------------------------------------------+--------+------+------+------|
-| *Total time*                                    | *6:17* |      |      |      |
-|-------------------------------------------------+--------+------+------+------|
-| Ttl                                             | 6:17   |      |      |      |
-| \_  MVP                                         |        | 6:17 |      |      |
-| \_    import/export to api.                     |        |      | 6:17 |      |
-| \_      DONE consolidate sections               |        |      |      | 2:07 |
-| \_      DONE Need to fix the planning parser... |        |      |      | 0:25 |
-| \_      DONE implement db schema                |        |      |      | 1:15 |
-| \_      TODO write to database                  |        |      |      | 2:30 |
+#+CAPTION: Clock summary at [2017-08-15 Tue 13:59]
+| Headline                                        | Time    |       |       |      |
+|-------------------------------------------------+---------+-------+-------+------|
+| *Total time*                                    | *10:19* |       |       |      |
+|-------------------------------------------------+---------+-------+-------+------|
+| Ttl                                             | 10:19   |       |       |      |
+| \_  MVP                                         |         | 10:19 |       |      |
+| \_    import/export to api.                     |         |       | 10:19 |      |
+| \_      DONE consolidate sections               |         |       |       | 2:07 |
+| \_      DONE Need to fix the planning parser... |         |       |       | 0:25 |
+| \_      DONE implement db schema                |         |       |       | 1:15 |
+| \_      TODO write to database                  |         |       |       | 6:32 |
 #+END:

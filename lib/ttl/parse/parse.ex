@@ -11,7 +11,7 @@ defmodule Ttl.Parse do
   defmodule Unknown,            do: defstruct lnb: 0, line: "", content: "", parent: ""
 
   defmodule Object do
-    defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", subobjects: []
+    defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", subobjects: []
   end
   defmodule Document do
     defstruct name: "", objects: []
@@ -29,6 +29,7 @@ defmodule Ttl.Parse do
     # first pass identify all the headers, planning, propertydrawers
     Enum.map(data, fn({line, lnb}) -> typeof({line, lnb}) end)
     |> build_ast([])
+    # needs to have an id also
     |> create_document(%Document{name: file})
   end
 
@@ -109,7 +110,7 @@ defmodule Ttl.Parse do
         obj = %Object{title: h.content, level: h.level, pri: h.pri, state: h.state, tags: h.tags}
         create_document(t, %{doc | objects: [obj | doc.objects]} )
 
-      # If the list of objects is empty, and it's not a header, add it to the list
+      # If the list of objects is empty, even if it's not a heading, add it to the list
       doc.objects == [] ->
         create_document(t , %{doc | objects: [h | doc.objects]})
 

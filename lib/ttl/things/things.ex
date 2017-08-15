@@ -157,6 +157,10 @@ defmodule Ttl.Things do
     on_conflict = [set: Map.to_list(changeset.changes)]
     Repo.insert(changeset, on_conflict: on_conflict, conflict_target: :id)
   end
+  def create_or_update_objects(list_of_attrs) do
+    on_conflict = :replace_all
+    Repo.insert_all(Object, list_of_attrs, on_conflict: on_conflict)
+  end
 
 
   @doc """
@@ -205,6 +209,20 @@ defmodule Ttl.Things do
   def change_object(%Object{} = object) do
     Object.changeset(object, %{})
   end
+
+
+  """
+  Additional functions for object operations
+  """
+  def get_versions_of_objects(document_id) do
+    q = from o in "things_objects",
+      where: o.document_id == ^document_id, 
+      select: [o.id, o.version]
+    Repo.all(q)
+  end
+
+
+
 
   alias Ttl.Things.Tag
 

@@ -150,6 +150,14 @@ defmodule Ttl.Things do
     |> Object.changeset(attrs)
     |> Repo.insert()
   end
+  # TODO - will need to be changed on versioning
+  def create_or_update_object(attrs) do
+    changeset = %Object{}
+    |> Object.changeset(attrs)
+    on_conflict = [set: Map.to_list(changeset.changes)]
+    Repo.insert(changeset, on_conflict: on_conflict, conflict_target: :id)
+  end
+
 
   @doc """
   Updates a object.

@@ -4,7 +4,11 @@ defmodule Ttl.Things.Object do
   alias Ttl.Things.Object
 
 
-  @primary_key {:id, :binary_id, autogenerate: true}
+  # NOTE - Don't autogenerate id for objects here, it overwrites anything passed in
+  # NOTE - Need to generate them as part of the query
+  #@primary_key {:id, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: false}
+
   @foreign_key_type :binary_id
   schema "things_objects" do
     field :blob, :binary
@@ -31,7 +35,7 @@ defmodule Ttl.Things.Object do
   @doc false
   def changeset(%Object{} = object, attrs) do
     object
-    |> cast(attrs, [:path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions])
-    |> validate_required([:path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions])
+    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions])
+    |> validate_required([:id, :document_id, :version])
   end
 end

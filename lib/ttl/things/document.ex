@@ -18,6 +18,6 @@ defmodule Ttl.Things.Document do
   def changeset(%Document{} = document, attrs) do
     document
     |> cast(attrs, [:name, :objects])
-    |> validate_required([:name, :objects])
+    |> validate_required([:name])
   end
 end

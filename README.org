@@ -188,7 +188,13 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
      create many to many table things_objects_tags
      create many to many table things_objects_properties
 
-     A document is an array of objects, a header has properties, tags, logbook associated with it, and section. Could also make it more of a tree-like structure, but we're not trying to edit the document, we're trying to get the main parts to do some scheduling and be able to regenerate it. 
+     A document is an array of objects, a header has properties, tags, logbook associated with it, and section. Could also make it more of a tree-like structure, but we're not trying to edit the document, we're trying to get the main parts to do some scheduling and be able to regenerate it.
+
+     An annoying problem is that we want to be able to refresh a document and also reorder or remove any objects. Possible to have a table of UUID's in the document to guarantee order. Another possibility is a many table with reference to document. If objects moved up and down, we would have to update every object. Same for insertion for new objects in the middle of a file. With an array of uuid's, need to just update the array and take care of fragments later. 
+
+
+      
+
 
     - old notes header is essentially an object, but then what is a section? section will be the content of a header
       what about logbook?
@@ -223,7 +229,6 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
     - Import/export whole documents (this can be used by emacs and/or the web editor)
 
 ** MVP
-
 *** import/export to api. 
 **** write a parser (not going to do in elisp since may want non-emacs users)
 **** DONE create db schema
@@ -245,28 +250,49 @@ CLOCK: [2017-08-13 Sun 12:48]--[2017-08-13 Sun 13:13] =>  0:25
 :END:
 **** DONE consolidate header (property, planning)
 CLOSED: [2017-08-13 Sun 15:00]
-**** implement db schema
+**** DONE implement db schema
+CLOSED: [2017-08-14 Mon 16:44]
 :LOGBOOK:
-CLOCK: [2017-08-14 Mon 16:14]
+CLOCK: [2017-08-14 Mon 16:14]--[2017-08-14 Mon 16:39] =>  0:25
 CLOCK: [2017-08-14 Mon 15:44]--[2017-08-14 Mon 16:09] =>  0:25
 CLOCK: [2017-08-14 Mon 15:09]--[2017-08-14 Mon 15:34] =>  0:25
 :END:
+**** TODO write to database
+:LOGBOOK:
+CLOCK: [2017-08-14 Mon 19:26]--[2017-08-14 Mon 19:46] =>  0:20
+CLOCK: [2017-08-14 Mon 18:57]--[2017-08-14 Mon 19:26] =>  0:29
+CLOCK: [2017-08-14 Mon 18:31]--[2017-08-14 Mon 18:56] =>  0:25
+CLOCK: [2017-08-14 Mon 18:05]--[2017-08-14 Mon 18:30] =>  0:25
+CLOCK: [2017-08-14 Mon 17:13]--[2017-08-14 Mon 17:38] =>  0:25
+CLOCK: [2017-08-14 Mon 16:44]--[2017-08-14 Mon 17:10] =>  0:26
+:END:
+[[file:lib/ttl/parse/parse.ex::#%20this%20is%20working%20but%20subsequent%20id's%20are%20not%20being%20updated][Current state]]
+***** Need to use ecto.multi to make a clean transaction
 **** Parse logbook and properties
-**** write to database
 **** regenerate file from database
+**** versioning
+- the [[file:lib/ttl/things/things.ex::def%20create_or_update_object(attrs)%20do][create or update function]] needs to be changed 
+- need to select all the existing uuid's, match the versions
+- and then do an update if it makes sense
 *** display UI for agenda
 *** additional properties for scheduling + contexts + tags
 *** notifications
 
 
 
+
 * clocktable
-#+BEGIN: clocktable :maxlevel 2 :scope file
-#+CAPTION: Clock summary at [2017-08-14 Mon 13:30]
-| Headline     | Time   |      |
-|--------------+--------+------|
-| *Total time* | *2:32* |      |
-|--------------+--------+------|
-| Ttl          | 2:32   |      |
-| \_  MVP      |        | 2:32 |
+#+BEGIN: clocktable :maxlevel 4 :scope file
+#+CAPTION: Clock summary at [2017-08-14 Mon 19:54]
+| Headline                                        | Time   |      |      |      |
+|-------------------------------------------------+--------+------+------+------|
+| *Total time*                                    | *6:17* |      |      |      |
+|-------------------------------------------------+--------+------+------+------|
+| Ttl                                             | 6:17   |      |      |      |
+| \_  MVP                                         |        | 6:17 |      |      |
+| \_    import/export to api.                     |        |      | 6:17 |      |
+| \_      DONE consolidate sections               |        |      |      | 2:07 |
+| \_      DONE Need to fix the planning parser... |        |      |      | 0:25 |
+| \_      DONE implement db schema                |        |      |      | 1:15 |
+| \_      TODO write to database                  |        |      |      | 2:30 |
 #+END:

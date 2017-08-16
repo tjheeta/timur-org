@@ -214,6 +214,13 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
     3ccd8a17-0fac-484c-83ab-feacf88c1812 | Dr Nic Williams | drnic
     2eb23b9f-eb9d-40d0-a46a-24c50aa73173 | Jamie Van Dyke  | jamie
 
+  - ttl_dev=# with x (id_list) as ( values (array['ffce2bd3-a4c4-4ea9-98df-e4ebde4452ee','75c3758c-0af9-4f15-a75a-c66a2fbe0299','f3c99da2-f9ef-45d8
+-a59d-c2b606be52d6'])) select o.id, o.title from things_objects o, x where cast(id as text) = any (x.id_list) order by array_position(x.id_list
+, cast( o.id as text));  
+  - with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id );
+
+
+
 
 
 ** Workflow:
@@ -315,9 +322,18 @@ Takes a document, parses it, and can insert all the objects into the database
 written to the database as jsonb
 http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
+
 **** regenerate file from database - with uuid's
-- The file uuid goes in the metadata at the top
-- The object metadata goes into properties
+     :LOGBOOK:
+     CLOCK: [2017-08-16 Wed 07:25]--[2017-08-16 Wed 07:43] =>  0:18
+     :END:
+    - The file uuid goes in the metadata at the top
+    - The object metadata goes into properties
+    - ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
+***** DONE adjust the levels for files with no bullets to 0 - this will fix for files with no headline
+      CLOSED: [2017-08-16 Wed 07:22]
+***** DONE bug with closed planning data not being parsed
+      CLOSED: [2017-08-16 Wed 07:43]
 **** Parse file uuid from metadata
 **** Parse properties to get version and id into object 
 **** Ensure data gets updated on change
@@ -340,7 +356,7 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-15 Tue 23:18]
+#+CAPTION: Clock summary at [2017-08-15 Tue 23:28]
 | Headline                                           | Time    |       |       |       |      |
 |----------------------------------------------------+---------+-------+-------+-------+------|
 | *Total time*                                       | *16:28* |       |       |       |      |
@@ -355,5 +371,5 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 | \_        DONE Make it into a function             |         |       |       |       | 0:30 |
 | \_        DONE Make a solid decision on what to... |         |       |       |       | 1:03 |
 | \_        DONE Parse and cast the dates            |         |       |       |       | 4:58 |
-| \_      Need to parse the file metadata            |         |       |       |  1:35 |      |
+| \_      DONE Need to parse the file metadata       |         |       |       |  1:35 |      |
 #+END:

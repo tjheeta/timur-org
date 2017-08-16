@@ -159,7 +159,7 @@ defmodule Ttl.Things do
   end
   def create_or_update_objects(list_of_attrs) do
     on_conflict = :replace_all
-    Repo.insert_all(Object, list_of_attrs, on_conflict: on_conflict)
+    Repo.insert_all(Object, list_of_attrs, on_conflict: on_conflict, conflict_target: :id)
   end
 
 

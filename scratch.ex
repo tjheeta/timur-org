@@ -308,6 +308,7 @@ d = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
 # what is my document_id?
 
 {:ok, doc_id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
+Map.from_struct(d) |> Map.take([:id, :name]) 
 {:ok, tmpdoc} = Map.from_struct(d) |> Map.take([:id, :name]) |> Ttl.Things.create_document()
 d = Map.put_new(d, :id, doc_id)
 doc_id = tmpdoc.id
@@ -326,10 +327,12 @@ ordered_object_ids = Enum.map(current_objects, &(Map.get(&1, :id)) )
 Enum.at(current_objects, 10)
 Enum.at(ordered_object_ids, 10)
 tmp = Ttl.Things.get_versions_of_objects(doc_id |> Ecto.UUID.dump() |> elem(1))
+tmp
 stored_objects = Enum.map(tmp, fn([id, ver]) ->
      {:ok, id} = Ecto.UUID.load(id)
      {id, ver}
 end) |> Enum.into(%{})
+stored_objects
 
 ### Versioning notes
 #- current_object has no version or id -> it shouldn't be stored
@@ -381,3 +384,14 @@ Ttl.Things.get_object!("00d7415d-847b-4f75-8745-7d9f5bdab02e")
 #  Ttl.Things.create_or_update_objects([x.changes])
 #  end)
 
+
+x = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
+x = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
+x = Ttl.Parse.doit("/home/tjheeta/org/adil-reference.org")
+elem(x,2)
+|> Enum.at(0)
+Ttl.Things.get_object!("a97c6bb7-c305-454a-aea5-3e65e5aa8ac2")
+Ecto.Multi.new 
+
+a = %{mode: "default"}
+a[:mode]

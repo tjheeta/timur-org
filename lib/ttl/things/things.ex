@@ -36,6 +36,7 @@ defmodule Ttl.Things do
 
   """
   def get_document!(id), do: Repo.get!(Document, id)
+  def get_document(id), do: Repo.get(Document, id)
 
   @doc """
   Creates a document.
@@ -150,7 +151,6 @@ defmodule Ttl.Things do
     |> Object.changeset(attrs)
     |> Repo.insert()
   end
-  # TODO - will need to be changed on versioning
   def create_or_update_object(attrs) do
     changeset = %Object{}
     |> Object.changeset(attrs)

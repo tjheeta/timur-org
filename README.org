@@ -282,10 +282,17 @@ Turns out Ecto casting from naive datetime to datetime was the issue.
 Takes a document, parses it, and can insert all the objects into the database
 [[file:scratch.ex::##%20Last%20working%20state][Last working state]]
 
-***** Create the document and document_id
-***** Make it into a function 
+***** DONE Make it into a function 
+      CLOSED: [2017-08-15 Tue 20:06]
+      :LOGBOOK:
+      CLOCK: [2017-08-15 Tue 19:30]--[2017-08-15 Tue 20:00] =>  0:30
+      :END:
 ***** Maybe use ecto.multi to make a clean transaction
 ***** Make a solid decision on what to do on failed update / version conflict
+      :LOGBOOK:
+      CLOCK: [2017-08-15 Tue 21:00]--[2017-08-15 Tue 21:38] =>  0:38
+      CLOCK: [2017-08-15 Tue 20:13]--[2017-08-15 Tue 20:38] =>  0:25
+      :END:
 ***** DONE Parse and cast the dates
       CLOSED: [2017-08-15 Tue 18:19]
       http://orgmode.org/manual/Timestamps.html#Timestamps
@@ -303,6 +310,7 @@ Takes a document, parses it, and can insert all the objects into the database
 ***** DONE Or maybe need to do versioning right now?
       CLOSED: [2017-08-15 Tue 18:22]
 **** regenerate file from database - with uuid's
+***** Create the document and document_id
 **** Parse logbook and properties to get version and id into object
 **** make an interval data structure for scheduling and bin-packing calendar
 **** Parse the schedule properly into the interval structure
@@ -320,17 +328,20 @@ Takes a document, parses it, and can insert all the objects into the database
 #+END_SRC
 
 * clocktable
-#+BEGIN: clocktable :maxlevel 4 :scope file
-#+CAPTION: Clock summary at [2017-08-15 Tue 13:59]
-| Headline                                        | Time    |       |       |      |
-|-------------------------------------------------+---------+-------+-------+------|
-| *Total time*                                    | *10:19* |       |       |      |
-|-------------------------------------------------+---------+-------+-------+------|
-| Ttl                                             | 10:19   |       |       |      |
-| \_  MVP                                         |         | 10:19 |       |      |
-| \_    import/export to api.                     |         |       | 10:19 |      |
-| \_      DONE consolidate sections               |         |       |       | 2:07 |
-| \_      DONE Need to fix the planning parser... |         |       |       | 0:25 |
-| \_      DONE implement db schema                |         |       |       | 1:15 |
-| \_      TODO write to database                  |         |       |       | 6:32 |
+#+BEGIN: clocktable :maxlevel 5 :scope file
+#+CAPTION: Clock summary at [2017-08-15 Tue 21:39]
+| Headline                                         | Time    |       |       |       |      |
+|--------------------------------------------------+---------+-------+-------+-------+------|
+| *Total time*                                     | *14:53* |       |       |       |      |
+|--------------------------------------------------+---------+-------+-------+-------+------|
+| Ttl                                              | 14:53   |       |       |       |      |
+| \_  MVP                                          |         | 14:53 |       |       |      |
+| \_    import/export to api.                      |         |       | 14:53 |       |      |
+| \_      DONE consolidate sections                |         |       |       |  2:07 |      |
+| \_      DONE Need to fix the planning parser...  |         |       |       |  0:25 |      |
+| \_      DONE implement db schema                 |         |       |       |  1:15 |      |
+| \_      TODO write to database                   |         |       |       | 11:06 |      |
+| \_        DONE Make it into a function           |         |       |       |       | 0:30 |
+| \_        Make a solid decision on what to do... |         |       |       |       | 1:03 |
+| \_        DONE Parse and cast the dates          |         |       |       |       | 4:58 |
 #+END:

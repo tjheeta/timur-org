@@ -1,7 +1,7 @@
 defmodule Ttl.Repo.Migrations.CreateTtl.Things.Object do
   use Ecto.Migration
 
-  def change do
+  def up do 
     create table(:things_objects, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :path, {:array, :uuid}
@@ -22,9 +22,23 @@ defmodule Ttl.Repo.Migrations.CreateTtl.Things.Object do
       add :permissions, :integer
       add :document_id, references(:things_documents, on_delete: :nothing, type: :binary_id)
 
-      timestamps()
+      #timestamps()
+      #add :inserted_at, :timestamp, [default: "CURRENT_TIMESTAMP"]
+      #add :updated_at, :timestamp, [default: "CURRENT_TIMESTAMP"]
     end
 
     create index(:things_objects, [:document_id])
+
+    execute """
+      alter table things_objects add column inserted_at timestamp not null default now();
+    """
+    execute """
+      alter table things_objects add column updated_at timestamp not null default now();
+    """
+  end
+  def down do
+    execute """
+      drop table things_objects;
+    """
   end
 end

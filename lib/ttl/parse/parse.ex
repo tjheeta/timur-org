@@ -1,4 +1,6 @@
 defmodule Ttl.Parse do
+  # TODO - @timestamps_opts [type: :utc_datetime]
+  # TODO - user timezones
   defmodule Blank,              do: defstruct lnb: 0, line: "", content: "", inside_code: false
   defmodule Heading,            do: defstruct lnb: 0, line: "", level: 1, content: "", pri: "", state: "", tags: []
   # many to many table against heading
@@ -152,9 +154,49 @@ defmodule Ttl.Parse do
       Regex.named_captures(~r/(?<keyword>(DEADLINE|SCHEDULED|CLOSED)):/, line) ->
         r = (Regex.named_captures(~r/(CLOSED:\s*([\[<])(?<closed>[^>\]]+)([\]>]))/, line) || %{} )
         r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
-        r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
+        r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{}) 
+        # closed and deadline can be turned directly into Ecto.DateTime
+        # scheduled will need to be split into scheduled (datetime), scheduled_end (datetime), and scheduled_interval (string)
+        # http://orgmode.org/manual/Timestamps.html#Timestamps
+        # the repeat scheduling over multiple days doesn't actually work in org-mode
+        # CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>
 
-        %Planning{line: line, lnb: lnb, scheduled: Map.get(r, "scheduled"), deadline: Map.get(r, "deadline"), closed: Map.get(r, "closed")}
+        # The following regexp correctly parses all of the below
+        #dates = ["2016-06-01 Wed 9:30-17:00 +1w", "2016-06-01 Wed 9:30-17:00", "2016-06-01 Wed 9:00", "2016-06-01 Wed 09:00", "2016-08-13 Sat 22:50", "2016-08-03", "2016-08-03 9:00", "2016-08-03 Wed 9:00"]
+        #Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*(?<interval>\+([\d][\w]))?/, x) } end)
+
+        date_format_regexp  = ~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<hour_end>[\d]{1,2}):(?<minute_end>[\d]{2}))?\s*(?<repeat_interval>\+([\d][\w]))?/
+
+        # schedule can have a range of dates and also a range of times
+        # TODO - for tag-based calendar scheduling, need a range of intervals. 
+        # TODO - same problem will occur for bin-packing later, but let's get the rough work done first - single date
+        { scheduled_start,
+          scheduled_start_duration,
+          scheduled_repeat_interval 
+        } = case Map.get(r, "scheduled_start") do
+              nil -> { nil, 0, 0 }
+              x ->
+
+                # To cast to Ecto.Datetime, the hour/minute needs to be non-zero
+              {:ok, date} = Regex.named_captures( date_format_regexp, x)
+                |> Map.update("hour", 0, fn(v) -> if v == "", do: 0, else: v end)
+                |> Map.update("minute", 0, fn(v) -> if v == "", do: 0, else: v end)
+                |> Ecto.DateTime.cast
+                date = Ecto.DateTime.to_iso8601(date)
+
+              {date, 0, 0 }
+            end
+
+        deadline = case Map.get(r, "deadline") do
+                     nil -> nil
+                     x -> Regex.named_captures( date_format_regexp, Map.get(r, "deadline")) |> Ecto.DateTime.cast
+                   end
+        closed = case Map.get(r, "closed") do
+                   nil -> nil
+                   x -> Regex.named_captures( date_format_regexp, Map.get(r, "deadline")) |> Ecto.DateTime.cast
+                 end
+
+        %Planning{line: line, lnb: lnb, scheduled: scheduled_start, deadline: deadline, closed: closed}
 
       line =~ ~r/^:PROPERTIES:/ ->
         %PropertyDrawer{line: line, lnb: lnb}

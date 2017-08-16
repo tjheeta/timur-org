@@ -16,7 +16,7 @@ defmodule Ttl.Parse do
     defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", subobjects: []
   end
   defmodule Document do
-    defstruct name: "", objects: []
+    defstruct name: "", metadata: [], objects: []
   end
 
   # modes are default, force
@@ -61,7 +61,7 @@ defmodule Ttl.Parse do
                {:ok, x} -> x
                _ ->
                  {:ok, result} = Map.from_struct(parsed_doc)
-                 |> Map.take([:id, :name])
+                 |> Map.take([:id, :name, :metadata])
                  |> Ttl.Things.create_document()
                  result
              end
@@ -130,11 +130,26 @@ defmodule Ttl.Parse do
     |> Enum.reverse
     data = Enum.zip(data, 1..Enum.count(data)+1)
 
+    # need to identify top of file metadata
+    {file_metadata, drop_count} = Enum.reduce_while(data, {%{}, 0}, fn({line, lnb}, {metadata, count}) ->
+      if line =~ ~r/^#\+/ do
+        r = Regex.named_captures(~r/^#\+(?<key>[A-Z]*?):\s+(?<value>.+)/, line)
+        tmp = %{Map.get(r, "key") => Map.get(r, "value")}
+        {:cont, {Map.merge(metadata, tmp), count + 1}}
+      else
+        {:halt, {metadata, count}}
+      end
+    end)
+
     # first pass identify all the headers, planning, propertydrawers
-    Enum.map(data, fn({line, lnb}) -> typeof({line, lnb}) end)
+    # remove the file_metadata 
+    data = Enum.drop(data, drop_count)
+    # this builds all the individual elements from lines
+    |> Enum.map(fn({line, lnb}) -> typeof({line, lnb}) end)
+    # TODO - rename to create_elements
     |> build_ast([])
-    # needs to have an id also
-    |> create_document(%Document{name: file})
+    # TODO - rename to consolidate_objects, creates obj from elements
+    |> create_document(%Document{name: file, metadata: file_metadata})
   end
 
   def slurp_until([], _, _, _, acc, ast) do
@@ -250,7 +265,6 @@ defmodule Ttl.Parse do
         r = r |> Map.merge(%{"tags" => ""}) |> Map.update!("title", &(String.strip/1))
         %Heading{content: r["title"], level: String.length(r["stars"]), 
           pri: r["pri"], state: r["state"], tags: r["tags"], lnb: lnb, line: line}
-
 
       # TODO - There is probably a way to capture all three planning at once
       Regex.named_captures(~r/(?<keyword>(DEADLINE|SCHEDULED|CLOSED)):/, line) ->

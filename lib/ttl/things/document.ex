@@ -12,6 +12,7 @@ defmodule Ttl.Things.Document do
   schema "things_documents" do
     field :name, :string
     field :objects, {:array, Ecto.UUID}
+    field :metadata, :map
     field :user_id, :binary_id
 
     timestamps()
@@ -20,7 +21,7 @@ defmodule Ttl.Things.Document do
   @doc false
   def changeset(%Document{} = document, attrs) do
     document
-    |> cast(attrs, [:name, :objects])
+    |> cast(attrs, [:id, :name, :objects, :metadata])
     |> validate_required([:name])
   end
 end

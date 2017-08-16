@@ -217,6 +217,8 @@ end)
 good
 attrs = Enum.at(current_objects, 3)
 attrs = Enum.at(good, 3)
+attrs.scheduled
+Ecto.DateTime.cast(attrs.scheduled)
 Ttl.Things.Object.changeset(%Ttl.Things.Object{}, attrs)
 t1 = Enum.map(good, fn(x) ->
   Ttl.Things.Object.changeset(%Ttl.Things.Object{}, x)
@@ -258,14 +260,18 @@ Enum.into( o2, %{})
 Map.merge(o1, Enum.into( o2, %{}))
 
 ### Parsing date regex
+d =  "CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00 +1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>"
+d =  "CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00> DEADLINE: <bla>"
+d =  "CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00 +1w> DEADLINE: <bla>"
+r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled>[^>\]]+)([\]>])((--)([\[<])(?<scheduled2>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, d) || %{}) 
 
 dates = ["2016-06-01 Wed 9:30-17:00 +1w", "2016-06-01 Wed 9:30-17:00", "2016-06-01 Wed 9:00", "2016-06-01 Wed 09:00", "2016-08-13 Sat 22:50", "2016-08-03", "2016-08-03 9:00", "2016-08-03 Wed 9:00"]
 r = Regex.named_captures(~r/^(?<year>[\d]{4})\s*(?<state>[A-Z]*?)\s+(?<pri>(\[#[A-Z]\])?)\s*(?<title>.+)\s+(?<tags>(:.*:))/, Enum.at(dates,0))
 r = Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*/, Enum.at(dates,0))
 Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2})?)/, x) } end)
 Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*/, x) } end)
-Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*(?<interval>\+([\d][\w]))?/, x) } end)
-r
+r = Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*(?<interval>\+([\d][\w]))?/, x) } end)
+Enum.at(r,0) |> elem(1) |> Ecto.DateTime.cast
 
 ### bad date parsing attempt
 current_objects 
@@ -277,3 +283,101 @@ Enum.at(current_objects, 3).closed |> Timex.parse("%Y-%m-%d %a", :strftime)
 Enum.at(current_objects, 3).closed |> Timex.parse("%Y-%m-%d %a %H:%M", :strftime)
 Timex.parse("2016-06-10 Fri 09:00-17:00", "%Y-%m-%d %a %H:%M", :strftime)
 ordered_object_ids = Enum.map(current_objects, &(Map.get(&1, :id)) )
+
+
+
+{:ok, d1} = %{"day" => "05",  "month" => "07", "year" => "2017", "hour" => 0, "minute" => 0} |> Ecto.DateTime.cast 
+DateTime.from(d1)
+DateTime.from_naive(d1, "Etc/UTC")
+DateTime.from_naive()
+Ecto.DateTime.to_iso8601(d1) 
+DateTime.to_unix(%DateTime{calendar: Calendar.ISO, day: 2, hour: 11, microsecond: {0, 0}, minute: 42, month: 2, second: 46, std_offset: 0, time_zone: "Etc/UTC", utc_offset: 0, year: 2017, zone_abbr: "UTC"})
+
+x = Regex.named_captures(~r/a(?<foo>b)c(?<bar>d)?/, "abce")
+{_, x2} = Map.get_and_update(x2, "bar", fn(v) -> if v == "", do: {v,0}, else: {v,v} end)
+x2 = %{"bar" => 3, "foo" => "b"}
+x2
+x2 = Map.update(x2, "bar", 0, fn(v) -> if v == "", do: 0, else: v end)
+x2
+
+
+
+## Last working state
+
+d = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
+# what is my document_id?
+
+{:ok, doc_id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
+{:ok, tmpdoc} = Map.from_struct(d) |> Map.take([:id, :name]) |> Ttl.Things.create_document()
+d = Map.put_new(d, :id, doc_id)
+doc_id = tmpdoc.id
+# this creates an id if it doesn't already exist
+# this date parsing is completely broken. Do it in the damn parser
+current_objects = Enum.map(d.objects, fn(x) ->
+  f_generate_id = fn ->
+    {:ok, id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
+    id
+  end
+  f_generate_version = fn -> 1 end
+  f_parse_date = fn(x) -> end
+  t1 = Map.from_struct(x) |> Map.put_new_lazy(:id, f_generate_id) |> Map.put_new_lazy(:version, f_generate_version ) |> Map.put_new(:document_id, doc_id)
+end)
+ordered_object_ids = Enum.map(current_objects, &(Map.get(&1, :id)) )
+Enum.at(current_objects, 10)
+Enum.at(ordered_object_ids, 10)
+tmp = Ttl.Things.get_versions_of_objects(doc_id |> Ecto.UUID.dump() |> elem(1))
+stored_objects = Enum.map(tmp, fn([id, ver]) ->
+     {:ok, id} = Ecto.UUID.load(id)
+     {id, ver}
+end) |> Enum.into(%{})
+
+### Versioning notes
+#- current_object has no version or id -> it shouldn't be stored
+#  - stored_object doesn't exist. Perfect
+#  - can't compare even if it identical
+#- current_object has version AND id
+#  - stored_object exists and is <= version. Perfect
+#  - stored_object exists and is > version - what to do?
+#    - force_update
+#    - fail the object in particular, return the stored state
+#    - merge the changes - not building this right now - org-mode doesn't support crdt anyway
+
+# do the compare and generate a list of objects for Ecto.insert_all
+{good, bad} = Enum.split_with(current_objects, fn(x) ->
+  cond do
+    stored_objects[x.id] == nil -> true
+    x.version >= stored_objects[x.id] -> true
+    true -> false
+  end
+end)
+good
+
+tmpdoc.id
+t1 = Enum.map(good, fn(x) ->
+  Ttl.Things.Object.changeset(%Ttl.Things.Object{}, x)
+end)
+{good2, bad2} = Enum.split_with(t1, &(&1.valid?))
+length(good2)
+length(bad2)
+IO.inspect Enum.at(good2, 0)
+
+data = good2
+# now do the insert_all 
+Enum.map(data, fn(x) -> x.changes end) |> Ttl.Things.create_or_update_objects()
+ordered_object_ids
+# Add all the objects in order to the document
+Ttl.Things.update_document(tmpdoc, %{objects: ordered_object_ids} )
+tmpdoc
+# PSQL select * from things_documents where id = uuid('f6271af8-df62-4f3f-95a0-b86e91cca276');  
+
+'00d7415d-847b-4f75-8745-7d9f5bdab02e' |> Ecto.UUID.load
+{:ok, id} = Ecto.UUID.dump("00d7415d-847b-4f75-8745-7d9f5bdab02e") 
+id
+Ttl.Things.get_object!(id)
+Ttl.Things.get_object!('00d7415d-847b-4f75-8745-7d9f5bdab02e')
+Ttl.Things.get_object!("00d7415d-847b-4f75-8745-7d9f5bdab02e")
+#Enum.each(data, fn(x) ->
+#  IO.inspect x.changes
+#  Ttl.Things.create_or_update_objects([x.changes])
+#  end)
+

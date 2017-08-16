@@ -230,7 +230,8 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
 
 ** MVP
 *** import/export to api. 
-**** write a parser (not going to do in elisp since may want non-emacs users)
+**** DONE write a parser (not going to do in elisp since may want non-emacs users)
+     CLOSED: [2017-08-15 Tue 18:27]
 **** DONE create db schema
 CLOSED: [2017-08-13 Sun 15:01]
 [[DBSCHEMA]]
@@ -271,27 +272,41 @@ CLOCK: [2017-08-14 Mon 18:05]--[2017-08-14 Mon 18:30] =>  0:25
 CLOCK: [2017-08-14 Mon 17:13]--[2017-08-14 Mon 17:38] =>  0:25
 CLOCK: [2017-08-14 Mon 16:44]--[2017-08-14 Mon 17:10] =>  0:26
 :END:
-      [[file:scratch.ex::###%20Parsing%20date%20regex][last state of regexp]]
 The dates need to be parsed to put into the db
 Turns out they are of many variable formats, need to use regexp
 The scheduler needs to have a few additional fields in db
-***** Parse and cast the dates
+
+After mucking around quite a bit with dates, regret not using a lexer. 
+Turns out Ecto casting from naive datetime to datetime was the issue. 
+
+Takes a document, parses it, and can insert all the objects into the database
+[[file:scratch.ex::##%20Last%20working%20state][Last working state]]
+
+***** Create the document and document_id
+***** Make it into a function 
+***** Maybe use ecto.multi to make a clean transaction
+***** Make a solid decision on what to do on failed update / version conflict
+***** DONE Parse and cast the dates
+      CLOSED: [2017-08-15 Tue 18:19]
       http://orgmode.org/manual/Timestamps.html#Timestamps
 
       :LOGBOOK:
+      CLOCK: [2017-08-15 Tue 16:55]--[2017-08-15 Tue 18:14] =>  1:19
+      CLOCK: [2017-08-15 Tue 16:15]--[2017-08-15 Tue 16:51] =>  0:36
+      CLOCK: [2017-08-15 Tue 15:30]--[2017-08-15 Tue 16:11] =>  0:41
+      CLOCK: [2017-08-15 Tue 15:04]--[2017-08-15 Tue 15:29] =>  0:25
       CLOCK: [2017-08-15 Tue 13:25]--[2017-08-15 Tue 13:50] =>  0:25
       CLOCK: [2017-08-15 Tue 12:43]--[2017-08-15 Tue 13:25] =>  0:42
       CLOCK: [2017-08-15 Tue 12:16]--[2017-08-15 Tue 12:41] =>  0:25
       CLOCK: [2017-08-15 Tue 11:43]--[2017-08-15 Tue 12:08] =>  0:25
       :END:
-***** Need to use ecto.multi to make a clean transaction
-***** Or maybe need to do versioning right now?
+***** DONE Or maybe need to do versioning right now?
+      CLOSED: [2017-08-15 Tue 18:22]
+**** regenerate file from database - with uuid's
 **** Parse logbook and properties to get version and id into object
-**** regenerate file from database
-**** versioning
-- the [[file:lib/ttl/things/things.ex::def%20create_or_update_object(attrs)%20do][create or update function]] needs to be changed 
-- need to select all the existing uuid's, match the versions
-- and then do an update if it makes sense
+**** make an interval data structure for scheduling and bin-packing calendar
+**** Parse the schedule properly into the interval structure
+**** [[file:scratch.ex::###%20Versioning%20notes][versioning notes]]
 *** display UI for agenda
 *** additional properties for scheduling + contexts + tags
 *** notifications

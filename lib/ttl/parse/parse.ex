@@ -19,7 +19,7 @@ defmodule Ttl.Parse do
     defstruct name: "", metadata: [], objects: []
   end
 
-  def regenerate(uuid) do
+  def regenerate(string_uuid) do
     # probably quite a few faster and better ways to do this in the db
     # but not caring about performance quite yet
     # ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
@@ -80,10 +80,10 @@ defmodule Ttl.Parse do
     end
 
     # get the data for the file
-    document_id = uuid
-    {:ok, document_id}= Ecto.UUID.dump(document_id)
-    document = Ttl.Things.get_document!(uuid)
-    unsorted_data = f_query.(document_id )
+    # TODO - need to add spec format and put these functions non anon
+    {:ok, binary_uuid}= Ecto.UUID.dump(string_uuid)
+    document = Ttl.Things.get_document!(string_uuid)
+    unsorted_data = f_query.(binary_uuid)
     sorted_data = for id <- document.objects, do: unsorted_data[id]
 
     # now need to merge the file together

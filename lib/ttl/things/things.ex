@@ -36,7 +36,7 @@ defmodule Ttl.Things do
 
   """
   def get_document!(id), do: Repo.get!(Document, id)
-  def get_document(id), do: Repo.get(!Document, id)
+  def get_document(id), do: Repo.get(Document, id)
 
   @doc """
   Creates a document.

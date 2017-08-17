@@ -322,7 +322,6 @@ Takes a document, parses it, and can insert all the objects into the database
 written to the database as jsonb
 http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
-
 **** DONE regenerate file from database - with uuid's
      CLOSED: [2017-08-16 Wed 19:18]
      :LOGBOOK:
@@ -351,11 +350,11 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 **** DONE Bugs - adil file has extra newline at start
      CLOSED: [2017-08-16 Wed 19:18]
-**** Bugs - date format should be the same
-**** Bugs - schedule time interval + repeat - is this done later?
 **** TODO - Properties - parse, store, and write
-**** Parse file uuid from metadata
-**** Parse properties to get version and id into object 
+**** Bugs - parsing schedule time interval + repeat - is this done later?
+**** Bugs - regeneration date format should be the same
+**** Add and parse file uuid from metadata
+**** Add and parse properties to get version and id into object 
 **** Ensure data gets updated on change
 **** Parse logbook
 **** make an interval data structure for scheduling and bin-packing calendar
@@ -363,10 +362,8 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 *** display UI for agenda
 *** parse additional properties for scheduling + contexts + tags
 *** notifications
-
-
 *** Cleanup
-***** use ecto.multi or control the dual commit transaction
+**** use ecto.multi or control the dual commit transaction
 
 * Scratch
 

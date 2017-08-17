@@ -544,6 +544,27 @@ notes_id = db_doc.id
 med_id = db_doc.id
 {:ok, db_doc, invalid}  = Ttl.Parse.doit("/home/tjheeta/org/adil-reference.org")
 adil_id = db_doc.id
+
 data = Ttl.Parse.regenerate(notes_id)
 data = Ttl.Parse.regenerate(adil_id)
+data = Ttl.Parse.regenerate(med_id)
+Ecto.UUID.dump(adil_id)
+
+
+tmpdoc = Ttl.Things.get_document!(adil_id)
+f_generate_metadata.(tmpdoc.metadata)
+tmpobjid = Ttl.Things.get_document!(adil_id).objects |> Enum.at(0)
+Ttl.Things.get_object!(tmpobjid)
+
+## Testing
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
+notes_id = db_doc.id
+data = Ttl.Parse.regenerate(notes_id)
+
+{:ok, sre_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/sreprep.org")
+sre_id = sre_doc.id
+data = Ttl.Parse.regenerate(sre_id)
+
+{:ok, med_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
+med_id = med_doc.id
 data = Ttl.Parse.regenerate(med_id)

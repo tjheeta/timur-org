@@ -221,22 +221,22 @@ defmodule Ttl.Parse do
     data = Enum.drop(data, drop_count)
     # this builds all the individual elements from lines
     |> Enum.map(fn({line, lnb}) -> typeof({line, lnb}) end)
-    # TODO - rename to create_elements
-    |> build_ast([])
+    # this creates elements - planning, propertydrawer, logbookdrawer, etc.
+    |> create_elements([])
     # TODO - rename to consolidate_objects, creates obj from elements
     |> create_document(%Document{name: file, metadata: file_metadata})
   end
 
   def slurp_until([], _, _, _, acc, ast) do
-      build_ast([], [acc | ast])
+      create_elements([], [acc | ast])
   end
 
   # this assumes the accumulator is a struct with a content field
   def slurp_until([h | t] = data, func_end, func_acc, skip_end_line, acc, ast) do
     if func_end.(h) do
       case skip_end_line do
-        true -> build_ast(t, [acc | ast])
-        false -> build_ast(data, [acc | ast])
+        true -> create_elements(t, [acc | ast])
+        false -> create_elements(data, [acc | ast])
       end
     else
       tmp = func_acc.(acc.content , h.line)
@@ -244,29 +244,29 @@ defmodule Ttl.Parse do
     end
   end
 
-  def build_ast([], ast) do
+  def create_elements([], ast) do
     ast |> Enum.reverse
   end
 
   # Slurping the properties
-  def build_ast([%Heading{} = s_head, %Planning{} = s_plan, %PropertyDrawer{} = s_prop| t], ast) do
+  def create_elements([%Heading{} = s_head, %Planning{} = s_plan, %PropertyDrawer{} = s_prop| t], ast) do
     slurp_until(t, &(&1.line =~ ~r/:END:/), &(&1 <> &2), true,  s_prop, [s_plan, s_head | ast ])
   end
 
-  def build_ast([%Heading{} = s_head, %Planning{} = s_plan | t], ast) do
-    build_ast(t, [s_plan, s_head | ast])
+  def create_elements([%Heading{} = s_head, %Planning{} = s_plan | t], ast) do
+    create_elements(t, [s_plan, s_head | ast])
   end
 
-  def build_ast([%Heading{} = s_head, %PropertyDrawer{} = s_prop| t], ast) do
-    build_ast(t, [s_prop, s_head | ast])
+  def create_elements([%Heading{} = s_head, %PropertyDrawer{} = s_prop| t], ast) do
+    create_elements(t, [s_prop, s_head | ast])
   end
 
-  def build_ast([%Heading{} = s_head |  t], ast) do
-    build_ast(t, [s_head | ast])
+  def create_elements([%Heading{} = s_head |  t], ast) do
+    create_elements(t, [s_head | ast])
   end
 
   # Slurping the logbook
-  def build_ast([%LogbookDrawer{} = s_log |  t], ast) do
+  def create_elements([%LogbookDrawer{} = s_log |  t], ast) do
     slurp_until(
       t,
       &(&1.line =~ ~r/:END:/),
@@ -278,7 +278,7 @@ defmodule Ttl.Parse do
   end
 
   # Slurping into section until we find something else
-  def build_ast([h | t], ast) do
+  def create_elements([h | t], ast) do
     slurp_until(
       t,
       &(&1.__struct__ != Ttl.Parse.Unknown), # stop at unknown
@@ -298,6 +298,8 @@ defmodule Ttl.Parse do
   end
 
   def create_document([h | t], doc) do
+    # find the latest object
+    current_object_index = Enum.find_index(doc.objects, fn(x) -> x.__struct__ == Ttl.Parse.Object end)
     cond do
       # If it's a heading, create an object and add it to the list of current objects
       h.__struct__ == Ttl.Parse.Heading ->
@@ -306,13 +308,12 @@ defmodule Ttl.Parse do
 
       # If the list of objects is empty, even if it's not a heading
       #add it to the list, but adjust the level to 0
-      doc.objects == [] ->
+      doc.objects == [] || current_object_index == nil ->
         create_document(t , %{doc | objects: [%{h | level: 0} | doc.objects]})
 
       true ->
         # not a heading, we need to update the heading to include planning, logbook, section, or append to list
-        index = Enum.find_index(doc.objects, fn(x) -> x.__struct__ == Ttl.Parse.Object end)
-        current_object = Enum.at(doc.objects, index)
+        current_object = Enum.at(doc.objects, current_object_index)
         current_object = cond do
           h.__struct__ == Ttl.Parse.Planning ->
             %{current_object | closed: h.closed, scheduled: h.scheduled, deadline: h.deadline}
@@ -325,7 +326,7 @@ defmodule Ttl.Parse do
           true -> current_object
         end
         # replace the current object in the doc
-        doc_objects = List.replace_at(doc.objects, index, current_object)
+        doc_objects = List.replace_at(doc.objects, current_object_index, current_object)
         create_document(t, %{doc | objects: doc_objects})
     end
   end

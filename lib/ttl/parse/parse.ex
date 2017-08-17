@@ -19,6 +19,10 @@ defmodule Ttl.Parse do
     defstruct id: nil, name: "", metadata: [], objects: []
   end
 
+  def regenerate_to_file(filename, string_uuid) do
+    str = regenerate(string_uuid)
+    File.write(filename, str)
+  end
   def regenerate(string_uuid) do
     # probably quite a few faster and better ways to do this in the db
     # but not caring about performance quite yet
@@ -109,7 +113,6 @@ defmodule Ttl.Parse do
     str = Enum.reduce(sorted_data, str, fn(x, acc) ->
       acc <> f_object_to_string.(x)
     end)
-    File.write("/tmp/hello",str )
   end
 
   # modes are default, force

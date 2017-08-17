@@ -385,9 +385,6 @@ Ttl.Things.get_object!("00d7415d-847b-4f75-8745-7d9f5bdab02e")
 #  end)
 
 
-x = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
-x = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
-x = Ttl.Parse.doit("/home/tjheeta/org/adil-reference.org")
 elem(x,2)
 |> Enum.at(0)
 Ttl.Things.get_object!("a97c6bb7-c305-454a-aea5-3e65e5aa8ac2")
@@ -395,3 +392,158 @@ Ecto.Multi.new
 
 a = %{mode: "default"}
 a[:mode]
+
+d.id
+d.metadata
+d.objects
+Ecto.Repo.
+
+alias Ttl.Things.Object
+alias Ttl.Repo
+import Ecto.Query
+
+#select: %{id: o.id, data: %{level: o.level, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+#select: %{id: fragment("cast(id as text)"), data: %{level: o.level, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+#select: %{o.id: %{level: o.level, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+#select: %{fragment("cast(id as text)"): %{level: o.level, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+d.id
+
+x = Enum.at(data,3)
+x = Enum.at(data, 0)
+data = Enum.reduce(content, "", fn(x, acc) ->
+  Map.keys(x)
+  x2 = Map.to_list(x)
+  [closed: closed, content: content, deadline: deadline, level: level, scheduled: scheduled, title: title] = Map.to_list(x)
+  [ level, title, state, priority, content, scheduled, closed, deadline, version ] = x  # |> Enum.map(fn(x) ->
+    case x do
+      { date, {h, m, d, _}} -> {date, {h, m, d}}
+      _ -> x
+    end 
+    end)
+
+
+  f_db_date_to_string = fn(date, bracket ) ->
+    { big, {h, m, d, _}}  = date
+    date = {big, {h,m,d}} |> Ecto.DateTime.from_erl |> Ecto.DateTime.to_string 
+    case bracket do
+      "[" -> "[" <> date <> "] "
+      "]" -> "[" <> date <> "] "
+      "[]" -> "[" <> date <> "] "
+      :square -> "[" <> date <> "] "
+      _ -> "<" <> date <> "> "
+    end
+  end
+
+f_object_to_string = fn(data) ->
+  [ level, title, state, priority, content, scheduled, closed, deadline, version ] = data
+  acc = ""
+  str_level = String.duplicate("*", level)
+  acc = acc <> str_level <> " "
+  acc = if state, do: acc <> state <> " ", else: acc
+  #acc = if title, do: acc <> String.replace(title, ~r/\r|\n/, "") <> " ", else: acc
+  acc = if title, do: acc <> title <> " ", else: acc
+  acc = if priority, do: acc <> priority <> " ", else: acc
+  acc = String.trim_trailing(acc, " ") <> "\n"
+
+  planning_string = ""
+  planning_string = planning_string <> if closed,  do: "CLOSED: " <> f_db_date_to_string.(closed, :square), else: ""
+  planning_string = planning_string <> if deadline,  do: "DEADLINE: " <> f_db_date_to_string.(deadline, "[]"), else: ""
+  scheduled
+  planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <> f_db_date_to_string.(scheduled, "<"), else: ""
+  planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
+  acc = acc <> planning_string 
+  #acc = String.trim_trailing(acc, " ") <> "\n"
+  acc = if content, do: acc <> content, else: acc
+  acc 
+end
+
+d = Ttl.Things.get_document!("b6e644d8-cb01-4a2d-8c32-9d4e53f1e3ac")
+
+
+Enum.at(data,1) |> f_object_to_string.()
+data
+d.metadata
+str = ""
+str = Enum.reduce( d.metadata, "", fn({k,v}, acc) ->  acc <> "#+#{k}: #{v}\n" end)
+str = Enum.reduce(data, str, fn(x, acc) ->
+  acc <> f_object_to_string.(x)
+end)
+File.write("/tmp/hello",str )
+
+str
+IO.puts(str)
+t = Enum.at(data, 15) |> Enum.at(1)
+"*** " <> t <> "\n"
+  case x do  
+    [level, title, content, scheduled ]
+  end
+  case x  do
+    [nil, content: content, deadline: deadline, level: 1, scheduled: nil] -> IO.inspect "HERE"
+    [closed: nil, content: content, deadline: deadline, level: 0, scheduled: nil, title: title] -> IO.inspect "HERE2"
+  end
+  acc = case x.content do
+    nil -> x.content
+  end
+  IO.inspect x.content
+  acc <> x.content
+end)
+
+Enum.at(content, 3)
+f_query2 = fn(document_id) ->
+  {:ok, document_id}= Ecto.UUID.dump(document_id)
+  q = from o in "things_objects",
+    where: o.document_id == ^document_id,
+    select: %{fragment("cast(id as text)") => %{level: o.level, title: o.title, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+    #select: %{fragment("cast(id as text)") => map(Object, [o.level, o.content, o.scheduled, o.closed,  o.deadline])}
+  Repo.all(q) |> Enum.reduce(%{}, fn(x, acc) -> Map.merge(acc, x) end)
+end
+data = f_query2.(d.id) 
+Map.keys(data2)
+data2["78281328-a18b-471b-b5f5-96cfdfc2295a"]
+Map.get(data2, "78281328-a18b-471b-b5f5-96cfdfc2295a")
+d.objects
+data
+content = for id <- d.objects, do: [data[id].title, data[id].content]
+tmp 
+content = for id <- d.objects, Map.get(data, id), do: Map.get(data, id)
+Enum.at(content, 3)
+posts |> Enum.map(&(&1.id)) |> IO.inspect
+data |> Map.keys
+
+f_query = fn(document_id) ->
+  {:ok, document_id}= Ecto.UUID.dump(document_id)
+  q = from o in "things_objects",
+    where: o.document_id == ^document_id,
+    select: [o.id , o.level, o.content, o.scheduled, o.closed, o.deadline]
+  result = Repo.all(q) |> Enum.reduce(%{}, fn(row, acc) ->
+    [id | t] = row
+    {:ok, id} = Ecto.UUID.load(id)
+    Map.put_new(acc, id, t)
+  end)
+end
+data = f_query.(d.id)
+Enum.reduce(d.objecs, "", fn(x, acc) ->
+  IO.inspect x
+  IO.inspect data[x]
+end)
+
+q = f_query.(d.id)
+Repo.all(q)
+Repo.all(Object)
+
+
+# debugging
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
+db_doc = Ttl.Things.get_document(parsed_doc.id) 
+IO.inspect parsed_doc.id
+Ttl.Things.get_document!(parsed_doc.id)
+
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
+notes_id = db_doc.id
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
+med_id = db_doc.id
+{:ok, db_doc, invalid}  = Ttl.Parse.doit("/home/tjheeta/org/adil-reference.org")
+adil_id = db_doc.id
+data = Ttl.Parse.regenerate(notes_id)
+data = Ttl.Parse.regenerate(adil_id)
+data = Ttl.Parse.regenerate(med_id)

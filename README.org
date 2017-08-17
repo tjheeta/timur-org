@@ -323,17 +323,37 @@ written to the database as jsonb
 http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 
-**** regenerate file from database - with uuid's
+**** DONE regenerate file from database - with uuid's
+     CLOSED: [2017-08-16 Wed 19:18]
      :LOGBOOK:
+     CLOCK: [2017-08-16 Wed 18:45]--[2017-08-16 Wed 19:20] =>  0:35
+     CLOCK: [2017-08-16 Wed 18:15]--[2017-08-16 Wed 18:40] =>  0:25
+     CLOCK: [2017-08-16 Wed 17:40]--[2017-08-16 Wed 18:15] =>  0:35
+     CLOCK: [2017-08-16 Wed 17:10]--[2017-08-16 Wed 17:38] =>  0:28
+     CLOCK: [2017-08-16 Wed 16:40]--[2017-08-16 Wed 17:08] =>  0:28
+     CLOCK: [2017-08-16 Wed 16:11]--[2017-08-16 Wed 16:36] =>  0:25
+     CLOCK: [2017-08-16 Wed 12:03]--[2017-08-16 Wed 12:28] =>  0:25
+     CLOCK: [2017-08-16 Wed 11:28]--[2017-08-16 Wed 11:53] =>  0:25
+     CLOCK: [2017-08-16 Wed 11:05]--[2017-08-16 Wed 11:20] =>  0:15
+     CLOCK: [2017-08-16 Wed 10:36]--[2017-08-16 Wed 11:01] =>  0:25
+     CLOCK: [2017-08-16 Wed 08:45]--[2017-08-16 Wed 09:00] =>  0:15
      CLOCK: [2017-08-16 Wed 07:25]--[2017-08-16 Wed 07:43] =>  0:18
      :END:
     - The file uuid goes in the metadata at the top
     - The object metadata goes into properties
     - ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
+    - ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, d.metadata from things_documents d,  x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
+    - 
 ***** DONE adjust the levels for files with no bullets to 0 - this will fix for files with no headline
       CLOSED: [2017-08-16 Wed 07:22]
 ***** DONE bug with closed planning data not being parsed
       CLOSED: [2017-08-16 Wed 07:43]
+
+**** DONE Bugs - adil file has extra newline at start
+     CLOSED: [2017-08-16 Wed 19:18]
+**** Bugs - date format should be the same
+**** Bugs - schedule time interval + repeat - is this done later?
+**** TODO - Properties - parse, store, and write
 **** Parse file uuid from metadata
 **** Parse properties to get version and id into object 
 **** Ensure data gets updated on change
@@ -356,14 +376,14 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-15 Tue 23:28]
+#+CAPTION: Clock summary at [2017-08-16 Wed 19:27]
 | Headline                                           | Time    |       |       |       |      |
 |----------------------------------------------------+---------+-------+-------+-------+------|
-| *Total time*                                       | *16:28* |       |       |       |      |
+| *Total time*                                       | *21:27* |       |       |       |      |
 |----------------------------------------------------+---------+-------+-------+-------+------|
-| Ttl                                                | 16:28   |       |       |       |      |
-| \_  MVP                                            |         | 16:28 |       |       |      |
-| \_    import/export to api.                        |         |       | 16:28 |       |      |
+| Ttl                                                | 21:27   |       |       |       |      |
+| \_  MVP                                            |         | 21:27 |       |       |      |
+| \_    import/export to api.                        |         |       | 21:27 |       |      |
 | \_      DONE consolidate sections                  |         |       |       |  2:07 |      |
 | \_      DONE Need to fix the planning parser...    |         |       |       |  0:25 |      |
 | \_      DONE implement db schema                   |         |       |       |  1:15 |      |
@@ -372,4 +392,5 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 | \_        DONE Make a solid decision on what to... |         |       |       |       | 1:03 |
 | \_        DONE Parse and cast the dates            |         |       |       |       | 4:58 |
 | \_      DONE Need to parse the file metadata       |         |       |       |  1:35 |      |
+| \_      DONE regenerate file from database -...    |         |       |       |  4:59 |      |
 #+END:

@@ -350,20 +350,33 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 **** DONE Bugs - adil file has extra newline at start
      CLOSED: [2017-08-16 Wed 19:18]
-**** TODO - Properties - parse, store, and write
-**** Bugs - parsing schedule time interval + repeat - is this done later?
-**** Bugs - regeneration date format should be the same
-**** Add and parse file uuid from metadata
-**** Add and parse properties to get version and id into object 
+**** DONE Properties - parse, store, and write
+     CLOSED: [2017-08-16 Wed 22:59]
+     :LOGBOOK:
+     CLOCK: [2017-08-16 Wed 21:10]--[2017-08-16 Wed 22:57] =>  1:47
+     :END:
+**** DONE Add file uuid into regenerate
+     CLOSED: [2017-08-16 Wed 23:39]
+**** DONE Add version and id into regenerated object 
+     CLOSED: [2017-08-17 Thu 00:03]
+     :LOGBOOK:
+     CLOCK: [2017-08-16 Wed 23:39]--[2017-08-17 Thu 00:03] =>  0:24
+     :END:
+**** Read file uuid from file to pull objects
+**** Compare the objects 
 **** Ensure data gets updated on change
-**** Parse logbook
-**** make an interval data structure for scheduling and bin-packing calendar
+**** Bugs parsing schedule time interval + repeat - is this done later?
+**** Bugs regeneration date format should be the same
+**** Parse logbook - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
+**** make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
 **** Parse the schedule properly into the interval structure
+**** Add REST api?
 *** display UI for agenda
 *** parse additional properties for scheduling + contexts + tags
 *** notifications
 *** Cleanup
 **** use ecto.multi or control the dual commit transaction
+**** Move anon functions into modules. Add spec to each one
 
 * Scratch
 
@@ -373,14 +386,14 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-16 Wed 19:27]
+#+CAPTION: Clock summary at [2017-08-17 Thu 00:03]
 | Headline                                           | Time    |       |       |       |      |
 |----------------------------------------------------+---------+-------+-------+-------+------|
-| *Total time*                                       | *21:27* |       |       |       |      |
+| *Total time*                                       | *23:38* |       |       |       |      |
 |----------------------------------------------------+---------+-------+-------+-------+------|
-| Ttl                                                | 21:27   |       |       |       |      |
-| \_  MVP                                            |         | 21:27 |       |       |      |
-| \_    import/export to api.                        |         |       | 21:27 |       |      |
+| Ttl                                                | 23:38   |       |       |       |      |
+| \_  MVP                                            |         | 23:38 |       |       |      |
+| \_    import/export to api.                        |         |       | 23:38 |       |      |
 | \_      DONE consolidate sections                  |         |       |       |  2:07 |      |
 | \_      DONE Need to fix the planning parser...    |         |       |       |  0:25 |      |
 | \_      DONE implement db schema                   |         |       |       |  1:15 |      |
@@ -390,4 +403,6 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 | \_        DONE Parse and cast the dates            |         |       |       |       | 4:58 |
 | \_      DONE Need to parse the file metadata       |         |       |       |  1:35 |      |
 | \_      DONE regenerate file from database -...    |         |       |       |  4:59 |      |
+| \_      DONE Properties - parse, store, and...     |         |       |       |  1:47 |      |
+| \_      DONE Add version and id into...            |         |       |       |  0:24 |      |
 #+END:

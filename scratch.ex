@@ -556,6 +556,15 @@ f_generate_metadata.(tmpdoc.metadata)
 tmpobjid = Ttl.Things.get_document!(adil_id).objects |> Enum.at(0)
 Ttl.Things.get_object!(tmpobjid)
 
+# test id parsing
+parsed_doc = Ttl.Parse.parse("/tmp/recurse")
+parsed_doc.metadata
+parsed_doc.id
+
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
+parsed_doc.metadata
+parsed_doc.id
+
 # propertydrawer parsing test
 parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
 Enum.at(parsed_doc.objects, 68) # this is the propertiesdrawer for Indian phone renew
@@ -577,13 +586,49 @@ end)
 notes_id = db_doc.id
 data = Ttl.Parse.regenerate(notes_id)
 
+{:ok, r_doc, invalid} = Ttl.Parse.doit("/tmp/recurse.org")
+{:ok, r_doc, invalid} = Ttl.Parse.doit("/tmp/hello")
+recurse_id = r_doc.id
+data = Ttl.Parse.regenerate(recurse_id)
+
 {:ok, sre_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/sreprep.org")
+{:ok, sre_doc, invalid} = Ttl.Parse.doit("/tmp/sreprep-recurse.org")
 sre_id = sre_doc.id
+sre_doc.metadata
 data = Ttl.Parse.regenerate(sre_id)
 
 {:ok, med_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
 med_id = med_doc.id
 data = Ttl.Parse.regenerate(med_id)
+
+{:ok, a_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/adil-reference.org")
+a_id = a_doc.id
+data = Ttl.Parse.regenerate(a_id)
+
+
+parsed_doc = Ttl.Parse.parse("/tmp/recurse.org")
+|> Enum.filter(&(&1.__struct__ == Ttl.Parse.PropertyDrawer))
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org") |> Enum.filter(&(&1.__struct__ == Ttl.Parse.PropertyDrawer))
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/meditation.org") |> Enum.filter(&(&1.__struct__ == Ttl.Parse.PropertyDrawer))
+parsed_doc.id
+{:ok, random_id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
+%Ttl.Things.Document{} =
+ huh =  Ttl.Things.get_document(parsed_doc.id)
+huh.id
+{:ok, x} = Ttl.Things.get_document(random_id)
+{:ok, recurse_doc, invalid} = Ttl.Parse.doit("/tmp/recurse.org")
+recurse_id = recurse_doc.id
+x = Ttl.Things.get_document(recurse_doc.id)
+recurse_doc.metadata
+Ttl.Things.get_object!(x.objects |> Enum.at(3))
+data = Ttl.Parse.regenerate(recurse_id)
+
+{:ok, recurse_doc, invalid} = Ttl.Parse.doit("/tmp/recurse2.org")
+recurse_id = recurse_doc.id
+data = Ttl.Parse.regenerate(recurse_id)
+{:ok, recurse_doc, invalid} = Ttl.Parse.doit("/tmp/recurse3.org")
+recurse_id = recurse_doc.id
+data = Ttl.Parse.regenerate(recurse_id)
 
 %Ttl.Parse.PropertyDrawer{content: ":LAST_REPEAT: [2017-08-15 Tue 05:09]\n:STYLE:    habit\n", level: 1, line: ":PROPERTIES:\n", lnb: 3}
 ** (RuntimeError) oops

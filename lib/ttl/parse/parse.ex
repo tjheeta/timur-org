@@ -105,7 +105,7 @@ defmodule Ttl.Parse do
 
     # now need to merge the file together
     str = f_generate_metadata.(document)
-    #str = str <> "\n" # Adding one single extra newline
+    str = str <> "\n" # Adding extra newline
     str = Enum.reduce(sorted_data, str, fn(x, acc) ->
       acc <> f_object_to_string.(x)
     end)
@@ -242,12 +242,22 @@ defmodule Ttl.Parse do
         {:halt, {metadata, count}}
       end
     end)
-
-    # first pass identify all the headers, planning, propertydrawers
     # remove the file_metadata 
     data = Enum.drop(data, drop_count)
+
+    # in addition, find all the next blank lines
+    blank_count = Enum.reduce_while(data, 0, fn({line, lnb}, count) ->
+      if String.trim(line) == "" do
+        {:cont, count + 1}
+      else
+        {:halt, count}
+      end
+    end)
+    data = Enum.drop(data, blank_count)
+
+    # first pass identify all the headers, planning, propertydrawers
     # this builds all the individual elements from lines
-    |> Enum.map(fn({line, lnb}) -> typeof({line, lnb}) end)
+    Enum.map(data, fn({line, lnb}) -> typeof({line, lnb}) end)
     # this creates elements - planning, propertydrawer, logbookdrawer, etc.
     |> create_elements([])
     # TODO - rename to consolidate_objects, creates obj from elements

@@ -13,10 +13,10 @@ defmodule Ttl.Parse do
   defmodule Unknown,            do: defstruct lnb: 0, line: "", level: 1, content: "", parent: ""
 
   defmodule Object do
-    defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
+    defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
   end
   defmodule Document do
-    defstruct name: "", metadata: [], objects: []
+    defstruct id: nil, name: "", metadata: [], objects: []
   end
 
   def regenerate(string_uuid) do
@@ -68,7 +68,7 @@ defmodule Ttl.Parse do
       planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
       acc = acc <> planning_string
 
-      property_string = "PREFIX_OBJ_ID:#{id}\n:PREFIX_OBJ_VERSION:#{version}\n"
+      property_string = "PREFIX_OBJ_ID: #{id}\n:PREFIX_OBJ_VERSION: #{version}\n"
       property_string = 
       if properties && length(Map.keys(properties)) > 0 do
         Enum.reduce(properties, property_string, fn({k,v}, acc) ->
@@ -78,7 +78,7 @@ defmodule Ttl.Parse do
       else
         property_string
       end
-      property_string = "PROPERTIES:\n:#{property_string}:END\n"
+      property_string = ":PROPERTIES:\n:#{property_string}:END:\n"
       acc = acc <> property_string
 
       acc = if content, do: acc <> content, else: acc
@@ -114,10 +114,16 @@ defmodule Ttl.Parse do
   # modes are default, force
   def doit(file, attrs \\ %{mode: "default"}) do
     # helper functions
-    f_generate_id = fn ->
-      {:ok, id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
-      id
+    f_maybe_add_id = fn(somemap) ->
+      case Map.get(somemap, :id) do
+        nil ->
+          {:ok, id} = Ecto.UUID.bingenerate() |> Ecto.UUID.load
+          Map.put(somemap, :id, id)
+        _ -> somemap
+      end
     end
+
+
     # TODO - fix the version update
     f_generate_version = fn -> 1 end
 
@@ -146,12 +152,11 @@ defmodule Ttl.Parse do
 
     # Can't use the file name as the indicator as the thing could move around on fs
     parsed_doc = parse(file)
-
-    parsed_doc = Map.put_new_lazy(parsed_doc, :id, f_generate_id)
+    |> f_maybe_add_id.()
 
     db_doc = case Ttl.Things.get_document(parsed_doc.id) do
-               {:ok, x} -> x
-               _ ->
+               %Ttl.Things.Document{} = x -> x
+               nil ->
                  {:ok, result} = Map.from_struct(parsed_doc)
                  |> Map.take([:id, :name, :metadata])
                  |> Ttl.Things.create_document()
@@ -161,9 +166,9 @@ defmodule Ttl.Parse do
     # Add versions and document_id to the parsed objects
     parsed_objects = Enum.map(parsed_doc.objects, fn(x) ->
       Map.from_struct(x)
-      |> Map.put_new_lazy(:id, f_generate_id)
       |> Map.put_new_lazy(:version, f_generate_version )
       |> Map.put_new(:document_id, db_doc.id)
+      |> f_maybe_add_id.()
     end)
 
     # TODO - I'm sure this is not how to deal with binary_ids
@@ -213,6 +218,7 @@ defmodule Ttl.Parse do
     {:ok, db_doc, objects_update_invalid ++ objects_with_conflict}
   end
 
+  # returns a Document - doesn't do any extraneous additions to the file - only parsing
   def parse(file) do
     #s = File.stream!("/home/tjheeta/org/notes.org",  [:read, :utf8], :line)
     s = File.stream!(file,  [:read, :utf8], :line)
@@ -225,7 +231,7 @@ defmodule Ttl.Parse do
     # need to identify top of file metadata
     {file_metadata, drop_count} = Enum.reduce_while(data, {%{}, 0}, fn({line, lnb}, {metadata, count}) ->
       if line =~ ~r/^#\+/ do
-        r = Regex.named_captures(~r/^#\+(?<key>[A-Z]*?):\s+(?<value>.+)/, line)
+        r = Regex.named_captures(~r/^#\+(?<key>[A-Z-_]*?):\s*(?<value>.+)/, line)
         tmp = %{Map.get(r, "key") => Map.get(r, "value")}
         {:cont, {Map.merge(metadata, tmp), count + 1}}
       else
@@ -241,7 +247,7 @@ defmodule Ttl.Parse do
     # this creates elements - planning, propertydrawer, logbookdrawer, etc.
     |> create_elements([])
     # TODO - rename to consolidate_objects, creates obj from elements
-    |> create_document(%Document{name: file, metadata: file_metadata})
+    |> create_document(%Document{name: file, metadata: file_metadata, id: file_metadata["PREFIX_DOC_ID"]})
   end
 
   def slurp_until([], _, _, _, acc, ast) do
@@ -275,7 +281,7 @@ defmodule Ttl.Parse do
   end
 
   def create_elements([%Heading{} = s_head, %PropertyDrawer{} = s_prop| t], ast) do
-    create_elements(t, [s_prop, s_head | ast])
+    slurp_until(t, &(&1.line =~ ~r/:END:/), &(&1 <> &2), true,  s_prop, [s_head | ast ])
   end
 
   def create_elements([%Heading{} = s_head |  t], ast) do
@@ -317,15 +323,34 @@ defmodule Ttl.Parse do
   def create_document([h | t], doc) do
 
     # helper func
-    f_convert_property_drawer_to_map = fn(content) ->
+    f_convert_property_drawer_to_map = fn(content_string) ->
       # h = %Ttl.Parse.PropertyDrawer{content: ":LAST_REPEAT: [2017-08-15 Tue 05:09]\n:STYLE:    habit\n",
       # level: 1, line: ":PROPERTIES:\n", lnb: 3}
-      String.split(content, "\n")
+      String.split(content_string, "\n")
       |> Enum.filter(&(&1 != ""))
       |> Enum.reduce(%{}, fn(x,acc) ->
         r = Regex.named_captures(~r/^:(?<key>[A-Za-z_-]*):\s+(?<value>.+)/, x)
         Map.merge(acc,%{r["key"] => r["value"]})
       end)
+    end
+
+    # key_lookup should be a string, and key_to_update is either :id or :version 
+    f_maybe_set_var_from_properties_map = fn(object, key_lookup, key_to_update) ->
+      case Map.get(object.properties, key_lookup ) do
+        nil -> object
+        x ->
+          new_properties = Map.delete(object.properties, key_lookup)
+          res = Map.put(object, key_to_update, x)
+          |> Map.put(:properties, new_properties)
+      end
+
+    end
+
+    f_maybe_set_id_from_properties_map = fn(object) ->
+      f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_ID", :id)
+    end
+    f_maybe_set_version_from_properties_map = fn(object) ->
+      f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_VERSION", :version)
     end
 
     # find the latest object
@@ -350,11 +375,15 @@ defmodule Ttl.Parse do
           h.__struct__ == Ttl.Parse.Section ->
             %{current_object | content: (current_object.content <> h.content) }
           h.__struct__ == Ttl.Parse.PropertyDrawer ->
+            # set the properties component and set the id/version if they exist
             %{current_object | properties: f_convert_property_drawer_to_map.(h.content) }
+            |> f_maybe_set_id_from_properties_map.()
+            |> f_maybe_set_version_from_properties_map.()
           h.__struct__ == Ttl.Parse.LogbookDrawer ->
             %{current_object | subobjects: [ h  | current_object.subobjects ] }
           true -> current_object
         end
+
         # replace the current object in the doc
         doc_objects = List.replace_at(doc.objects, current_object_index, current_object)
         create_document(t, %{doc | objects: doc_objects})

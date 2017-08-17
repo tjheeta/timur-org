@@ -28,12 +28,13 @@ defmodule Ttl.Parse do
       q_struct = from o in "things_objects",
         where: o.document_id == ^document_id,
         select: %{fragment("cast(id as text)") =>
-          [ o.level, o.title, o.state, o.priority, o.content, o.scheduled, o.closed, o.deadline, o.version ]
+          [ o.level, o.title, o.state, o.priority, o.content, o.properties, o.scheduled, o.closed, o.deadline, o.version ]
         }
       q_map = from o in "things_objects",
         where: o.document_id == ^document_id,
         select: %{fragment("cast(id as text)") =>
-          %{level: o.level, title: o.title, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+          %{level: o.level, title: o.title, content: o.content, properties: o.properties,
+            scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
       q_all = from o in Ttl.Things.Object, 
       where: o.document_id == ^document_id
       Ttl.Repo.all(q_struct)
@@ -51,7 +52,7 @@ defmodule Ttl.Parse do
       end
     end
     f_object_to_string = fn(data) ->
-      [ level, title, state, priority, content, scheduled, closed, deadline, version ] = data
+      [ level, title, state, priority, content, properties, scheduled, closed, deadline, version ] = data
       acc = ""
       str_level = String.duplicate("*", level)
       acc = if level > 0, do: acc <> str_level <> " ", else: acc
@@ -59,12 +60,26 @@ defmodule Ttl.Parse do
       acc = if title, do: acc <> title <> " ", else: acc
       acc = if priority, do: acc <> priority <> " ", else: acc
       acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
+
       planning_string = ""
       planning_string = planning_string <> if closed,  do: "CLOSED: " <> f_db_date_to_string.(closed, :square), else: ""
       planning_string = planning_string <> if deadline,  do: "DEADLINE: " <> f_db_date_to_string.(deadline, "[]"), else: ""
       planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <> f_db_date_to_string.(scheduled, "<"), else: ""
       planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
       acc = acc <> planning_string
+
+      property_string =
+      if properties && length(Map.keys(properties)) > 0 do
+        Enum.reduce(properties, ":PROPERTIES:\n", fn({k,v}, acc) ->
+          str = ":#{k}:    #{v}\n"
+          acc <> str
+        end) <> ":END\n"
+      else
+        ""
+      end
+      acc = acc <> property_string
+
+
       acc = if content, do: acc <> content, else: acc
     end
 
@@ -306,7 +321,7 @@ defmodule Ttl.Parse do
       String.split(content, "\n")
       |> Enum.filter(&(&1 != ""))
       |> Enum.reduce(%{}, fn(x,acc) ->
-        r = Regex.named_captures(~r/^:(?<key>[A-Z_-]*):\s+(?<value>.+)/, x)
+        r = Regex.named_captures(~r/^:(?<key>[A-Za-z_-]*):\s+(?<value>.+)/, x)
         Map.merge(acc,%{r["key"] => r["value"]})
       end)
     end

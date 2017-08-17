@@ -556,6 +556,22 @@ f_generate_metadata.(tmpdoc.metadata)
 tmpobjid = Ttl.Things.get_document!(adil_id).objects |> Enum.at(0)
 Ttl.Things.get_object!(tmpobjid)
 
+# propertydrawer parsing test
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
+Enum.at(parsed_doc.objects, 68) # this is the propertiesdrawer for Indian phone renew
+parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/meditation.org")
+Enum.at(parsed_doc.objects, 1) 
+
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
+Enum.at(db_doc.objects, 68) |> Ttl.Things.get_object!
+
+{:ok, med_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
+x = Enum.at(med_doc.objects, 1) |> Ttl.Things.get_object! 
+x.properties 
+Enum.reduce(x.properties, ":PROPERTIES:\n", fn({k,v}, acc) ->
+  ":#{k}:    #{v}"
+end)
+
 ## Testing
 {:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
 notes_id = db_doc.id
@@ -568,3 +584,22 @@ data = Ttl.Parse.regenerate(sre_id)
 {:ok, med_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/meditation.org")
 med_id = med_doc.id
 data = Ttl.Parse.regenerate(med_id)
+
+%Ttl.Parse.PropertyDrawer{content: ":LAST_REPEAT: [2017-08-15 Tue 05:09]\n:STYLE:    habit\n", level: 1, line: ":PROPERTIES:\n", lnb: 3}
+** (RuntimeError) oops
+(ttl) lib/ttl/parse/parse.ex:324: Ttl.Parse.create_document/2
+l = ":LAST_REPEAT: [2017-08-15 Tue 05:09]\n:STYLE:    habit\n"
+String.split(l, "\n") |>Enum.filter(&(&1 != "")) |> Enum.map(fn(x) ->
+  r = Regex.named_captures(~r/^:(?<key>[A-Z_-]*):\s+(?<value>.+)/, x)
+  %{r["key"] => r["value"]}
+end)
+
+String.split(l, "\n") 
+
+r
+String.split(l, "\n") |>Enum.filter(&(&1 != "")) |> Enum.reduce(%{}, fn(x,acc) ->
+  r = Regex.named_captures(~r/^:(?<key>[A-Z_-]*):\s+(?<value>.+)/, x)
+  Map.merge(acc,%{r["key"] => r["value"]})
+end)
+
+r

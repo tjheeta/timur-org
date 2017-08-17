@@ -362,21 +362,38 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
      :LOGBOOK:
      CLOCK: [2017-08-16 Wed 23:39]--[2017-08-17 Thu 00:03] =>  0:24
      :END:
-**** Read file uuid from file to pull objects
+**** DONE Read file uuid from file to pull objects
+     CLOSED: [2017-08-17 Thu 11:38]
+     :LOGBOOK:
+     CLOCK: [2017-08-17 Thu 10:00]--[2017-08-17 Thu 10:57] =>  0:57
+     CLOCK: [2017-08-17 Thu 08:55]--[2017-08-17 Thu 09:20] =>  0:25
+     CLOCK: [2017-08-17 Thu 08:05]--[2017-08-17 Thu 08:50] =>  0:45
+     :END:
+**** DONE Start of file exception
+     CLOSED: [2017-08-17 Thu 11:38]
+     :LOGBOOK:
+     CLOCK: [2017-08-17 Thu 11:04]--[2017-08-17 Thu 11:29] =>  0:25
+     :END:
 **** Compare the objects 
 **** Ensure data gets updated on change
+      Org-mode won't ever update the version locally. If remote_version > local_version => conflict.
+      Conflict resolution will require parsing things locally and replacing them
+
 **** Bugs parsing schedule time interval + repeat - is this done later?
 **** Bugs regeneration date format should be the same
 **** Parse logbook - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
 **** make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
 **** Parse the schedule properly into the interval structure
 **** Add REST api?
+      Start off with a simple curl client to do whole files
+      Later can make an object level api and make an elisp client - update versions / conflict resolution
 *** display UI for agenda
 *** parse additional properties for scheduling + contexts + tags
 *** notifications
 *** Cleanup
 **** use ecto.multi or control the dual commit transaction
 **** Move anon functions into modules. Add spec to each one
+**** Tests
 
 * Scratch
 
@@ -386,23 +403,25 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-17 Thu 00:03]
-| Headline                                           | Time    |       |       |       |      |
-|----------------------------------------------------+---------+-------+-------+-------+------|
-| *Total time*                                       | *23:38* |       |       |       |      |
-|----------------------------------------------------+---------+-------+-------+-------+------|
-| Ttl                                                | 23:38   |       |       |       |      |
-| \_  MVP                                            |         | 23:38 |       |       |      |
-| \_    import/export to api.                        |         |       | 23:38 |       |      |
-| \_      DONE consolidate sections                  |         |       |       |  2:07 |      |
-| \_      DONE Need to fix the planning parser...    |         |       |       |  0:25 |      |
-| \_      DONE implement db schema                   |         |       |       |  1:15 |      |
-| \_      DONE write to database                     |         |       |       | 11:06 |      |
-| \_        DONE Make it into a function             |         |       |       |       | 0:30 |
-| \_        DONE Make a solid decision on what to... |         |       |       |       | 1:03 |
-| \_        DONE Parse and cast the dates            |         |       |       |       | 4:58 |
-| \_      DONE Need to parse the file metadata       |         |       |       |  1:35 |      |
-| \_      DONE regenerate file from database -...    |         |       |       |  4:59 |      |
-| \_      DONE Properties - parse, store, and...     |         |       |       |  1:47 |      |
-| \_      DONE Add version and id into...            |         |       |       |  0:24 |      |
+#+CAPTION: Clock summary at [2017-08-17 Thu 11:44]
+| Headline                                           | Time      |         |         |       |      |
+|----------------------------------------------------+-----------+---------+---------+-------+------|
+| *Total time*                                       | *1d 2:10* |         |         |       |      |
+|----------------------------------------------------+-----------+---------+---------+-------+------|
+| Ttl                                                | 1d 2:10   |         |         |       |      |
+| \_  MVP                                            |           | 1d 2:10 |         |       |      |
+| \_    import/export to api.                        |           |         | 1d 2:10 |       |      |
+| \_      DONE consolidate sections                  |           |         |         |  2:07 |      |
+| \_      DONE Need to fix the planning parser...    |           |         |         |  0:25 |      |
+| \_      DONE implement db schema                   |           |         |         |  1:15 |      |
+| \_      DONE write to database                     |           |         |         | 11:06 |      |
+| \_        DONE Make it into a function             |           |         |         |       | 0:30 |
+| \_        DONE Make a solid decision on what to... |           |         |         |       | 1:03 |
+| \_        DONE Parse and cast the dates            |           |         |         |       | 4:58 |
+| \_      DONE Need to parse the file metadata       |           |         |         |  1:35 |      |
+| \_      DONE regenerate file from database -...    |           |         |         |  4:59 |      |
+| \_      DONE Properties - parse, store, and...     |           |         |         |  1:47 |      |
+| \_      DONE Add version and id into...            |           |         |         |  0:24 |      |
+| \_      DONE Read file uuid from file to pull...   |           |         |         |  2:07 |      |
+| \_      DONE Start of file exception               |           |         |         |  0:25 |      |
 #+END:

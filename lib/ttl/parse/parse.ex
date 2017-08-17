@@ -19,6 +19,70 @@ defmodule Ttl.Parse do
     defstruct name: "", metadata: [], objects: []
   end
 
+  def regenerate(uuid) do
+    # probably quite a few faster and better ways to do this in the db
+    # but not caring about performance quite yet
+    # ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
+    f_query = fn(document_id) ->
+      import Ecto.Query
+      q_struct = from o in "things_objects",
+        where: o.document_id == ^document_id,
+        select: %{fragment("cast(id as text)") =>
+          [ o.level, o.title, o.state, o.priority, o.content, o.scheduled, o.closed, o.deadline, o.version ]
+        }
+      q_map = from o in "things_objects",
+        where: o.document_id == ^document_id,
+        select: %{fragment("cast(id as text)") =>
+          %{level: o.level, title: o.title, content: o.content, scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+      q_all = from o in Ttl.Things.Object, 
+      where: o.document_id == ^document_id
+      Ttl.Repo.all(q_struct)
+      |> Enum.reduce(%{}, fn(x, acc) -> Map.merge(acc, x) end)
+    end
+    f_db_date_to_string = fn(date, bracket ) ->
+      { big, {h, m, d, _}}  = date
+      date = {big, {h,m,d}} |> Ecto.DateTime.from_erl |> Ecto.DateTime.to_string
+      case bracket do
+        "[" -> "[" <> date <> "] "
+        "]" -> "[" <> date <> "] "
+        "[]" -> "[" <> date <> "] "
+        :square -> "[" <> date <> "] "
+        _ -> "<" <> date <> "> "
+      end
+    end
+    f_object_to_string = fn(data) ->
+      [ level, title, state, priority, content, scheduled, closed, deadline, version ] = data
+      acc = ""
+      str_level = String.duplicate("*", level)
+      acc = acc <> str_level <> " "
+      acc = if state, do: acc <> state <> " ", else: acc
+      acc = if title, do: acc <> title <> " ", else: acc
+      acc = if priority, do: acc <> priority <> " ", else: acc
+      acc = String.trim_trailing(acc, " ") <> "\n"
+      planning_string = ""
+      planning_string = planning_string <> if closed,  do: "CLOSED: " <> f_db_date_to_string.(closed, :square), else: ""
+      planning_string = planning_string <> if deadline,  do: "DEADLINE: " <> f_db_date_to_string.(deadline, "[]"), else: ""
+      planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <> f_db_date_to_string.(scheduled, "<"), else: ""
+      planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
+      acc = acc <> planning_string
+      acc = if content, do: acc <> content, else: acc
+    end
+
+    # get the data for the file
+    document_id = uuid
+    {:ok, document_id}= Ecto.UUID.dump(document_id)
+    document = Ttl.Things.get_document!(uuid)
+    data = f_query.(document_id )
+    content = for id <- document.objects, do: data[id]
+
+    # now need to merge the file together
+    str = Enum.reduce( document.metadata, "", fn({k,v}, acc) ->  acc <> "#+#{k}: #{v}\n" end)
+    str = Enum.reduce(content, str, fn(x, acc) ->
+      acc <> f_object_to_string.(x)
+    end)
+    File.write("/tmp/hello",str )
+  end
+
   # modes are default, force
   def doit(file, attrs \\ %{mode: "default"}) do
     # helper functions

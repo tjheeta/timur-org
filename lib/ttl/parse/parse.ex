@@ -28,7 +28,7 @@ defmodule Ttl.Parse do
       q_struct = from o in "things_objects",
         where: o.document_id == ^document_id,
         select: %{fragment("cast(id as text)") =>
-          [ o.level, o.title, o.state, o.priority, o.content, o.properties, o.scheduled, o.closed, o.deadline, o.version ]
+          [ fragment("cast(id as text)"), o.level, o.title, o.state, o.priority, o.content, o.properties, o.scheduled, o.closed, o.deadline, o.version ]
         }
       q_map = from o in "things_objects",
         where: o.document_id == ^document_id,
@@ -52,7 +52,7 @@ defmodule Ttl.Parse do
       end
     end
     f_object_to_string = fn(data) ->
-      [ level, title, state, priority, content, properties, scheduled, closed, deadline, version ] = data
+      [ id, level, title, state, priority, content, properties, scheduled, closed, deadline, version ] = data
       acc = ""
       str_level = String.duplicate("*", level)
       acc = if level > 0, do: acc <> str_level <> " ", else: acc
@@ -68,17 +68,18 @@ defmodule Ttl.Parse do
       planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
       acc = acc <> planning_string
 
-      property_string =
+      property_string = "PREFIX_OBJ_ID:#{id}\n:PREFIX_OBJ_VERSION:#{version}\n"
+      property_string = 
       if properties && length(Map.keys(properties)) > 0 do
-        Enum.reduce(properties, ":PROPERTIES:\n", fn({k,v}, acc) ->
+        Enum.reduce(properties, property_string, fn({k,v}, acc) ->
           str = ":#{k}:    #{v}\n"
           acc <> str
-        end) <> ":END\n"
+        end) 
       else
-        ""
+        property_string
       end
+      property_string = "PROPERTIES:\n:#{property_string}:END\n"
       acc = acc <> property_string
-
 
       acc = if content, do: acc <> content, else: acc
     end

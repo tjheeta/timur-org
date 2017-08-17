@@ -13,7 +13,7 @@ defmodule Ttl.Parse do
   defmodule Unknown,            do: defstruct lnb: 0, line: "", level: 1, content: "", parent: ""
 
   defmodule Object do
-    defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", subobjects: []
+    defstruct level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
   end
   defmodule Document do
     defstruct name: "", metadata: [], objects: []
@@ -298,6 +298,19 @@ defmodule Ttl.Parse do
   end
 
   def create_document([h | t], doc) do
+
+    # helper func
+    f_convert_property_drawer_to_map = fn(content) ->
+      # h = %Ttl.Parse.PropertyDrawer{content: ":LAST_REPEAT: [2017-08-15 Tue 05:09]\n:STYLE:    habit\n",
+      # level: 1, line: ":PROPERTIES:\n", lnb: 3}
+      String.split(content, "\n")
+      |> Enum.filter(&(&1 != ""))
+      |> Enum.reduce(%{}, fn(x,acc) ->
+        r = Regex.named_captures(~r/^:(?<key>[A-Z_-]*):\s+(?<value>.+)/, x)
+        Map.merge(acc,%{r["key"] => r["value"]})
+      end)
+    end
+
     # find the latest object
     current_object_index = Enum.find_index(doc.objects, fn(x) -> x.__struct__ == Ttl.Parse.Object end)
     cond do
@@ -320,7 +333,7 @@ defmodule Ttl.Parse do
           h.__struct__ == Ttl.Parse.Section ->
             %{current_object | content: (current_object.content <> h.content) }
           h.__struct__ == Ttl.Parse.PropertyDrawer ->
-            %{current_object | subobjects: [ h  | current_object.subobjects ] }
+            %{current_object | properties: f_convert_property_drawer_to_map.(h.content) }
           h.__struct__ == Ttl.Parse.LogbookDrawer ->
             %{current_object | subobjects: [ h  | current_object.subobjects ] }
           true -> current_object

@@ -20,6 +20,7 @@ defmodule Ttl.Repo.Migrations.CreateTtl.Things.Object do
       add :time_spent, :integer
       add :time_left, :integer
       add :permissions, :integer
+      add :properties, :map
       add :document_id, references(:things_documents, on_delete: :nothing, type: :binary_id)
 
       #timestamps()

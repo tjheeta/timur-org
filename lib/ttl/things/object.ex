@@ -28,6 +28,7 @@ defmodule Ttl.Things.Object do
     field :title, :string
     field :version, :integer
     field :document_id, :binary_id
+    field :properties, :map
 
     timestamps()
   end
@@ -35,7 +36,7 @@ defmodule Ttl.Things.Object do
   @doc false
   def changeset(%Object{} = object, attrs) do
     object
-    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions])
+    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions, :properties])
     |> validate_required([:id, :document_id, :version])
   end
 end

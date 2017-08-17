@@ -122,10 +122,13 @@ defmodule Ttl.Parse do
         _ -> somemap
       end
     end
-
-
-    # TODO - fix the version update
-    f_generate_version = fn -> 1 end
+    f_maybe_add_version = fn(somemap) ->
+      case Map.get(somemap, :version) do
+        nil ->
+          Map.put(somemap, :version, 1)
+        _ -> somemap
+      end
+    end
 
     f_compare_object_versions = fn(parsed_objects, db_objects) ->
       {objects_to_update, objects_with_conflict} = Enum.split_with(parsed_objects, fn(x) ->
@@ -166,9 +169,9 @@ defmodule Ttl.Parse do
     # Add versions and document_id to the parsed objects
     parsed_objects = Enum.map(parsed_doc.objects, fn(x) ->
       Map.from_struct(x)
-      |> Map.put_new_lazy(:version, f_generate_version )
       |> Map.put_new(:document_id, db_doc.id)
       |> f_maybe_add_id.()
+      |> f_maybe_add_version.()
     end)
 
     # TODO - I'm sure this is not how to deal with binary_ids

@@ -54,11 +54,11 @@ defmodule Ttl.Parse do
       [ level, title, state, priority, content, scheduled, closed, deadline, version ] = data
       acc = ""
       str_level = String.duplicate("*", level)
-      acc = acc <> str_level <> " "
+      acc = if level > 0, do: acc <> str_level <> " ", else: acc
       acc = if state, do: acc <> state <> " ", else: acc
       acc = if title, do: acc <> title <> " ", else: acc
       acc = if priority, do: acc <> priority <> " ", else: acc
-      acc = String.trim_trailing(acc, " ") <> "\n"
+      acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
       planning_string = ""
       planning_string = planning_string <> if closed,  do: "CLOSED: " <> f_db_date_to_string.(closed, :square), else: ""
       planning_string = planning_string <> if deadline,  do: "DEADLINE: " <> f_db_date_to_string.(deadline, "[]"), else: ""
@@ -68,16 +68,27 @@ defmodule Ttl.Parse do
       acc = if content, do: acc <> content, else: acc
     end
 
+    f_generate_metadata = fn(metadata) ->
+      Enum.reduce( metadata, "", fn({k,v}, acc) ->
+          str = "#+#{k}: #{v}"
+          if String.length(str) do
+            acc <> str <> "\n"
+          else
+            acc
+          end
+      end)
+    end
+
     # get the data for the file
     document_id = uuid
     {:ok, document_id}= Ecto.UUID.dump(document_id)
     document = Ttl.Things.get_document!(uuid)
-    data = f_query.(document_id )
-    content = for id <- document.objects, do: data[id]
+    unsorted_data = f_query.(document_id )
+    sorted_data = for id <- document.objects, do: unsorted_data[id]
 
     # now need to merge the file together
-    str = Enum.reduce( document.metadata, "", fn({k,v}, acc) ->  acc <> "#+#{k}: #{v}\n" end)
-    str = Enum.reduce(content, str, fn(x, acc) ->
+    str = f_generate_metadata.(document.metadata)
+    str = Enum.reduce(sorted_data, str, fn(x, acc) ->
       acc <> f_object_to_string.(x)
     end)
     File.write("/tmp/hello",str )

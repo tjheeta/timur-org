@@ -83,8 +83,9 @@ defmodule Ttl.Parse do
       acc = if content, do: acc <> content, else: acc
     end
 
-    f_generate_metadata = fn(metadata) ->
-      Enum.reduce( metadata, "", fn({k,v}, acc) ->
+    f_generate_metadata = fn(document) ->
+      acc = "#+PREFIX_DOC_ID:#{document.id}\n"
+      acc = Enum.reduce( document.metadata, acc, fn({k,v}, acc) ->
           str = "#+#{k}: #{v}"
           if String.length(str) do
             acc <> str <> "\n"
@@ -102,7 +103,7 @@ defmodule Ttl.Parse do
     sorted_data = for id <- document.objects, do: unsorted_data[id]
 
     # now need to merge the file together
-    str = f_generate_metadata.(document.metadata)
+    str = f_generate_metadata.(document)
     str = Enum.reduce(sorted_data, str, fn(x, acc) ->
       acc <> f_object_to_string.(x)
     end)

@@ -22,8 +22,11 @@ Acts as an agenda, outliner, wiki, blog, etc. It's secure because single-user. E
 
 *** Bad
 1) Cannot easily capture web data, pictures, video, clips, etc.
-2) Not simple/easy to access over mobile
+2) Not simple/easy to access over mobile. Though there are mobileorg and orgzly. 
 3) Collaboration (though will need to think about security model here)
+   - Whether through publishing blog, document
+   - Allowing sharing / delegation of tasks
+   - Comments 
 
 *** How
 - Capture
@@ -159,20 +162,34 @@ https://turtlapp.com/
 http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
 
     
-** UI Interface Thoughts
-
-- If this is for power-users, it has to be able to integrate with org-mode. To import/export out of text mode, there needs to be a UUID for each element.
-
-- If tasks can be shared / commented / etc. each item will have to be independent. Also, inheritance is important here, probably just from the top-level. 
-- How would conflict resolution be handled? Not sure how to merge diffs between different versions except to have a time-clock.
-
-- https://org-web.org/ - is a rudimentary org-web parser
-- http://appsonthemove.com/blog/2017/05/25/borg/
-- http://www.orgzly.com/help#org7fa55de
-- https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
-
   
-** Parsing and db schema:
+
+** Workflow:
+*** Sync 
+This will send the entire file over and at high load and high users cause issues. Will need a emacs client to update properties. 
+
+- Have things locally.
+- Initial sync
+- Server parses and adds uuid's
+  - Stores in database so can do scheduling, sharing, making lists for other people
+  - Re-exports with additional property information
+- No conflict resolution between local/remote copies.
+  Should have a time-vector on each element though.
+  Pull down any changes from server and use them. Sync to server overwrites the uploads/changes.
+- This workflow requires an api:
+  - Import/export whole documents (this can be used by emacs and/or the web editor)
+
+*** Collaboration
+A simple use case is someone making a list for someone else to do. Grocery list, etc. 
+When is something allowed to be delegated? What are the viewing permissions? Are there spaces with permissions/groups instead? 
+Commenting then can be on objects as a generic comment service. However, how would the comments be fetched? They would have to have the same permissions as the parent. Don't want the comment service to have to call back to the parent service for permissions. The other option is replicating / synchronizing the permissions over the the comment system. Another option is only have trusted systems call the comment system and never have it public.    
+*** Capturing
+Major issue is capturing images, bookmarks, webpages. 
+
+https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
+
+** MVP
+*** Thoughts on parsing and db schema:
   - Can store the entire file and then the tags/headers in separate tables for scheduling
     - If the agenda is modified on web, item state to done, the file needs to be re-written also. Need to keep both in sync.
   - Represent the entire file as an AST and then store it
@@ -236,33 +253,19 @@ http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
 
 
 
+*** Thoughts on UI Interface
+
+- If this is for power-users, it has to be able to integrate with org-mode. To import/export out of text mode, there needs to be a UUID for each element.
+
+- If tasks can be shared / commented / etc. each item will have to be independent. Also, inheritance is important here, probably just from the top-level. 
+- How would conflict resolution be handled? Not sure how to merge diffs between different versions except to have a time-clock.
+
+- https://org-web.org/ - is a rudimentary org-web parser
+- http://appsonthemove.com/blog/2017/05/25/borg/
+- http://www.orgzly.com/help#org7fa55de
+- https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
 
 
-** Workflow:
-*** Sync 
-This will send the entire file over and at high load and high users cause issues. Will need a emacs client to update properties. 
-
-- Have things locally.
-- Initial sync
-- Server parses and adds uuid's
-  - Stores in database so can do scheduling, sharing, making lists for other people
-  - Re-exports with additional property information
-- No conflict resolution between local/remote copies.
-  Should have a time-vector on each element though.
-  Pull down any changes from server and use them. Sync to server overwrites the uploads/changes.
-- This workflow requires an api:
-  - Import/export whole documents (this can be used by emacs and/or the web editor)
-
-*** Collaboration
-A simple use case is someone making a list for someone else to do. Grocery list, etc. 
-When is something allowed to be delegated? What are the viewing permissions? Are there spaces with permissions/groups instead? 
-Commenting then can be on objects as a generic comment service. However, how would the comments be fetched? They would have to have the same permissions as the parent. Don't want the comment service to have to call back to the parent service for permissions. The other option is replicating / synchronizing the permissions over the the comment system. Another option is only have trusted systems call the comment system and never have it public.    
-*** Capturing
-Major issue is capturing images, bookmarks, webpages. 
-
-https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
-
-** MVP
 *** import/export to api. 
 **** DONE write a parser (not going to do in elisp since may want non-emacs users)
      CLOSED: [2017-08-15 Tue 18:27]
@@ -413,18 +416,20 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
        - A new object gets added (db count + 1)
        - the new object gets modified (db count same)
 
-**** make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
+**** DONE make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
+     CLOSED: [2017-08-17 Thu 17:53]
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 13:42]--[2017-08-17 Thu 14:07] =>  0:25
      :END:
 Time can be tagged with multiple contexts. So an interval of time can be tagged work, etc. 
 org-mode also has intervals which need to be stored for scheduled time and repetition. 
-      "CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>"
+      CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-08 Wed 09:00+x>--<2016-06-02 9:00-17:00> DEADLINE: <bla>
 
 The agenda display is not important in this case, the api output will need to be generated anyway. 
 Easiest format for a single day would be {start_time, interval_size}. This allows for packing things into whatever interval_size available. 
 The end times for org-document generation will need to be calculated.  
 For the issue of "scheduled" over multiple days, it will need to become a list. [{start_time1, interval1}, {start_time2, interval2}] and repeat_interval
+In the db - not sure how to store this? another jsonb?
 
 Workflow:
 Server sees free time. Sorts by priority + tag matching on time slot + longest first? Need to optimize algorithm based on actual results. 
@@ -434,8 +439,14 @@ Data structure is fine.
 However, need ability to defer scheduled tasks and logging.
 
 
-**** Bugs parsing schedule time interval + repeat - is this done later?
 **** Parse the schedule properly into the interval structure
+     :LOGBOOK:
+     CLOCK: [2017-08-17 Thu 18:55]--[2017-08-17 Thu 19:20] =>  0:25
+     CLOCK: [2017-08-17 Thu 18:25]--[2017-08-17 Thu 18:50] =>  0:25
+     CLOCK: [2017-08-17 Thu 17:53]--[2017-08-17 Thu 18:20] =>  0:27
+     :END:
+Current state - schedule start_date parsing has been done. End_date, duration, repeat_interval remain. Data structure needs put into schema and then populated.
+**** Bugs parsing schedule time interval + repeat - is this done later?
 **** Bugs regeneration date format should be the same
 **** Parse or skip logbook 
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation

@@ -2,6 +2,30 @@
 
 ** What
 
+*** Good
+The beautiful thing about org-mode is the customizability. 
+ - org-agenda
+ - org-habit
+ - org-capture
+ - org-journal
+ - org-contacts
+ - timetracking
+ - tables / spreadsheet
+ - org-pomodoro
+ - org-present?
+ - calendar invites
+ - export to html/etc.
+ - fold / unfold
+ - scheduling with other people
+ 
+Acts as an agenda, outliner, wiki, blog, etc. It's secure because single-user. Easy to backup, etc. The best of all worlds if there is only a single device.
+
+*** Bad
+1) Cannot easily capture web data, pictures, video, clips, etc.
+2) Not simple/easy to access over mobile
+3) Collaboration (though will need to think about security model here)
+
+*** How
 - Capture
 - Schedule the time to do it.
 
@@ -124,24 +148,15 @@ State:
   - open
   - started
 
-The beautiful thing about org-mode is the customizability. 
- - org-agenda
- - org-habit
- - org-capture
- - org-journal
- - org-contacts
- - timetracking
- - tables / spreadsheet
- - org-pomodoro
- - org-present?
- - calendar invites
- - export to html/etc.
- - fold / unfold
- - scheduling with other people
- 
 
 Others:
 https://checkvist.com/checklists/627469-name-your-project-and-press-enter
+https://workflowy.com/ -- the most mature app
+https://www.moo.do -- really nice Google Apps integration
+https://checkvist.com/ -- extremely feature rich
+https://github.com/novoid/Memacs
+https://turtlapp.com/
+http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
 
     
 ** UI Interface Thoughts
@@ -156,7 +171,7 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
 - http://www.orgzly.com/help#org7fa55de
 - https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
 
-
+  
 ** Parsing and db schema:
   - Can store the entire file and then the tags/headers in separate tables for scheduling
     - If the agenda is modified on web, item state to done, the file needs to be re-written also. Need to keep both in sync.
@@ -224,16 +239,28 @@ https://checkvist.com/checklists/627469-name-your-project-and-press-enter
 
 
 ** Workflow:
-  - Have things locally.
-  - Initial sync
-    - Server parses and adds uuid's
-    - Stores in database so can do scheduling, sharing, making lists for other people
-    - Re-exports with additional property information
-  - No conflict resolution between local/remote copies.
-    Should have a time-vector on each element though.
-    Pull down any changes from server and use them. Sync to server overwrites the uploads/changes.
-  - This workflow requires an api:
-    - Import/export whole documents (this can be used by emacs and/or the web editor)
+*** Sync 
+This will send the entire file over and at high load and high users cause issues. Will need a emacs client to update properties. 
+
+- Have things locally.
+- Initial sync
+- Server parses and adds uuid's
+  - Stores in database so can do scheduling, sharing, making lists for other people
+  - Re-exports with additional property information
+- No conflict resolution between local/remote copies.
+  Should have a time-vector on each element though.
+  Pull down any changes from server and use them. Sync to server overwrites the uploads/changes.
+- This workflow requires an api:
+  - Import/export whole documents (this can be used by emacs and/or the web editor)
+
+*** Collaboration
+A simple use case is someone making a list for someone else to do. Grocery list, etc. 
+When is something allowed to be delegated? What are the viewing permissions? Are there spaces with permissions/groups instead? 
+Commenting then can be on objects as a generic comment service. However, how would the comments be fetched? They would have to have the same permissions as the parent. Don't want the comment service to have to call back to the parent service for permissions. The other option is replicating / synchronizing the permissions over the the comment system. Another option is only have trusted systems call the comment system and never have it public.    
+*** Capturing
+Major issue is capturing images, bookmarks, webpages. 
+
+https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
 
 ** MVP
 *** import/export to api. 
@@ -374,16 +401,46 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 11:04]--[2017-08-17 Thu 11:29] =>  0:25
      :END:
-**** Compare the objects 
-**** Ensure data gets updated on change
+**** DONE Ensure data gets updated on change
+     CLOSED: [2017-08-17 Thu 13:05]
+     :LOGBOOK:
+     CLOCK: [2017-08-17 Thu 12:58]--[2017-08-17 Thu 13:06] =>  0:08
+     :END:
       Org-mode won't ever update the version locally. If remote_version > local_version => conflict.
       Conflict resolution will require parsing things locally and replacing them
+      Tests:
+       - An old object (all db counts same)
+       - A new object gets added (db count + 1)
+       - the new object gets modified (db count same)
+
+**** make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
+     :LOGBOOK:
+     CLOCK: [2017-08-17 Thu 13:42]--[2017-08-17 Thu 14:07] =>  0:25
+     :END:
+Time can be tagged with multiple contexts. So an interval of time can be tagged work, etc. 
+org-mode also has intervals which need to be stored for scheduled time and repetition. 
+      "CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>"
+
+The agenda display is not important in this case, the api output will need to be generated anyway. 
+Easiest format for a single day would be {start_time, interval_size}. This allows for packing things into whatever interval_size available. 
+The end times for org-document generation will need to be calculated.  
+For the issue of "scheduled" over multiple days, it will need to become a list. [{start_time1, interval1}, {start_time2, interval2}] and repeat_interval
+
+Workflow:
+Server sees free time. Sorts by priority + tag matching on time slot + longest first? Need to optimize algorithm based on actual results. 
+Yes/no -> deferred -> repeat.  
+Or set out a full schedule at night. 
+Data structure is fine. 
+However, need ability to defer scheduled tasks and logging.
+
 
 **** Bugs parsing schedule time interval + repeat - is this done later?
-**** Bugs regeneration date format should be the same
-**** Parse logbook - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
-**** make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
 **** Parse the schedule properly into the interval structure
+**** Bugs regeneration date format should be the same
+**** Parse or skip logbook 
+      - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
+**** Compare the objects 
+      - Need to modify the object from ui/db and then test uploads
 **** Add REST api?
       Start off with a simple curl client to do whole files
       Later can make an object level api and make an elisp client - update versions / conflict resolution
@@ -394,6 +451,10 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 **** use ecto.multi or control the dual commit transaction
 **** Move anon functions into modules. Add spec to each one
 **** Tests
+       Updates
+       - An old object (all db counts same)
+       - A new object gets added (db count + 1)
+       - the new object gets modified (db count same)
 
 * Scratch
 

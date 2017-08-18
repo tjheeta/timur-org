@@ -4,7 +4,7 @@ defmodule Ttl.Parse do
   defmodule Blank,              do: defstruct lnb: 0, line: "", content: "", inside_code: false
   defmodule Heading,            do: defstruct lnb: 0, line: "", level: 1, content: "", pri: "", state: "", tags: []
   # many to many table against heading
-  defmodule Planning,           do: defstruct lnb: 0, line: "", level: 1, content: "", closed: nil, scheduled: nil, deadline: nil
+  defmodule Planning,           do: defstruct lnb: 0, line: "", level: 1, content: "", closed: nil, deadline: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil
   # many to many table against heading
   defmodule PropertyDrawer,     do: defstruct lnb: 0, line: "", level: 1, content: ""
   defmodule LogbookDrawer,      do: defstruct lnb: 0, line: "", level: 1, content: []
@@ -415,8 +415,8 @@ defmodule Ttl.Parse do
     end
   end
 
-  def typeof({line,lnb}) do
-
+  @spec helper_f_capture_date(string) :: {NaiveDateTime,  integer, string }
+  def helper_f_capture_date(date) do
     # To cast to Ecto.Datetime, the hour/minute needs to be non-zero
     f_capture_date = fn(date) ->
       # The following regexp correctly parses all of the below
@@ -424,12 +424,37 @@ defmodule Ttl.Parse do
       #Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*(?<interval>\+([\d][\w]))?/, x) } end)
       date_format_regexp  = ~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<hour_end>[\d]{1,2}):(?<minute_end>[\d]{2}))?\s*(?<repeat_interval>\+([\d][\w]))?/
 
-      {:ok, date} = Regex.named_captures( date_format_regexp, date)
-       |> Map.update("hour", 0, fn(v) -> if v == "", do: 0, else: v end)
-       |> Map.update("minute", 0, fn(v) -> if v == "", do: 0, else: v end)
-       |> Ecto.DateTime.cast
-      Ecto.DateTime.to_iso8601(date)
+      r = Regex.named_captures( date_format_regexp, date)
+
+      # Set hour/minute to 0 if not exist
+      r = r
+      |> Map.update("hour", 0, fn(v) -> if v == "", do: "0", else: v end)
+      |> Map.update("minute", 0, fn(v) -> if v == "", do: "0", else: v end)
+      |> Map.update("hour_end", 0, fn(v) -> if v == "", do: "0", else: v end)
+      |> Map.update("minute_end", 0, fn(v) -> if v == "", do: "0", else: v end)
+
+      # have to convert this to integers for the Timex function
+      d = Map.take(r, ["day", "month", "year", "hour", "minute", "hour_end", "minute_end"]) |> Enum.map(fn({k,v}) ->
+        {k, String.to_integer(v)}
+      end) |> Enum.into(%{})
+
+      # {{year, month, day}, {hour, min, sec}}
+      start_t_tuple = {{ d["year"], d["month"], d["day"] } , { d["hour"], d["minute"], 0}}
+      end_t_tuple = {{ d["year"], d["month"], d["day"] } , { d["hour_end"], d["minute_end"], 0}}
+      start_t = Timex.to_datetime(start_t_tuple)
+      end_t = Timex.to_datetime(end_t_tuple)
+
+      seconds_diff = Timex.diff(end_t, start_t, :seconds)
+      #duration  = Timex.Duration.from_seconds(seconds_diff)
+      #Timex.add(start_t, duration) == end_t
+      { Timex.to_naive_datetime(start_t), seconds_diff, r["interval"] }
     end
+    f_capture_date.(date)
+  end
+
+  def typeof({line,lnb}) do
+
+
 
     cond do
       r = Regex.named_captures(~r/^(?<stars>[\*]+)\s*(?<state>[A-Z]*?)\s+(?<pri>(\[#[A-Z]\])?)\s*(?<title>.+)\s+(?<tags>(:.*:))/, line)  ->
@@ -456,23 +481,28 @@ defmodule Ttl.Parse do
         r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
         r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
 
-        { scheduled_start,
-          scheduled_start_duration,
+        { scheduled_start, scheduled_start_duration,
           scheduled_repeat_interval 
         } = case Map.get(r, "scheduled_start") do
               nil -> { nil, 0, 0 }
-              x -> {f_capture_date.(x), 0, 0 }
+              x -> helper_f_capture_date(x)
             end
+#        { scheduled_end, scheduled_end_duration,
+#          _
+#        } = case Map.get(r, "scheduled_end") do
+#              nil -> { nil, 0, 0 }
+#              x -> helper_f_capture_date(x)
+#            end
         deadline = case Map.get(r, "deadline") do
                      nil -> nil
-                     x -> f_capture_date.(x)
+                     x -> helper_f_capture_date(x) |> elem(0)
                    end
         closed = case Map.get(r, "closed") do
                    nil -> nil
-                   x -> f_capture_date.(x)
+                   x -> helper_f_capture_date(x) |> elem(0)
                  end
 
-        %Planning{line: line, lnb: lnb, scheduled: scheduled_start, deadline: deadline, closed: closed}
+        %Planning{line: line, lnb: lnb, scheduled: scheduled_start, scheduled_duration: scheduled_start_duration, deadline: deadline, closed: closed}
 
       line =~ ~r/^:PROPERTIES:/ ->
         %PropertyDrawer{line: line, lnb: lnb}

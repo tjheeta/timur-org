@@ -583,7 +583,6 @@ end)
 
 ## Testing
 {:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
-notes_id = db_doc.id
 data = Ttl.Parse.regenerate(notes_id)
 
 {:ok, r_doc, invalid} = Ttl.Parse.doit("/tmp/recurse.org")
@@ -605,6 +604,9 @@ data = Ttl.Parse.regenerate(med_id)
 a_id = a_doc.id
 data = Ttl.Parse.regenerate(a_id)
 
+{:ok, xdoc, invalid} = Ttl.Parse.doit("/home/tjheeta/repos/self/ttl/README.org")
+xid = xdoc.id
+data = Ttl.Parse.regenerate(xid)
 
 parsed_doc = Ttl.Parse.parse("/tmp/recurse.org")
 |> Enum.filter(&(&1.__struct__ == Ttl.Parse.PropertyDrawer))
@@ -641,10 +643,16 @@ end)
 
 String.split(l, "\n") 
 
-r
 String.split(l, "\n") |>Enum.filter(&(&1 != "")) |> Enum.reduce(%{}, fn(x,acc) ->
   r = Regex.named_captures(~r/^:(?<key>[A-Z_-]*):\s+(?<value>.+)/, x)
   Map.merge(acc,%{r["key"] => r["value"]})
 end)
 
-r
+
+### Testing adding / deleting entries / reordering / re-leveling manually
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/home/tjheeta/org/notes.org")
+data = Ttl.Parse.regenerate_to_file("/tmp/notes.org", db_doc.id)
+{:ok, db_doc, invalid} = Ttl.Parse.doit("/tmp/notes.org")
+length(db_doc.objects)
+data = Ttl.Parse.regenerate_to_file("/tmp/notes2.org", db_doc.id)
+

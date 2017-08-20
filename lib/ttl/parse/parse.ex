@@ -57,17 +57,21 @@ defmodule Ttl.Parse do
             Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
           {0,0,0,0} ->
             Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
-          {0,0,0,_} ->
-            duration  = Timex.Duration.from_seconds(time_interval)
-            date = Timex.to_datetime(date) |> Timex.add(duration)
-            Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
+          #{0,0,0,_} ->
+          #  # having a time interval and no start time makes no sense
+          #  duration  = Timex.Duration.from_seconds(time_interval)
+          #  date = Timex.to_datetime(date) |> Timex.add(duration)
+          #  Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
           {_,_,_,0} ->
             Timex.format!(date, "%Y-%m-%d %a %H:%M #{repeat_interval}", :strftime)
           _ ->
             duration  = Timex.Duration.from_seconds(time_interval)
-            date = Timex.to_datetime(date) |> Timex.add(duration)
-            Timex.format!(date, "%Y-%m-%d %a %H:%M #{repeat_interval}", :strftime)
+            end_date = Timex.to_datetime(date) |> Timex.add(duration)
+            end_time = Timex.format!(end_date, "%H:%M", :strftime)
+            Timex.format!(date, "%Y-%m-%d %a %H:%M-#{end_time} #{repeat_interval}", :strftime)
         end |> String.trim_trailing
+
+      # TODO - the second date 
 
       case bracket do
         "[" -> "[" <> date_str <> "] "

@@ -12,6 +12,8 @@ The beautiful thing about org-mode is the customizability.
  - timetracking
  - tables / spreadsheet
  - org-pomodoro
+ - org-wiki
+ - org-brain
  - org-present?
  - calendar invites
  - export to html/etc.
@@ -384,7 +386,7 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
      CLOSED: [2017-08-16 Wed 22:59]
      :LOGBOOK:
      CLOCK: [2017-08-16 Wed 21:10]--[2017-08-16 Wed 22:57] =>  1:47
-     :END:
+     :END: 
 **** DONE Add file uuid into regenerate
      CLOSED: [2017-08-16 Wed 23:39]
 **** DONE Add version and id into regenerated object 
@@ -419,6 +421,8 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 **** DONE make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
      CLOSED: [2017-08-17 Thu 17:53]
      :LOGBOOK:
+     CLOCK: [2017-08-19 Sat 11:12]--[2017-08-19 Sat 11:37] =>  0:25
+     CLOCK: [2017-08-19 Sat 10:37]--[2017-08-19 Sat 11:02] =>  0:25
      CLOCK: [2017-08-17 Thu 13:42]--[2017-08-17 Thu 14:07] =>  0:25
      :END:
 Time can be tagged with multiple contexts. So an interval of time can be tagged work, etc. 
@@ -430,6 +434,16 @@ Easiest format for a single day would be {start_time, interval_size}. This allow
 The end times for org-document generation will need to be calculated.  
 For the issue of "scheduled" over multiple days, it will need to become a list. [{start_time1, interval1}, {start_time2, interval2}] and repeat_interval
 In the db - not sure how to store this? another jsonb?
+Use two arrays - one for start time, the other for interval. 
+Other option - just have a planning table. 
+select * from objects o, planning p where o.id = p.object_id and p.scheduled > $p1 and p.scheduled < $p2 
+
+UPDATE - just going with start_time, start_interval, date_range
+
+     mix phx.gen.html Things Object objects document_id:references:things_documents path:array:uuid level:integer title:text content:text blob:binary state:string priority:string version:integer defer_count:integer min_time_needed:integer time_spent:integer time_left:integer permissions:integer
+     mix phx.gen.html Things Planning planning object_id:references:things_objects repeat_interval:string closed:utc_datetime scheduled:utc_datetime scheduled_date_range:integer scheduled_time_interval:integer deadline:utc_datetime 
+     mix phx.gen.html Things Property properties object_id:references:things_objects key:string value:string
+     mix phx.gen.html Things Timelog timelogs object_id:references:things_objects key:string value:string
 
 Workflow:
 Server sees free time. Sorts by priority + tag matching on time slot + longest first? Need to optimize algorithm based on actual results. 
@@ -439,14 +453,18 @@ Data structure is fine.
 However, need ability to defer scheduled tasks and logging.
 
 
-**** Parse the schedule properly into the interval structure
+**** DONE Parse the schedule properly into the interval structure
+     CLOSED: [2017-08-19 Sat 17:53]
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 18:55]--[2017-08-17 Thu 19:20] =>  0:25
      CLOCK: [2017-08-17 Thu 18:25]--[2017-08-17 Thu 18:50] =>  0:25
      CLOCK: [2017-08-17 Thu 17:53]--[2017-08-17 Thu 18:20] =>  0:27
      :END:
 Current state - schedule start_date parsing has been done. End_date, duration, repeat_interval remain. Data structure needs put into schema and then populated.
-**** Bugs parsing schedule time interval + repeat - is this done later?
+
+ 
+**** DONE Bugs parsing schedule time interval + repeat - is this done later?
+     CLOSED: [2017-08-19 Sat 17:53]
 **** Bugs regeneration date format should be the same
 **** Parse or skip logbook 
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
@@ -456,8 +474,20 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
       Start off with a simple curl client to do whole files
       Later can make an object level api and make an elisp client - update versions / conflict resolution
 *** display UI for agenda
+- https://www.realsimple.com/home-organizing/organizing/bullet-journal
+- http://help.bulletjournal.com/category/5-bullet-journaling-101
+- https://news.ycombinator.com/item?id=11856987
+- http://talk.dynalist.io/t/switching-to-dynalist-from-workflowy-and-todoist/475
+- memex - what did you do on what day
+- reminder to journal
+*** Security
+https://turtlapp.com/
+https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results
+https://github.com/standardfile
 *** parse additional properties for scheduling + contexts + tags
 *** notifications
+*** capture
+- some sort of ifttt integration? send email to an interface and it will go into todo?
 *** Cleanup
 **** use ecto.multi or control the dual commit transaction
 **** Move anon functions into modules. Add spec to each one
@@ -475,25 +505,28 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-17 Thu 11:44]
-| Headline                                           | Time      |         |         |       |      |
-|----------------------------------------------------+-----------+---------+---------+-------+------|
-| *Total time*                                       | *1d 2:10* |         |         |       |      |
-|----------------------------------------------------+-----------+---------+---------+-------+------|
-| Ttl                                                | 1d 2:10   |         |         |       |      |
-| \_  MVP                                            |           | 1d 2:10 |         |       |      |
-| \_    import/export to api.                        |           |         | 1d 2:10 |       |      |
-| \_      DONE consolidate sections                  |           |         |         |  2:07 |      |
-| \_      DONE Need to fix the planning parser...    |           |         |         |  0:25 |      |
-| \_      DONE implement db schema                   |           |         |         |  1:15 |      |
-| \_      DONE write to database                     |           |         |         | 11:06 |      |
-| \_        DONE Make it into a function             |           |         |         |       | 0:30 |
-| \_        DONE Make a solid decision on what to... |           |         |         |       | 1:03 |
-| \_        DONE Parse and cast the dates            |           |         |         |       | 4:58 |
-| \_      DONE Need to parse the file metadata       |           |         |         |  1:35 |      |
-| \_      DONE regenerate file from database -...    |           |         |         |  4:59 |      |
-| \_      DONE Properties - parse, store, and...     |           |         |         |  1:47 |      |
-| \_      DONE Add version and id into...            |           |         |         |  0:24 |      |
-| \_      DONE Read file uuid from file to pull...   |           |         |         |  2:07 |      |
-| \_      DONE Start of file exception               |           |         |         |  0:25 |      |
+#+CAPTION: Clock summary at [2017-08-18 Fri 00:02]
+| Headline                                         | Time      |         |         |       |      |
+|--------------------------------------------------+-----------+---------+---------+-------+------|
+| *Total time*                                     | *1d 4:00* |         |         |       |      |
+|--------------------------------------------------+-----------+---------+---------+-------+------|
+| Ttl                                              | 1d 4:00   |         |         |       |      |
+| \_  MVP                                          |           | 1d 4:00 |         |       |      |
+| \_    import/export to api.                      |           |         | 1d 4:00 |       |      |
+| \_      consolidate sections                     |           |         |         |  2:07 |      |
+| \_      Need to fix the planning parser to...    |           |         |         |  0:25 |      |
+| \_      implement db schema                      |           |         |         |  1:15 |      |
+| \_      write to database                        |           |         |         | 11:06 |      |
+| \_        Make it into a function                |           |         |         |       | 0:30 |
+| \_        Make a solid decision on what to do... |           |         |         |       | 1:03 |
+| \_        Parse and cast the dates               |           |         |         |       | 4:58 |
+| \_      Need to parse the file metadata          |           |         |         |  1:35 |      |
+| \_      regenerate file from database - with...  |           |         |         |  4:59 |      |
+| \_      Properties - parse, store, and write     |           |         |         |  1:47 |      |
+| \_      Add version and id into regenerated...   |           |         |         |  0:24 |      |
+| \_      Read file uuid from file to pull objects |           |         |         |  2:07 |      |
+| \_      Start of file exception                  |           |         |         |  0:25 |      |
+| \_      Ensure data gets updated on change       |           |         |         |  0:08 |      |
+| \_      make an interval data structure for...   |           |         |         |  0:25 |      |
+| \_      Parse the schedule properly into the...  |           |         |         |  1:17 |      |
 #+END:

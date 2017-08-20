@@ -32,31 +32,56 @@ defmodule Ttl.Parse do
       q_struct = from o in "things_objects",
         where: o.document_id == ^document_id,
         select: %{fragment("cast(id as text)") =>
-          [ fragment("cast(id as text)"), o.level, o.title, o.state, o.priority, o.content, o.properties, o.scheduled, o.closed, o.deadline, o.version ]
+          [ fragment("cast(id as text)"), o.level, o.title, o.state, o.priority, o.content, o.properties,
+            o.scheduled, o.scheduled_date_range, o.scheduled_repeat_interval, o.scheduled_time_interval,
+            o.closed, o.deadline, o.version ]
         }
-      q_map = from o in "things_objects",
-        where: o.document_id == ^document_id,
-        select: %{fragment("cast(id as text)") =>
-          %{level: o.level, title: o.title, content: o.content, properties: o.properties,
-            scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
-      q_all = from o in Ttl.Things.Object, 
-      where: o.document_id == ^document_id
+      #q_map = from o in "things_objects",
+      #  where: o.document_id == ^document_id,
+      #  select: %{fragment("cast(id as text)") =>
+      #    %{level: o.level, title: o.title, content: o.content, properties: o.properties,
+      #      scheduled: o.scheduled, closed: o.closed, deadline: o.deadline}}
+      #q_all = from o in Ttl.Things.Object, 
+      #where: o.document_id == ^document_id
       Ttl.Repo.all(q_struct)
       |> Enum.reduce(%{}, fn(x, acc) -> Map.merge(acc, x) end)
     end
-    f_db_date_to_string = fn(date, bracket ) ->
-      { big, {h, m, d, _}}  = date
-      date = {big, {h,m,d}} |> Ecto.DateTime.from_erl |> Ecto.DateTime.to_string
+    f_db_date_to_string = fn(date, bracket, time_interval, date_range, repeat_interval ) ->
+      # remove the last tuple 
+      { ymd, {h, m, s, _}}  = date
+      date = { ymd, {h, m, s}}
+
+      date_str =
+        case {h, m, s, time_interval} do
+          {0,0,0,0} ->
+            Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
+          {0,0,0,0} ->
+            Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
+          {0,0,0,_} ->
+            duration  = Timex.Duration.from_seconds(time_interval)
+            date = Timex.to_datetime(date) |> Timex.add(duration)
+            Timex.format!(date, "%Y-%m-%d %a #{repeat_interval}", :strftime)
+          {_,_,_,0} ->
+            Timex.format!(date, "%Y-%m-%d %a %H:%M #{repeat_interval}", :strftime)
+          _ ->
+            duration  = Timex.Duration.from_seconds(time_interval)
+            date = Timex.to_datetime(date) |> Timex.add(duration)
+            Timex.format!(date, "%Y-%m-%d %a %H:%M #{repeat_interval}", :strftime)
+        end |> String.trim_trailing
+
       case bracket do
-        "[" -> "[" <> date <> "] "
-        "]" -> "[" <> date <> "] "
-        "[]" -> "[" <> date <> "] "
-        :square -> "[" <> date <> "] "
-        _ -> "<" <> date <> "> "
+        "[" -> "[" <> date_str <> "] "
+        "]" -> "[" <> date_str <> "] "
+        "[]" -> "[" <> date_str <> "] "
+        :square -> "[" <> date_str <> "] "
+        _ -> "<" <> date_str <> "> "
       end
     end
     f_object_to_string = fn(data) ->
-      [ id, level, title, state, priority, content, properties, scheduled, closed, deadline, version ] = data
+      # deconstruct the query
+      [ id, level, title, state, priority, content, properties,
+        scheduled, scheduled_date_range, scheduled_repeat_interval, scheduled_time_interval,
+        closed, deadline, version ] = data
       acc = ""
       str_level = String.duplicate("*", level)
       acc = if level > 0, do: acc <> str_level <> " ", else: acc
@@ -66,14 +91,17 @@ defmodule Ttl.Parse do
       acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
 
       planning_string = ""
-      planning_string = planning_string <> if closed,  do: "CLOSED: " <> f_db_date_to_string.(closed, :square), else: ""
-      planning_string = planning_string <> if deadline,  do: "DEADLINE: " <> f_db_date_to_string.(deadline, "[]"), else: ""
-      planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <> f_db_date_to_string.(scheduled, "<"), else: ""
+      planning_string = planning_string <> if closed,  do: "CLOSED: " <>
+        f_db_date_to_string.(closed, :square, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval), else: ""
+      planning_string = planning_string <> if deadline,  do: "DEADLINE: " <>
+        f_db_date_to_string.(deadline, :notsquare, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval ), else: ""
+      planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <>
+        f_db_date_to_string.(scheduled, :notsquare, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval), else: ""
       planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
       acc = acc <> planning_string
 
       property_string = "PREFIX_OBJ_ID: #{id}\n:PREFIX_OBJ_VERSION: #{version}\n"
-      property_string = 
+      property_string =
       if properties && length(Map.keys(properties)) > 0 do
         Enum.reduce(properties, property_string, fn({k,v}, acc) ->
           str = ":#{k}:    #{v}\n"
@@ -524,8 +552,8 @@ defmodule Ttl.Parse do
       line =~ ~r/^:PROPERTIES:/ ->
         %PropertyDrawer{line: line, lnb: lnb}
 
-      line =~ ~r/^:LOGBOOK:/ ->
-        %LogbookDrawer{line: line, lnb: lnb}
+#      line =~ ~r/^:LOGBOOK:/ ->
+#        %LogbookDrawer{line: line, lnb: lnb}
 
       line =~ ~r/^:END:/ ->
         %End{line: line, lnb: lnb}

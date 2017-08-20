@@ -86,8 +86,8 @@ defmodule Ttl.Parse do
       str_level = String.duplicate("*", level)
       acc = if level > 0, do: acc <> str_level <> " ", else: acc
       acc = if state, do: acc <> state <> " ", else: acc
-      acc = if title, do: acc <> title <> " ", else: acc
       acc = if priority, do: acc <> priority <> " ", else: acc
+      acc = if title, do: acc <> title <> " ", else: acc
       acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
 
       planning_string = ""

@@ -268,7 +268,8 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
 - https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
 
 
-*** import/export to api. 
+*** DONE import/export to api. 
+    CLOSED: [2017-08-19 Sat 22:11]
 **** DONE write a parser (not going to do in elisp since may want non-emacs users)
      CLOSED: [2017-08-15 Tue 18:27]
 **** DONE create db schema
@@ -465,14 +466,17 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
  
 **** DONE Bugs parsing schedule time interval + repeat - is this done later?
      CLOSED: [2017-08-19 Sat 17:53]
-**** Bugs regeneration date format should be the same
-**** Parse or skip logbook 
+**** DONE Bugs regeneration date format should be the same
+     CLOSED: [2017-08-19 Sat 22:07]
+**** DONE Parse or skip logbook 
+     CLOSED: [2017-08-19 Sat 22:07]
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
-**** Compare the objects 
-      - Need to modify the object from ui/db and then test uploads
-**** Add REST api?
-      Start off with a simple curl client to do whole files
-      Later can make an object level api and make an elisp client - update versions / conflict resolution
+*** Bugs
+**** DONE scheduled_date_range, scheduled_time_interval not written to db
+     CLOSED: [2017-08-19 Sat 22:43]
+**** Regenerate org-file - scheduled date - the second date of the range is missing
+[[file:lib/ttl/parse/parse.ex::#%20TODO%20-%20the%20second%20date][fix it here]]
+
 *** display UI for agenda
 - https://www.realsimple.com/home-organizing/organizing/bullet-journal
 - http://help.bulletjournal.com/category/5-bullet-journaling-101
@@ -480,6 +484,13 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 - http://talk.dynalist.io/t/switching-to-dynalist-from-workflowy-and-todoist/475
 - memex - what did you do on what day
 - reminder to journal
+*** Add REST API
+**** User security
+**** Compare the objects 
+      - Need to modify the object from ui/db and then test uploads
+**** Add REST api?
+      Start off with a simple curl client to do whole files
+      Later can make an object level api and make an elisp client - update versions / conflict resolution
 *** Security
 https://turtlapp.com/
 https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results

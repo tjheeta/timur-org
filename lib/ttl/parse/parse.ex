@@ -13,7 +13,7 @@ defmodule Ttl.Parse do
   defmodule Unknown,            do: defstruct lnb: 0, line: "", level: 1, content: "", parent: ""
 
   defmodule Object do
-    defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
+    defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil, deadline: nil, state: "", priority: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
   end
   defmodule Document do
     defstruct id: nil, name: "", metadata: [], objects: []
@@ -403,7 +403,7 @@ defmodule Ttl.Parse do
     cond do
       # If it's a heading, create an object and add it to the list of current objects
       h.__struct__ == Ttl.Parse.Heading ->
-        obj = %Object{title: h.content, level: h.level, pri: h.pri, state: h.state, tags: h.tags}
+        obj = %Object{title: h.content, level: h.level, priority: h.pri, state: h.state, tags: h.tags}
         create_document(t, %{doc | objects: [obj | doc.objects]} )
 
       # If the list of objects is empty, need to treat the start of file as special before the first heading
@@ -493,9 +493,6 @@ defmodule Ttl.Parse do
   end
 
   def typeof({line,lnb}) do
-
-
-
     cond do
       r = Regex.named_captures(~r/^(?<stars>[\*]+)\s*(?<state>[A-Z]*?)\s+(?<pri>(\[#[A-Z]\])?)\s*(?<title>.+)\s+(?<tags>(:.*:))/, line)  ->
         r = r |> Map.update!("title", &(String.strip/1))

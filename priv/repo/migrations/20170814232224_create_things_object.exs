@@ -11,6 +11,9 @@ defmodule Ttl.Repo.Migrations.CreateTtl.Things.Object do
       add :blob, :binary
       add :closed, :utc_datetime
       add :scheduled, :utc_datetime
+      add :scheduled_date_range, :integer
+      add :scheduled_time_interval, :integer
+      add :scheduled_repeat_interval, :string
       add :deadline, :utc_datetime
       add :state, :string
       add :priority, :string

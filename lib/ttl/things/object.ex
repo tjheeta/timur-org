@@ -12,16 +12,13 @@ defmodule Ttl.Things.Object do
   @foreign_key_type :binary_id
   schema "things_objects" do
     field :blob, :binary
-    field :closed, :utc_datetime
     field :content, :string
-    field :deadline, :utc_datetime
     field :defer_count, :integer
     field :level, :integer
     field :min_time_needed, :integer
     field :path, {:array, Ecto.UUID}
     field :permissions, :integer
     field :priority, :string
-    field :scheduled, :utc_datetime
     field :state, :string
     field :time_left, :integer
     field :time_spent, :integer
@@ -29,14 +26,20 @@ defmodule Ttl.Things.Object do
     field :version, :integer
     field :document_id, :binary_id
     field :properties, :map
+    field :closed, :utc_datetime
+    field :deadline, :utc_datetime
+    field :scheduled, :utc_datetime
+    field :scheduled_date_range, :integer
+    field :scheduled_repeat_interval, :string
+    field :scheduled_time_interval, :integer
 
     timestamps()
   end
 
   @doc false
   def changeset(%Object{} = object, attrs) do
-    object
-    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :closed, :scheduled, :deadline, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions, :properties])
+    tmp = object
+    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions, :properties, :closed,  :deadline, :scheduled, :scheduled_date_range, :scheduled_repeat_interval, :scheduled_time_interval])
     |> validate_required([:id, :document_id, :version])
   end
 end

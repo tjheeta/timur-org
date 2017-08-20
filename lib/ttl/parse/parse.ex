@@ -4,7 +4,7 @@ defmodule Ttl.Parse do
   defmodule Blank,              do: defstruct lnb: 0, line: "", content: "", inside_code: false
   defmodule Heading,            do: defstruct lnb: 0, line: "", level: 1, content: "", pri: "", state: "", tags: []
   # many to many table against heading
-  defmodule Planning,           do: defstruct lnb: 0, line: "", level: 1, content: "", closed: nil, deadline: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil
+  defmodule Planning,           do: defstruct lnb: 0, line: "", level: 1, content: "", closed: nil, deadline: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil 
   # many to many table against heading
   defmodule PropertyDrawer,     do: defstruct lnb: 0, line: "", level: 1, content: ""
   defmodule LogbookDrawer,      do: defstruct lnb: 0, line: "", level: 1, content: []
@@ -13,7 +13,7 @@ defmodule Ttl.Parse do
   defmodule Unknown,            do: defstruct lnb: 0, line: "", level: 1, content: "", parent: ""
 
   defmodule Object do
-    defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_duration: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
+    defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil, deadline: nil, state: "", pri: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
   end
   defmodule Document do
     defstruct id: nil, name: "", metadata: [], objects: []
@@ -396,7 +396,12 @@ defmodule Ttl.Parse do
         current_object = Enum.at(doc.objects, current_object_index)
         current_object = cond do
           h.__struct__ == Ttl.Parse.Planning ->
-            %{current_object | closed: h.closed, scheduled: h.scheduled, deadline: h.deadline}
+            %{current_object |
+              closed: h.closed, deadline: h.deadline, scheduled: h.scheduled,
+              scheduled_repeat_interval: h.scheduled_repeat_interval,
+              scheduled_date_range: h.scheduled_date_range,
+              scheduled_time_interval: h.scheduled_time_interval
+             }
           h.__struct__ == Ttl.Parse.Section ->
             %{current_object | content: (current_object.content <> h.content) }
           h.__struct__ == Ttl.Parse.PropertyDrawer ->
@@ -422,7 +427,7 @@ defmodule Ttl.Parse do
       # The following regexp correctly parses all of the below
       #dates = ["2016-06-01 Wed 9:30-17:00 +1w", "2016-06-01 Wed 9:30-17:00", "2016-06-01 Wed 9:00", "2016-06-01 Wed 09:00", "2016-08-13 Sat 22:50", "2016-08-03", "2016-08-03 9:00", "2016-08-03 Wed 9:00"]
       #Enum.map(dates, fn(x) -> { x, Regex.named_captures(~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<scheduled_hour_end>[\d]{1,2}):(?<scheduled_minute_end>[\d]{2}))?\s*(?<interval>\+([\d][\w]))?/, x) } end)
-      date_format_regexp  = ~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<hour_end>[\d]{1,2}):(?<minute_end>[\d]{2}))?\s*(?<repeat_interval>\+([\d][\w]))?/
+      date_format_regexp  = ~r/^(?<year>[\d]{4})-(?<month>[\d]{2})-(?<day>[\d]{2})\s*(?<dayofweek>[a-zA-Z]{3})?\s*((?<hour>[\d]{1,2}):(?<minute>[\d]{2}))?(-(?<hour_end>[\d]{1,2}):(?<minute_end>[\d]{2}))?\s*(?<repeat_interval>(\.)?\+([\d][\w]))?/
 
       r = Regex.named_captures( date_format_regexp, date)
 
@@ -445,9 +450,16 @@ defmodule Ttl.Parse do
       end_t = Timex.to_datetime(end_t_tuple)
 
       seconds_diff = Timex.diff(end_t, start_t, :seconds)
+      # there is no end date - less than 0 
+      seconds_diff = if seconds_diff < 0 do
+        seconds_diff = 0
+      else
+        seconds_diff
+      end
+
       #duration  = Timex.Duration.from_seconds(seconds_diff)
       #Timex.add(start_t, duration) == end_t
-      { Timex.to_naive_datetime(start_t), seconds_diff, r["interval"] }
+      { Timex.to_naive_datetime(start_t), seconds_diff, r["repeat_interval"] }
     end
     f_capture_date.(date)
   end
@@ -474,25 +486,24 @@ defmodule Ttl.Parse do
       # the repeat scheduling over multiple days doesn't actually work in org-mode
       # CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>
       # schedule can have a range of dates and also a range of times
-      # TODO - for tag-based calendar scheduling, need a range of intervals. 
+      # TODO - for tag-based calendar scheduling, need a range of intervals.
       # TODO - same problem will occur for bin-packing later, but let's get the rough work done first - single date
       Regex.named_captures(~r/(?<keyword>(DEADLINE|SCHEDULED|CLOSED)):/, line) ->
         r = (Regex.named_captures(~r/(CLOSED:\s*([\[<])(?<closed>[^>\]]+)([\]>]))/, line) || %{} )
         r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
         r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
 
-        { scheduled_start, scheduled_start_duration,
-          scheduled_repeat_interval 
-        } = case Map.get(r, "scheduled_start") do
-              nil -> { nil, 0, 0 }
-              x -> helper_f_capture_date(x)
-            end
-#        { scheduled_end, scheduled_end_duration,
-#          _
-#        } = case Map.get(r, "scheduled_end") do
-#              nil -> { nil, 0, 0 }
-#              x -> helper_f_capture_date(x)
-#            end
+        { scheduled_start, scheduled_time_interval, scheduled_repeat_interval} = case Map.get(r, "scheduled_start") do
+                                                                                   nil -> { nil, 0, "" }
+                                                                                   x -> helper_f_capture_date(x)
+                                                                                 end
+        scheduled_date_range = case Map.get(r, "scheduled_end") do
+                                 nil -> 0
+                                 "" -> 0
+                                 x ->
+                                   {tmp_end, _, _ } = helper_f_capture_date(x)
+                                   Timex.diff(tmp_end, scheduled_start, :days)
+                               end
         deadline = case Map.get(r, "deadline") do
                      nil -> nil
                      x -> helper_f_capture_date(x) |> elem(0)
@@ -502,7 +513,13 @@ defmodule Ttl.Parse do
                    x -> helper_f_capture_date(x) |> elem(0)
                  end
 
-        %Planning{line: line, lnb: lnb, scheduled: scheduled_start, scheduled_duration: scheduled_start_duration, deadline: deadline, closed: closed}
+        %Planning{line: line, lnb: lnb,
+                  scheduled: scheduled_start,
+                  scheduled_repeat_interval: scheduled_repeat_interval,
+                  scheduled_date_range: scheduled_date_range,
+                  scheduled_time_interval: scheduled_time_interval,
+                  deadline: deadline,
+                  closed: closed}
 
       line =~ ~r/^:PROPERTIES:/ ->
         %PropertyDrawer{line: line, lnb: lnb}

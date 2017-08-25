@@ -37,7 +37,7 @@ config :ttl, Ttl.Web.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/ttl/web/views/.*(ex)$},
-      ~r{lib/ttl/web/templates/.*(eex)$}
+      ~r{lib/ttl/web/templates/.*(eex|drab)$}
     ]
   ]
 

@@ -1,5 +1,6 @@
 defmodule Ttl.Web.TagController do
   use Ttl.Web, :controller
+  use Drab.Controller
 
   alias Ttl.Things
 

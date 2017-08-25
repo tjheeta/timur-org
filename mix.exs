@@ -36,6 +36,7 @@ defmodule Ttl.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.11"},
      {:timex, "~> 3.0"},
+     {:drab, "~> 0.5.4"},
      {:secure_random, "~> 0.5"},
      {:cowboy, "~> 1.0"}]
   end

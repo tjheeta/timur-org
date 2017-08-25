@@ -1,0 +1,122 @@
+#+TODO: TODO IN-PROGRESS WAITING DONE
+
+* asdfasdfl;jl
+* dafd aldjf
+*** DONE adflk;j not pointing anywhere
+CLOSED: [2016-06-01 Wed 00:31] SCHEDULED: <2016-05-31 Tue>
+- Note taken on [2016-06-01 Wed 00:30] \\
+  ## find . -type l -exec test ! -e {} \; -print > /tmp/broken.txt
+  ## bash something.txt
+ 
+  #!/usr/bin/python
+  
+  import os
+  import subprocess
+  
+  with open("broken.txt") as f:
+      content=f.readlines()
+      for line in content:
+          #print line.rstrip()
+              print "rm " + line.rstrip() + " &&  ln -s " + dest + " " + line.rstrip()
+- Note taken on [2016-05-31 Tue 21:16] \\
+  [[file:~/annex/fix_links.py::print%20line][tmp script]]
+  
+  need to open a subprocess and get the stdout
+*** DONE cert.jpg and scan1.jpg missing
+CLOSED: [2016-05-31 Tue 21:18] SCHEDULED: <2016-05-31 Tue>
+- Note taken on [2016-05-31 Tue 21:19] \\
+  not missing, bug with the rsync copy
+*** TODO fix monitor width on large monitor
+*** DONE repair
+CLOSED: [2017-02-05 Sun 21:16]
+
+
+*screen General
+** DONE something
+
+CLOSED: [2016-06-03 Fri 15:43] DEADLINE: <2016-06-01 Wed>
+
+
+* dadfa
+- Note taken on [2017-07-18 Tue 06:51] \\
+some note
+some note2
+- Note taken on [2016-11-12 Sat 20:01] \\
+some other note
+* Tasks
+
+** DONE - da;ldfa
+CLOSED: [2016-06-03 Fri 11:56] SCHEDULED: <2016-06-03 Fri>
+** DONE [#A] fadfadf
+CLOSED: [2016-05-31 Tue 15:44] SCHEDULED: <2016-05-31 Tue>
+:LOGBOOK:
+CLOCK: [2016-05-31 Tue 14:18]--[2016-05-31 Tue 15:41] =>  1:23
+CLOCK: [2016-05-31 Tue 14:17]--[2016-05-31 Tue 14:17] =>  0:00
+CLOCK: [2016-05-31 Tue 14:15]--[2016-05-31 Tue 14:15] =>  0:00
+CLOCK: [2016-05-31 Tue 14:14]--[2016-05-31 Tue 14:15] =>  0:01
+:END:
+** DONE [#A] fdafdadf
+CLOSED: [2016-05-31 Tue 16:06] SCHEDULED: <2016-05-31 Tue>
+- Note taken on [2016-05-31 Tue 16:06] \\
+  [[file:~/dfdaf][somefile]]
+** DONE [#A] laundry 
+CLOSED: [2016-05-31 Tue 18:42] SCHEDULED: <2016-05-31 Tue>
+** DONE [#A] groceries 
+CLOSED: [2016-05-31 Tue 18:42] SCHEDULED: <2016-05-31 Tue>
+** DONE - dfadf adfaf
+CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00>--<2016-06-02 9:00-17:00>
+** DONE - dafaf
+CLOSED: [2016-06-02 Thu 21:23] SCHEDULED: <2016-06-01 Wed>
+** Inafaf 
+SCHEDULED: <2017-10-01 Sun>
+:PROPERTIES:
+:LAST_REPEAT: [2017-03-17 Fri 09:04]
+:STYLE: habit
+:END:
+- Note taken on [2017-08-21 Mon 15:32] \\
+         . aflkaj af ladfadf adfafd
+  
+- Note taken on [2017-04-30 Sun 18:53] \\
+   something something something
+  
+- State "DONE"       from "WAITING"    [2017-03-17 Fri 09:04]
+- Note taken on [2017-03-17 Fri 09:04] \\
+dfadfaf
+- State "DONE"       from "WAITING"    [2017-02-04 Sat 23:56]
+- Note taken on [2017-02-04 Sat 23:55] \\
+  something something something
+- State "DONE"       from "WAITING"    [2016-12-29 Thu 08:56]
+- State "DONE"       from "WAITING"    [2016-12-28 Wed 06:40]
+- State "DONE"       from "WAITING"    [2016-12-11 Sun 19:00]
+- State "DONE"       from "WAITING"    [2016-12-11 Sun 10:29]
+- State "DONE"       from "WAITING"    [2016-12-11 Sun 00:03]
+- Note taken on [2016-12-10 Sat 22:23] \\
+  something something something
+- State "DONE"       from "WAITING"    [2016-12-10 Sat 21:19]
+- Note taken on [2016-12-10 Sat 21:19] \\
+adf
+- State "DONE"       from "WAITING"    [2016-10-22 Sat 16:11]
+- Note taken on [2016-10-22 Sat 16:09] \\
+adfaf
+- State "DONE"       from "WAITING"    [2016-09-17 Sat 04:39]
+- State "DONE"       from "TODO"       [2016-08-10 Wed 19:45]
+- State "DONE"       from "TODO"       [2016-06-05 Sun 14:50]
+
+** DONE [#B] badf
+CLOSED: [2016-06-09 Thu 09:26] SCHEDULED: <2016-06-07 Tue>
+*** [#C] test
+**** [#D] test 2 
+**** test 2  :tag:
+** TODO [#A] lkj;df
+** DONE [#A] dadfa
+CLOSED: [2016-06-05 Sun 13:35] SCHEDULED: <2016-06-04 Sat>
+** DONE [#A] lkadfaf
+CLOSED: [2016-06-05 Sun 11:29] SCHEDULED: <2016-06-04 Sat>
+** DONE [#A] lkadfaf
+CLOSED: [2016-06-05 Sun 13:05] SCHEDULED: <2016-06-05 Sun>
+- Note taken on [2016-06-05 Sun 13:19] \\
+  [[mu4e:msgid:87lh2jqu56.fsf@adfa.com][versioning]]
+:LOGBOOK:
+CLOCK: [2016-06-05 Sun 12:55]--[2016-06-05 Sun 13:05] =>  0:10
+:END:
+CLOSED: [2016-08-31 Wed 14:04] SCHEDULED: <2016-08-30 Tue>

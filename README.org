@@ -471,12 +471,13 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 **** DONE Parse or skip logbook 
      CLOSED: [2017-08-19 Sat 22:07]
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
-*** Bugs
+*** Import/Export Bugs
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
      CLOSED: [2017-08-19 Sat 22:43]
 **** Regenerate org-file - scheduled date - the second date of the range is missing
 [[file:lib/ttl/parse/parse.ex::#%20TODO%20-%20the%20second%20date][fix it here]]
 
+**** Still need to parse tags into database
 *** display UI for agenda
 - https://www.realsimple.com/home-organizing/organizing/bullet-journal
 - http://help.bulletjournal.com/category/5-bullet-journaling-101
@@ -500,6 +501,11 @@ https://github.com/standardfile
 *** capture
 - some sort of ifttt integration? send email to an interface and it will go into todo?
 *** Cleanup
+**** Refactor parse 
+     SCHEDULED: <2017-08-24 Thu 18:00-20:00> DEADLINE: <2017-08-24 Thu 21:00>
+     :LOGBOOK:
+     CLOCK: [2017-08-24 Thu 17:30]--[2017-08-24 Thu 20:49] =>  3:19
+     :END:
 **** use ecto.multi or control the dual commit transaction
 **** Move anon functions into modules. Add spec to each one
 **** Tests
@@ -516,14 +522,14 @@ https://github.com/standardfile
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-18 Fri 00:02]
+#+CAPTION: Clock summary at [2017-08-24 Thu 20:49]
 | Headline                                         | Time      |         |         |       |      |
 |--------------------------------------------------+-----------+---------+---------+-------+------|
-| *Total time*                                     | *1d 4:00* |         |         |       |      |
+| *Total time*                                     | *1d 8:09* |         |         |       |      |
 |--------------------------------------------------+-----------+---------+---------+-------+------|
-| Ttl                                              | 1d 4:00   |         |         |       |      |
-| \_  MVP                                          |           | 1d 4:00 |         |       |      |
-| \_    import/export to api.                      |           |         | 1d 4:00 |       |      |
+| Ttl                                              | 1d 8:09   |         |         |       |      |
+| \_  MVP                                          |           | 1d 8:09 |         |       |      |
+| \_    import/export to api.                      |           |         | 1d 4:50 |       |      |
 | \_      consolidate sections                     |           |         |         |  2:07 |      |
 | \_      Need to fix the planning parser to...    |           |         |         |  0:25 |      |
 | \_      implement db schema                      |           |         |         |  1:15 |      |
@@ -538,6 +544,8 @@ https://github.com/standardfile
 | \_      Read file uuid from file to pull objects |           |         |         |  2:07 |      |
 | \_      Start of file exception                  |           |         |         |  0:25 |      |
 | \_      Ensure data gets updated on change       |           |         |         |  0:08 |      |
-| \_      make an interval data structure for...   |           |         |         |  0:25 |      |
+| \_      make an interval data structure for...   |           |         |         |  1:15 |      |
 | \_      Parse the schedule properly into the...  |           |         |         |  1:17 |      |
+| \_    Cleanup                                    |           |         |    3:19 |       |      |
+| \_      Refactor parse                           |           |         |         |  3:19 |      |
 #+END:

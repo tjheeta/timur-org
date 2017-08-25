@@ -23,4 +23,6 @@ defmodule Ttl.ParseTest do
       assert ret == 0
     end
   end
+  # TODO - import a file to db, generate the file, regenerate it
+  # Ensure no changes to the db
 end

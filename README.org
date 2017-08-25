@@ -191,7 +191,8 @@ Major issue is capturing images, bookmarks, webpages.
 https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
 
 ** MVP
-*** Thoughts on parsing and db schema:
+*** DONE Thoughts on parsing and db schema:
+    CLOSED: [2017-08-24 Thu 20:59]
   - Can store the entire file and then the tags/headers in separate tables for scheduling
     - If the agenda is modified on web, item state to done, the file needs to be re-written also. Need to keep both in sync.
   - Represent the entire file as an AST and then store it
@@ -255,7 +256,8 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
 
 
 
-*** Thoughts on UI Interface
+*** DONE Thoughts on UI Interface
+    CLOSED: [2017-08-24 Thu 20:59]
 
 - If this is for power-users, it has to be able to integrate with org-mode. To import/export out of text mode, there needs to be a UUID for each element.
 
@@ -475,9 +477,9 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
      CLOSED: [2017-08-19 Sat 22:43]
 **** Regenerate org-file - scheduled date - the second date of the range is missing
-[[file:lib/ttl/parse/parse.ex::#%20TODO%20-%20the%20second%20date][fix it here]]
-
+[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
 **** Still need to parse tags into database
+**** More complete tests for generate -> regenerate with UUID's
 *** display UI for agenda
 - https://www.realsimple.com/home-organizing/organizing/bullet-journal
 - http://help.bulletjournal.com/category/5-bullet-journaling-101

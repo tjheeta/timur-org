@@ -22,6 +22,7 @@ defmodule Ttl.Web.Router do
     resources "/objects", ObjectController
     resources "/tags", TagController
     resources "/properties", PropertyController
+    resources "/agenda", AgendaController
     resources "/sessions", SessionController, only: [:new, :create, :show]
     resources "/sessions", SessionController, only: [:delete], singleton: true
     get "/", PageController, :index

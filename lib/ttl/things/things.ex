@@ -222,6 +222,14 @@ defmodule Ttl.Things do
   end
 
 
+  def get_todo_objects(document_id) do
+    q = from o in Ttl.Things.Object,
+      #where: o.document_id == ^document_id and is_nil(o.closed),
+      where: is_nil(o.closed) and o.state == "TODO",
+      order_by: [asc: o.priority]
+#      select: [o.title, o.level, o.path, o.content]
+    Repo.all(q)
+  end
 
 
   alias Ttl.Things.Tag

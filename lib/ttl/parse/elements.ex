@@ -52,6 +52,48 @@ defmodule Ttl.Parse.Elements do
     f_capture_date.(date)
   end
 
+  # TODO - There is probably a way to capture all three planning at once
+  # closed and deadline can be turned directly into Ecto.DateTime
+  # scheduled will need to be split into scheduled (datetime), scheduled_end (datetime), and scheduled_interval (string)
+  # http://orgmode.org/manual/Timestamps.html#Timestamps
+  # the repeat scheduling over multiple days doesn't actually work in org-mode
+  # CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>
+  # schedule can have a range of dates and also a range of times
+  # TODO - for tag-based calendar scheduling, need a range of intervals.
+  # TODO - same problem will occur for bin-packing later, but let's get the rough work done first - single date
+  defp parse_planning_line(line, lnb) do
+    r = (Regex.named_captures(~r/(CLOSED:\s*([\[<])(?<closed>[^>\]]+)([\]>]))/, line) || %{} )
+    r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
+    r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
+
+    { scheduled_start, scheduled_time_interval, scheduled_repeat_interval} = case Map.get(r, "scheduled_start") do
+                                                                               nil -> { nil, 0, "" }
+                                                                               x -> helper_f_capture_date(x)
+                                                                             end
+    scheduled_date_range = case Map.get(r, "scheduled_end") do
+                             nil -> 0
+                             "" -> 0
+                             x ->
+                               {tmp_end, _, _ } = helper_f_capture_date(x)
+                               Timex.diff(tmp_end, scheduled_start, :days)
+                           end
+    deadline = case Map.get(r, "deadline") do
+                 nil -> nil
+                 x -> helper_f_capture_date(x) |> elem(0)
+               end
+    closed = case Map.get(r, "closed") do
+               nil -> nil
+               x -> helper_f_capture_date(x) |> elem(0)
+             end
+
+    %Planning{line: line, lnb: lnb,
+              scheduled: scheduled_start,
+              scheduled_repeat_interval: scheduled_repeat_interval,
+              scheduled_date_range: scheduled_date_range,
+              scheduled_time_interval: scheduled_time_interval,
+              deadline: deadline,
+              closed: closed}
+  end
   def typeof({line,lnb}) do
     cond do
       r = Regex.named_captures(~r/^(?<stars>[\*]+)\s*(?<state>[A-Z]*?)\s+(?<pri>(\[#[A-Z]\])?)\s*(?<title>.+)\s+(?<tags>(:.*:))/, line)  ->
@@ -64,47 +106,8 @@ defmodule Ttl.Parse.Elements do
         %Heading{content: r["title"], level: String.length(r["stars"]), 
           pri: r["pri"], state: r["state"], tags: r["tags"], lnb: lnb, line: line}
 
-      # TODO - There is probably a way to capture all three planning at once
-      # closed and deadline can be turned directly into Ecto.DateTime
-      # scheduled will need to be split into scheduled (datetime), scheduled_end (datetime), and scheduled_interval (string)
-      # http://orgmode.org/manual/Timestamps.html#Timestamps
-      # the repeat scheduling over multiple days doesn't actually work in org-mode
-      # CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00+1w>--<2016-06-02 9:00-17:00> DEADLINE: <bla>
-      # schedule can have a range of dates and also a range of times
-      # TODO - for tag-based calendar scheduling, need a range of intervals.
-      # TODO - same problem will occur for bin-packing later, but let's get the rough work done first - single date
       Regex.named_captures(~r/(?<keyword>(DEADLINE|SCHEDULED|CLOSED)):/, line) ->
-        r = (Regex.named_captures(~r/(CLOSED:\s*([\[<])(?<closed>[^>\]]+)([\]>]))/, line) || %{} )
-        r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
-        r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
-
-        { scheduled_start, scheduled_time_interval, scheduled_repeat_interval} = case Map.get(r, "scheduled_start") do
-                                                                                   nil -> { nil, 0, "" }
-                                                                                   x -> helper_f_capture_date(x)
-                                                                                 end
-        scheduled_date_range = case Map.get(r, "scheduled_end") do
-                                 nil -> 0
-                                 "" -> 0
-                                 x ->
-                                   {tmp_end, _, _ } = helper_f_capture_date(x)
-                                   Timex.diff(tmp_end, scheduled_start, :days)
-                               end
-        deadline = case Map.get(r, "deadline") do
-                     nil -> nil
-                     x -> helper_f_capture_date(x) |> elem(0)
-                   end
-        closed = case Map.get(r, "closed") do
-                   nil -> nil
-                   x -> helper_f_capture_date(x) |> elem(0)
-                 end
-
-        %Planning{line: line, lnb: lnb,
-                  scheduled: scheduled_start,
-                  scheduled_repeat_interval: scheduled_repeat_interval,
-                  scheduled_date_range: scheduled_date_range,
-                  scheduled_time_interval: scheduled_time_interval,
-                  deadline: deadline,
-                  closed: closed}
+        %Planning{line: line, lnb: lnb}
 
       line =~ ~r/^:PROPERTIES:/ ->
         %PropertyDrawer{line: line, lnb: lnb}
@@ -144,10 +147,12 @@ defmodule Ttl.Parse.Elements do
 
   # Slurping the properties
   def create_elements([%Heading{} = s_head, %Planning{} = s_plan, %PropertyDrawer{} = s_prop| t], ast) do
+    s_plan = parse_planning_line(s_plan.line, s_plan.lnb)
     slurp_until(t, &(&1.line =~ ~r/:END:/), &(&1 <> &2), true,  s_prop, [s_plan, s_head | ast ])
   end
 
   def create_elements([%Heading{} = s_head, %Planning{} = s_plan | t], ast) do
+    s_plan = parse_planning_line(s_plan.line, s_plan.lnb)
     create_elements(t, [s_plan, s_head | ast])
   end
 

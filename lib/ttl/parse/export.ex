@@ -73,11 +73,11 @@ defmodule Ttl.Parse.Export do
 
     planning_string = ""
     planning_string = planning_string <> if closed,  do: "CLOSED: " <>
-      db_date_to_string(closed, :square, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval), else: ""
+      db_date_to_string(closed, :square, 0, 0, ""), else: ""
     planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <>
       db_date_to_string(scheduled, :notsquare, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval), else: ""
     planning_string = planning_string <> if deadline,  do: "DEADLINE: " <>
-      db_date_to_string(deadline, :notsquare, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval ), else: ""
+      db_date_to_string(deadline, :notsquare, 0, 0, ""), else: ""
     planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
     acc = acc <> planning_string
 
@@ -92,7 +92,7 @@ defmodule Ttl.Parse.Export do
         str = ":#{k}:    #{v}\n"
         acc <> str
       end) 
-      ":PROPERTIES:\n:#{tmpstr}:END:\n"
+      ":PROPERTIES:\n#{tmpstr}:END:\n"
     else
       property_string
     end
@@ -107,7 +107,7 @@ defmodule Ttl.Parse.Export do
     else
       ""
     end
-    Enum.reduce( document.metadata, acc, fn({k,v}, acc) ->
+    acc = Enum.reduce( document.metadata, acc, fn({k,v}, acc) ->
       str = "#+#{k}: #{v}"
       if String.length(str) do
         acc <> str <> "\n"
@@ -115,6 +115,7 @@ defmodule Ttl.Parse.Export do
         acc
       end
     end)
+    acc = if String.length(acc) > 0, do: acc <> "\n", else: acc # adding a newline
   end
 
   def export_file(filename, string_uuid, add_id \\ true) do
@@ -132,7 +133,6 @@ defmodule Ttl.Parse.Export do
 
     # now need to merge the file together
     str = generate_metadata(document, add_id)
-    str = str <> "\n" # Adding extra newline
     Enum.reduce(sorted_data, str, fn(x, acc) ->
       acc <> object_to_string(x, add_id)
     end)

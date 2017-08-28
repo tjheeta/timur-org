@@ -1,5 +1,9 @@
 <h2>Listing Objects</h2>
 
+<form><input name="text_to_uppercase" value="<%= @text %>">
+  <button drab-event="click" drab-handler="uppercase">Upcase</button>
+  <button drab-event="click" drab-handler="lowercase">Downcase</button>
+</form>
 <table class="table">
   <thead>
     <tr>
@@ -52,6 +56,10 @@
  -->
 
       <td class="text-right">
+        <form><input name="delete_object_id" value="<%= object.id %>">
+          <button class="btn btn-default btn-xs" drab-event="click" drab-handler="delete_object">Delete</button>
+        </form>
+        <span><a href="#" class="btn btn-default btn-xs">Something</a></span>
         <span><%= link "Show", to: object_path(@conn, :show, object), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Edit", to: object_path(@conn, :edit, object), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Delete", to: object_path(@conn, :delete, object), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>

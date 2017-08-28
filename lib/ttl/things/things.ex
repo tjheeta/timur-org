@@ -226,7 +226,7 @@ defmodule Ttl.Things do
     q = from o in Ttl.Things.Object,
       #where: o.document_id == ^document_id and is_nil(o.closed),
       where: is_nil(o.closed) and o.state == "TODO",
-      order_by: [asc: o.priority]
+      order_by: [asc: o.scheduled]
 #      select: [o.title, o.level, o.path, o.content]
     Repo.all(q)
   end

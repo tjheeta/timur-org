@@ -57,7 +57,7 @@
 
       <td class="text-right">
         <form><input name="delete_object_id" value="<%= object.id %>">
-          <button class="btn btn-default btn-xs" drab-event="click" drab-handler="delete_object">Delete</button>
+        <button class="btn btn-default btn-xs" drab-event="click" drab-handler="delete_object">Delete</button>
         </form>
         <span><a href="#" class="btn btn-default btn-xs">Something</a></span>
         <span><%= link "Show", to: object_path(@conn, :show, object), class: "btn btn-default btn-xs" %></span>

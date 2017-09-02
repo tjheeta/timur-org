@@ -1,0 +1,64 @@
+<h2>Listing Objects</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Path</th>
+      <th>Level</th>
+      <th>Title</th>
+      <th>State</th>
+      <th>Priority</th>
+      <!-- .priority
+      <th>Content</th>
+      <th>Blob</th>
+
+      <th>Closed</th>
+      <th>Scheduled</th>
+      <th>Deadline</th>
+      -->
+      <!--  
+      <th>Version</th>
+      <th>Defer count</th>
+      <th>Min time needed</th>
+      <th>Time spent</th>
+      <th>Time left</th>
+      <th>Permissions</th>
+      -->
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for object <- @objects do %>
+    <tr>
+      <td><%= object.path %></td>
+      <td><%= object.level %></td>
+      <td><%= object.title %></td>
+      <td><%= object.state %></td>
+      <td><%= object.priority %></td>
+      <!-- <td><%= object.content %></td> 
+      <td><%= object.blob %></td>
+      <td><%= object.closed %></td>
+      <td><%= object.scheduled %></td>
+      <td><%= object.deadline %></td>
+-->
+      <!-- 
+      <td><%= object.version %></td>
+      <td><%= object.defer_count %></td>
+      <td><%= object.min_time_needed %></td>
+      <td><%= object.time_spent %></td>
+      <td><%= object.time_left %></td>
+      <td><%= object.permissions %></td>
+ -->
+
+      <td class="text-right">
+        <span><%= link "Show", to: object_path(@conn, :show, object), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: object_path(@conn, :edit, object), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: object_path(@conn, :delete, object), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Object", to: object_path(@conn, :new) %></span>

@@ -20,14 +20,12 @@ defmodule Ttl.Web.SessionController do
   end
 
   def show(conn, %{"id" => access_token}) do
-    # TODO - need to expire the token, etc
-    # That logic belongs in Ttl.Accounts.User
-    case Ttl.Accounts.get_user_by_token!(access_token) do
-      nil ->
+    case Ttl.Accounts.User.verify_session(access_token) do
+      {:error, _} ->
         conn
         |> put_flash(:error, "Access token not found or expired.")
         |> redirect(to: page_path(conn, :index))
-      user ->
+      {:ok, user} ->
         conn
         |> Ttl.Accounts.PlugAuth.login(user)
         |> put_flash(:info, "Welcome #{user.email}")

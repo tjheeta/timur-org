@@ -30,6 +30,20 @@ defmodule Ttl.Accounts.User do
     |> unique_constraint(:access_token)
   end
 
+  def verify_session(access_token) do
+    case Ttl.Accounts.get_user_by_token!(access_token) do
+      nil ->
+        {:error, "notoken"}
+      user ->
+        # why does phx not put everything in unixtime into ecto?
+        if Timex.diff(Timex.now |> Timex.to_naive_datetime, user.updated_at) / 1000000 < 300 do
+          {:ok, user}
+        else
+          {:error, "timeout"}
+        end
+    end
+  end
+
   def create_session(params) do
      email = String.downcase(params["email"])
      case Ttl.Accounts.get_user_by_email!(email) do

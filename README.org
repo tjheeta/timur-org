@@ -164,7 +164,8 @@ https://github.com/novoid/Memacs
 https://turtlapp.com/
 http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
 https://github.com/scripting/concord
-
+Personal knowledge base:
+https://news.ycombinator.com/item?id=8270759
     
   
 
@@ -761,6 +762,11 @@ If a person is involved in 50 objects, some public, delegated, some private.
 How do comments work? Client can connect to the backend system for comments, but what is real-time, and what is cached?  
 
 Kinto requires bucket + collection level for anything. Specific buckets for fetching. In fact, if a document is a collection, then already have problems creating an agenda. Need to fetch all records in multiple collections, store them, build an agenda.  
+
+Will be multiple calls to fetch unless we overlay our own queries into the database or maybe write a plugin.
+  - https://github.com/Kinto/kinto-changes
+This, however, won't help with changes. 
+
 - Sync multiple collections. That sucks.
 - Make a document a record. Then will have to parse and create the agenda each time. That sucks.
 - Have tasks be replicated into an inbox bucket for a user. This doesn't really work except for maybe 2-way.  
@@ -772,9 +778,9 @@ Kinto requires bucket + collection level for anything. Specific buckets for fetc
 - Team-org-mode. Team/group has a bucket with two collections called documents and objects. Have a personal bucket. For each bucket, dosync. Personal bucket has agenda - which has metadata about the real object - title + location. Actually, can just build the agenda off of this without the sync. An object needs an "assigned" field also.
 - Product usage. No one is going to partially share a document. The atomic unit for collaboration is the document, not the object. If anything, an object and children should be able to be moved to another document, with a reference back if necessary. Kinto does sharding by buckets => can represent a group. No one would share a subtree and get comments.
 - Are comments objects? For instance, a collection of these objects can also represent a forum thread. A comment could be represented by a headline. Could put comments into their own collection? Maybe want to turn comments into objects. 
-
   
-*** Conclusion
+*** DONE Conclusion
+    CLOSED: [2017-09-01 Fri 18:01]
 1) Single user productivity 
    - agenda
    - notifications
@@ -791,9 +797,6 @@ Kinto requires bucket + collection level for anything. Specific buckets for fetc
    - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
 
-Will be multiple calls to fetch unless we overlay our own queries into the database or maybe write a plugin.
-  - https://github.com/Kinto/kinto-changes
-This, however, won't help with changes. 
    
 *** Get real data - Elixir to Kinto
 What about logbook?

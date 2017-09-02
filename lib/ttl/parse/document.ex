@@ -1,5 +1,5 @@
 defmodule Ttl.Parse.Object do
-  defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil, deadline: nil, state: "", priority: "", version: 1, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
+  defstruct id: nil, level: 1, title: "", content: "", closed: nil, scheduled: nil, scheduled_repeat_interval: nil, scheduled_date_range: nil, scheduled_time_interval: nil, deadline: nil, state: "", priority: "", version: nil, defer_count: 0, min_time_needed: 5, time_spent: 0, permissions: 0, tags: "", properties: %{}, subobjects: []
 end
 
 defmodule Ttl.Parse.Document do

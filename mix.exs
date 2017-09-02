@@ -17,7 +17,7 @@ defmodule Ttl.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Ttl.Application, []},
-     extra_applications: [:logger, :runtime_tools, :timex]]
+     extra_applications: [:logger, :runtime_tools, :timex, :httpoison]]
   end
 
   # Specifies which paths to compile per environment.
@@ -36,6 +36,7 @@ defmodule Ttl.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.11"},
      {:timex, "~> 3.0"},
+     {:httpoison, "0.13.0"},
      {:secure_random, "~> 0.5"},
      {:cowboy, "~> 1.0"}]
   end

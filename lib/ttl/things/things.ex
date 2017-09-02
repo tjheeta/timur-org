@@ -20,6 +20,10 @@ defmodule Ttl.Things do
   def list_documents do
     Repo.all(Document)
   end
+  def kinto_list_documents(token, bucket \\ "default") do
+    url = "/buckets/#{bucket}/collections/documents/records"
+    Kinto.query_get!( token, url)
+  end
 
   @doc """
   Gets a single document.
@@ -37,6 +41,10 @@ defmodule Ttl.Things do
   """
   def get_document!(id), do: Repo.get!(Document, id)
   def get_document(id), do: Repo.get(Document, id)
+  def kinto_get_document!(token, id, bucket \\ "default") do
+    url = "/buckets/#{bucket}/collections/documents/records/#{id}"
+    Kinto.query_get!(token, url )
+  end
 
   @doc """
   Creates a document.
@@ -56,6 +64,10 @@ defmodule Ttl.Things do
     |> Repo.insert()
   end
 
+  def kinto_create_document(token, %Document{} = document, attrs, bucket \\ "default" ) do
+    url = "/buckets/#{bucket}/collections/documents/records"
+    Kinto.query_post!(token, url, attrs)
+  end
   @doc """
   Updates a document.
 
@@ -72,6 +84,11 @@ defmodule Ttl.Things do
     document
     |> Document.changeset(attrs)
     |> Repo.update()
+  end
+
+  def kinto_update_document(token, %Document{} = document, attrs, bucket \\ "default" ) do
+    url = "/buckets/#{bucket}/collections/documents/records/#{document.id}"
+    Kinto.query_patch!(token, url, attrs)
   end
 
   @doc """
@@ -161,6 +178,10 @@ defmodule Ttl.Things do
     on_conflict = :replace_all
     Repo.insert_all(Object, list_of_attrs, on_conflict: on_conflict, conflict_target: :id)
   end
+  def kinto_create_or_update_objects(kinto_token, list_of_attrs, bucket \\ "default" ) do
+    url = "/buckets/#{bucket}/collections/objects/records"
+    Kinto.query_batch(kinto_token, url, "PUT", list_of_attrs )
+  end
 
 
   @doc """
@@ -216,13 +237,15 @@ defmodule Ttl.Things do
   """
   def get_versions_of_objects(document_id) do
     q = from o in "things_objects",
-      where: o.document_id == ^document_id, 
+      where: o.document_id == ^document_id,
       select: [o.id, o.version]
     Repo.all(q)
   end
 
-
-
+  def kinto_get_versions_of_objects(kinto_token, document_id, bucket \\ "default" ) do
+    url = "/buckets/#{bucket}/collections/objects/records?_fields=id,version&document_id=#{document_id}"
+    Kinto.query_get!( kinto_token, url)
+  end
 
   alias Ttl.Things.Tag
 

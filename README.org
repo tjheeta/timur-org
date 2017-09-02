@@ -1,7 +1,7 @@
 * Ttl
 
 ** What
-
+   
 *** Good
 The beautiful thing about org-mode is the customizability. 
  - org-agenda
@@ -39,6 +39,8 @@ Acts as an agenda, outliner, wiki, blog, etc. It's secure because single-user. E
 - Get reminded
 - Encouragement from others who have the same goal
 - Markdown?
+- Sharing / Delegation
+- Publish
 - Reminder / categorization - groceries, etc based on location
   - Notifications 
     - https://github.com/realtime-framework/WebPushNotifications/blob/master/index.js
@@ -153,8 +155,7 @@ State:
   - open
   - started
 
-
-Others:
+*** Others
 https://checkvist.com/checklists/627469-name-your-project-and-press-enter
 https://workflowy.com/ -- the most mature app
 https://www.moo.do -- really nice Google Apps integration
@@ -162,11 +163,12 @@ https://checkvist.com/ -- extremely feature rich
 https://github.com/novoid/Memacs
 https://turtlapp.com/
 http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
+https://github.com/scripting/concord
 
     
   
 
-** Workflow:
+** Workflow
 *** Sync 
 This will send the entire file over and at high load and high users cause issues. Will need a emacs client to update properties. 
 
@@ -190,7 +192,8 @@ Major issue is capturing images, bookmarks, webpages.
 
 https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
 
-** MVP
+** DONE MVP1
+   CLOSED: [2017-09-01 Fri 17:23]
 *** DONE Thoughts on parsing and db schema:
     CLOSED: [2017-08-24 Thu 20:59]
   - Can store the entire file and then the tags/headers in separate tables for scheduling
@@ -255,7 +258,6 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
   - with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, x where id = any (x.id_list) order by array_position(x.id_list, o.id );
 
 
-
 *** DONE Thoughts on UI Interface
     CLOSED: [2017-08-24 Thu 20:59]
 
@@ -269,7 +271,7 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
 - http://www.orgzly.com/help#org7fa55de
 - https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
 
-
+  
 *** DONE import/export to api. 
     CLOSED: [2017-08-19 Sat 22:11]
 **** DONE write a parser (not going to do in elisp since may want non-emacs users)
@@ -473,6 +475,379 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 **** DONE Parse or skip logbook 
      CLOSED: [2017-08-19 Sat 22:07]
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
+*** DONE Cleanup
+    CLOSED: [2017-09-01 Fri 17:51]
+**** DONE Refactor parse 
+     CLOSED: [2017-09-01 Fri 17:23] SCHEDULED: <2017-08-24 Thu 18:00-20:00> DEADLINE: <2017-08-24 Thu 21:00>
+     :LOGBOOK:
+     CLOCK: [2017-08-24 Thu 17:30]--[2017-08-24 Thu 20:49] =>  3:19
+     :END:
+**** use ecto.multi or control the dual commit transaction
+*** DONE POC - display UI for agenda
+   :LOGBOOK:
+   CLOCK: [2017-09-01 Fri 00:00]--[2017-09-01 Fri 23:59] => 23:59
+   :END:
+    CLOSED: [2017-09-01 Fri 10:17]
+Not sure which is more important to do first. Capturing, offline support, notifications, logging activities. Notifications are fairly straightforward. Capture and offline support will need to come by building out a service worker for a progressive web app (pwa) . Looks like a lot more functionality will end up moving into the client. 
+
+The server will contain the documents and the items stored in kinto db. 
+The client will sync proxy auth through the server to make things consistent.
+Client downloads entire documents and has all the data now.
+  - capture
+  - display the agenda
+    - schedule / reschedule
+    - mark as done
+    - logging time / journal
+    - import/export back to org-mode
+  - most important tasks
+
+  - https://www.realsimple.com/home-organizing/organizing/bullet-journal
+  - http://help.bulletjournal.com/category/5-bullet-journaling-101
+  - https://news.ycombinator.com/item?id=11856987
+  - http://talk.dynalist.io/t/switching-to-dynalist-from-workflowy-and-todoist/475
+  - memex - what did you do on what day
+  - reminder to journal
+**** PWA
+
+Looks like an app-shell needs to be implemented and workboxjs seems to be the newest gold standard. 
+
+Workflow:
+
+Desires:
+- communication over websocket
+- little to no api if not required
+- works offline
+
+- Agenda shell
+  - This is a rendered html page without data
+  - Has some authorization info locally? 
+  - Fetches from local to display immediately 
+  - Fetches from remote to sync
+    - update cache
+    - and then redisplay on update
+
+https://elixirforum.com/t/tips-for-building-resilient-frontend-apps-which-use-phoenix-channels-for-backend-communication/6216/15
+https://www.viget.com/articles/phoenix-and-react-a-killer-combo
+https://unpoly.com/
+https://github.com/hyperapp/hyperapp
+
+
+https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/
+
+https://hnpwa.com/
+
+https://github.com/Kinto/kinto/wiki/Brainstorm-rationale
+
+Should probably take a PWA style working model and modify it:
+https://github.com/SimonDEvans/notes
+
+https://serviceworke.rs/
+https://workboxjs.org/
+https://nolanlawson.github.io/fronteers-2016/#/51
+https://github.com/turbolinks/turbolinks
+https://github.com/GoogleChrome/workbox
+https://github.com/GoogleChrome/voice-memos
+https://github.com/jakearchibald/trained-to-thrill/
+
+**** Drab
+Spent a few hours off and on investigating Drab. Server-side dom modifications is nice, but not sure how to deal with offline. Will have to build custom sync mechanism. 
+**** Clojurescript
+Want to use. Community is small compared to others though.
+
+We'd have to make the externs for kinto. 
+https://github.com/cljsjs
+
+However, before doing anything with clojurescript get something working with javascript.
+https://github.com/andreloureiro/andrel.me/blob/master/_posts/2016-01-09-a-basic-service-worker-implementation.md
+
+Figwheel is pretty awesome. 
+
+https://github.com/gadfly361/cljs-todomvc
+https://github.com/tel/oak 
+
+**** Kinto
+     :LOGBOOK:
+     CLOCK: [2017-08-30 Wed 19:00]--[2017-08-30 Wed 23:48] =>  4:48
+     :END:
+
+Kinto philosophy and architecture fits better. 
+
+Comparison with Pouchdb and others:
+http://www.servicedenuages.fr/en/generic-storage-ecosystem#storage-specs
+http://docs.kinto-storage.org/en/stable/faq.html#comparison
+
+Only other choice for offline storage was pouchdb, however, the cons are:
+  - This will then require a db per user and the sharing of objects isn't possible easily anymore.
+  - The permissioning requires a gateway from cloudant or etc. and going down that rabbithole. 
+
+Close to the same data schema is possible with documents moving to a "collection" and all the objects into the "records". Groups, permissions, sharing out of the box. Possible performance issues on large datasets, but very unlikely. Fairly robust permissions for grouping:
+http://docs.kinto-storage.org/en/stable/tutorials/permission-setups.html
+
+***** Kinto setup 
+Using docker image:
+#!/bin/sh
+docker run --rm --name  kinto --env-file ./kinto.env -p 8888:8888 kinto/kinto-server
+
+$ cat kinto.env 
+KINTO_STORAGE_BACKEND=kinto.core.storage.postgresql
+KINTO_STORAGE_URL=postgres://postgres:postgres@10.0.2.99/kinto
+MULTIAUTH_POLICIES=basicauth
+KINTO_EXPERIMENTAL_PERMISSIONS_ENDPOINT=true
+KINTO_PERMISSION_BACKEND=kinto.core.permission.postgresql
+KINTO_PERMISSION_URL=postgres://postgres:postgres@10.0.2.99/kinto
+
+***** Kinto schema - export doc 
+Trying to generate a document will have the multi-commit issue as before:
+
+#+BEGIN_SRC shell :results output
+echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth user1:pass1
+
+#+END_SRC
+
+#+RESULTS:
+: {"permissions":{"write":["basicauth:582ff7049eb3712f30dda114970902e93d64bf4ae3bd50373799d52ddd3e1dca"]},"data":{"id":"217b5227-50b9-44a0-9dcb-171383a5bb52","completed":false,"title":"emacs","level":2,"priority":null,"status":"TODO","state":"","content":"some crazy content 2","description":"emacs","properties":[],"last_modified":1504300871026}}
+
+#+BEGIN_SRC shell :results output
+echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | 
+    http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+#+END_SRC
+
+#+RESULTS:
+: {"permissions":{"write":["basicauth:344805ac2a747906f79c7b1246cc1a5f15c1ebaffed6ca0bba111c3ec9defebf"]},"data":{"id":"c9cdc6e4-71a9-4756-85b1-365c2688526f","completed":false,"title":"emacs","level":2,"priority":null,"status":"TODO","state":"","content":"some crazy content 2","description":"emacs","properties":[],"last_modified":1504299805753}}
+
+#+BEGIN_SRC shell :results output
+    #http GET http://localhost:8888/v1/buckets/default/collections/tasks --auth user3:pass3
+    http GET http://localhost:8888/v1/buckets/default/collections --auth user1:pass1
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"id":"newdoc","last_modified":1504300871014},{"id":"tasks","order":["7ca72a3e-afe7-452e-a2ba-2dfa02a3d01c","0d37d5f1-4d44-443b-a546-52c6e15d8f0c"],"last_modified":1504135779282}]}
+
+#+BEGIN_SRC shell :results output
+    http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user1:pass1
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"id":"981f166f-f033-4826-93eb-b5c3dc385815","title":"emacs","priority":null,"level":2,"status":"TODO","description":"emacs","state":"","properties":[],"content":"some crazy content 2","last_modified":1504138324556},{"id":"4e9dc027-45d1-4c48-8fe7-54d0af328d68","title":"emacs","priority":null,"level":1,"status":"TODO","description":"emacs","state":"","properties":[],"content":"some crazy content","last_modified":1504138145187},{"id":"53f9cdd5-fcd3-4699-924b-4d68067b25df","last_modified":1504138066386},{"id":"afea9854-508b-42a5-b490-0c23eed2d42b","level":1,"status":"todo","description":"user1 data try4","last_updated":"2017-08-30T08:30:00","last_modified":1504138038761},{"id":"9b6d746d-2e92-444c-93cb-56ebf28354d2","last_modified":1504138024204},{"id":"8bad1995-1585-422d-a712-eb7bc8a011b7","level":1,"status":"todo","description":"user1 data try3","last_updated":"2017-08-30T08:30:00","last_modified":1504137990660},{"id":"0348491e-a1dc-4470-9f0a-97bd6d17f338","last_modified":1504137897503},{"id":"aa867294-471b-4f78-bc1a-d5de45c3716e","last_modified":1504137845531},{"id":"a8e4c8fa-6315-4a56-b52e-39363bc1eba9","last_modified":1504137742919},{"id":"7e21c027-e2e3-4e09-806c-8846f9635a60","last_modified":1504137734302},{"id":"a11c5585-36f4-438e-979a-4b96111c81ff","last_modified":1504137676441},{"id":"0d37d5f1-4d44-443b-a546-52c6e15d8f0c","level":1,"status":"todo","description":"user1 data try2","last_updated":"2017-08-30T08:30:00","last_modified":1504135413068},{"id":"7ca72a3e-afe7-452e-a2ba-2dfa02a3d01c","level":1,"status":"todo","description":"user1 data","last_updated":"2017-08-30T08:30:00","last_modified":1504131793546}]}
+
+#+BEGIN_SRC shell :results output
+#    http GET http://localhost:8888/v1/buckets --auth user3:pass3 # 6f0b5857-7aaa-da44-f0bb-648c6619f5f1 is the bucket for user3:pass3
+#    http GET http://localhost:8888/v1/buckets --auth user2:pass2 #  f1abf618-c58c-1496-5274-b7e8be8a259b is the bucket for user3:pass3
+#     echo '{"permissions": {"read": ["basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39"]}}' | http PATCH http://localhost:8888/v1/buckets/default/collections/tasks/records/90dbf30d-1d5e-4874-8878-8ffcc67e8ffb -v --auth 'user2:pass2' # grant perms from user2 to user3 for record
+  
+    #http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+   # http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user3:pass3
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"id":"683ea5c7-645b-4236-9f2f-48ec3b1542d9","completed":false,"title":"new item","last_modified":1504297795367},{"id":"8ad85f69-5056-47dc-9fdb-6fb473fc67e3","completed":false,"title":"New again","last_modified":1504286396202},{"id":"09c5b364-f358-41ff-b7f3-2fcb9470511a","completed":false,"title":"what","last_modified":1504273413555}]}
+
+It worked, the perms table has:
+ /buckets/6f0b5857-7aaa-da44-f0bb-648c6619f5f1                                                                | write      | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+ /buckets/6f0b5857-7aaa-da44-f0bb-648c6619f5f1/collections/tasks                                              | write      | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+ /buckets/6f0b5857-7aaa-da44-f0bb-648c6619f5f1/collections/tasks/records/09c5b364-f358-41ff-b7f3-2fcb9470511a | write      | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+ /buckets/6f0b5857-7aaa-da44-f0bb-648c6619f5f1/collections/tasks/records/8ad85f69-5056-47dc-9fdb-6fb473fc67e3 | write      | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+ /buckets/6f0b5857-7aaa-da44-f0bb-648c6619f5f1/collections/tasks/records/683ea5c7-645b-4236-9f2f-48ec3b1542d9 | write      | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+ /buckets/f1abf618-c58c-1496-5274-b7e8be8a259b/collections/tasks/records/90dbf30d-1d5e-4874-8878-8ffcc67e8ffb | read       | basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39
+
+#+BEGIN_SRC shell :results output
+#    http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user3:pass3
+    http GET http://localhost:8888/v1/buckets/f1abf618-c58c-1496-5274-b7e8be8a259b/collections/tasks/records --auth user3:pass3
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"id":"c9cdc6e4-71a9-4756-85b1-365c2688526f","completed":false,"title":"emacs","priority":null,"level":2,"status":"TODO","description":"emacs","state":"","properties":[],"content":"some crazy content 2","last_modified":1504299805753},{"id":"90dbf30d-1d5e-4874-8878-8ffcc67e8ffb","level":1,"status":"todo","description":"test1","last_updated":"2017-08-30T08:30:00","last_modified":1504298161138}]}
+
+Trying to set perms on the collection tasks
+#+BEGIN_SRC shell :results output
+     echo '{"permissions": {"read": ["basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39"]}}' | http PATCH http://localhost:8888/v1/buckets/default/collections/tasks -v --auth 'user2:pass2' # grant perms from user2 to user3 for collection
+  
+    #http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+   # http GET http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user3:pass3
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+PATCH /v1/buckets/default/collections/tasks HTTP/1.1
+Content-Length: 106
+Accept-Encoding: gzip, deflate
+Host: localhost:8888
+Accept: application/json
+User-Agent: HTTPie/0.9.2
+Connection: keep-alive
+Content-Type: application/json
+Authorization: Basic dXNlcjI6cGFzczI=
+
+{"permissions": {"read": ["basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39"]}}
+
+
+HTTP/1.1 200 OK
+Access-Control-Expose-Headers: Retry-After, Alert, Backoff, Content-Length
+Content-Length: 242
+Content-Type: application/json
+Date: Fri, 01 Sep 2017 21:05:06 GMT
+Etag: "1504299906940"
+Last-Modified: Fri, 01 Sep 2017 21:05:06 GMT
+Server: waitress
+X-Content-Type-Options: nosniff
+
+{"permissions":{"write":["basicauth:344805ac2a747906f79c7b1246cc1a5f15c1ebaffed6ca0bba111c3ec9defebf"],"read":["basicauth:7fc2f542fc5a66bcbcb45bea54ec43c5db5020a03286ebb84dbb120ef66b2a39"]},"data":{"id":"tasks","last_modified":1504299906940}}
+#+end_example
+
+***** Kinto schema - How to generate the agendas
+http://docs.kinto-storage.org/en/stable/api/1.x/filtering.html
+
+#+BEGIN_SRC shell :results output
+    http GET "http://localhost:8888/v1/buckets/default/collections/tasks/records?gt_level=1&status=TODO" --auth user1:pass1
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"status":"TODO","state":"","id":"981f166f-f033-4826-93eb-b5c3dc385815","priority":null,"properties":[],"description":"emacs","level":2,"title":"emacs","content":"some crazy content 2","last_modified":1504138324556}]}
+
+***** Kinto permissions
+Synchronization happens at a bucket level. Each user has a default bucket which they sync automatically. Everything after that for 
+  - tasks = new Kinto(remotedb).collection("tasks"), tasks.sync(syncOptions)
+Separately need to fetch from different buckets. 
+
+Operates on the bucket + records level . 
+Can set sharing permission at the bucket, collection, or record level. Fetching anything of interest, however, is a completely different problem.
+
+**** Todo app examples with Kinto
+file:///home/tjheeta/repos/self/all-todo-test/kinto.js/demo/index.html
+https://github.com/Kinto/kinto/wiki/App-examples
+http://leplatrem.github.io/kinto-demo-calendar/#public
+https://github.com/leplatrem/kinto-demo-calendar/
+https://github.com/leplatrem/Routina
+
+**** Frontend thoughts 
+JS frontend is insane.
+
+https://github.com/facebook/react  
+https://github.com/developit/preact
+https://github.com/angular/angular - 27000 - Too complicated.
+https://github.com/meteor/meteor
+https://github.com/emberjs/ember.js/
+https://github.com/apollographql/apollo-client
+https://github.com/vuejs/vue
+https://github.com/MithrilJS/mithril.js - 
+https://github.com/knockout/knockout - 8400 - MVVM
+https://github.com/sveltejs/svelte - 5100 - compile time
+https://github.com/turbolinks/turbolinks - 4000
+https://github.com/unpoly/unpoly - 139
+https://github.com/Polymer/polymer - 18000 - No idea what web components are.
+https://github.com/zeit/next.js/ - 16700 - Server rendered react? Already have backend.
+https://cycle.js.org/ - 
+
+
+**** DONE Learning hyperapp to build a PWA/SPA
+     CLOSED: [2017-09-01 Fri 10:16]
+https://github.com/ramda/ramda - hyperapp probably needs something like this
+https://github.com/lodash/lodash - or this
+https://github.com/hyperapp/hyperapp/issues/244#issuecomment-321145114
+https://github.com/hyperapp/hyperapp/blob/master/docs/vdom-events.md - adapting an external library
+https://github.com/hyperapp/hyperapp/issues/251 - testing
+***** DONE Need to figure out how to route to the next page - almost done
+      CLOSED: [2017-08-31 Thu 01:11]
+***** DONE Try to add kinto - mixin necessary?
+      CLOSED: [2017-08-31 Thu 23:37]
+** MVP2
+*** DONE Thoughts
+    CLOSED: [2017-09-01 Fri 17:47]
+Need to clearly dilineate what happens server-side vs client-side. If items are being collaborated on, could open a websocket and make a lock for it. 
+Comments - are they a separate system or do we write into the same schema?
+Offline - editing is based on whether they are personal documents or not. Need a lock for shared. If go offline, warn that may have to merge conflicts or save duplicate version, but can continue editing.
+Binpacking - does the client do it or the server?
+If a person is involved in 50 objects, some public, delegated, some private. 
+How do comments work? Client can connect to the backend system for comments, but what is real-time, and what is cached?  
+
+Kinto requires bucket + collection level for anything. Specific buckets for fetching. In fact, if a document is a collection, then already have problems creating an agenda. Need to fetch all records in multiple collections, store them, build an agenda.  
+- Sync multiple collections. That sucks.
+- Make a document a record. Then will have to parse and create the agenda each time. That sucks.
+- Have tasks be replicated into an inbox bucket for a user. This doesn't really work except for maybe 2-way.  
+- Build a custom offline cache and replication. Need to replicate everything that a user has access to, not just by bucket or collection. That sucks.
+- Instead of each document being a collection, have a document collection and an object collection. Get a full list of objects to build an agenda. Ignore anything about a document. When sharing, can move the object into a shared bucket location and can still have reference to it? No, will have build problem again. 
+- A dedicated group for collaboration with org-mode could have a bucket with group perms. After that, each can take objects offline, work, change state, etc.
+- Move permissions directly onto the object itself.
+- All objects for all users are in a single collection (could be sharded).
+- Team-org-mode. Team/group has a bucket with two collections called documents and objects. Have a personal bucket. For each bucket, dosync. Personal bucket has agenda - which has metadata about the real object - title + location. Actually, can just build the agenda off of this without the sync. An object needs an "assigned" field also.
+- Product usage. No one is going to partially share a document. The atomic unit for collaboration is the document, not the object. If anything, an object and children should be able to be moved to another document, with a reference back if necessary. Kinto does sharding by buckets => can represent a group. No one would share a subtree and get comments.
+- Are comments objects? For instance, a collection of these objects can also represent a forum thread. A comment could be represented by a headline. Could put comments into their own collection? Maybe want to turn comments into objects. 
+
+  
+*** Conclusion
+1) Single user productivity 
+   - agenda
+   - notifications
+   - capture
+   - dumb server, smart client, bin-packing, etc. done in js
+2) Collaboration -  Kinto can go pretty far with team/personal buckets with collections of doc + objects.
+   - Each group is represented by a bucket. Can be sharded. 
+   - Can build agenda - need to resolve over all buckets.
+   - Can share documents / move documents / create documents from object subtrees if necessary.
+   - Locking for editing documents online via websocket
+   - Can shared and assign tasks by fetch from multiple buckets/collections.
+   - External contributors also work by adding to a single group. All hierarchy needs to be done via bucket-id or secondary table.
+   - Moving groups from public to private - offline stuff would still exist, but could remove keys from keychain?
+   - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
+   - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
+
+Will be multiple calls to fetch unless we overlay our own queries into the database or maybe write a plugin.
+  - https://github.com/Kinto/kinto-changes
+This, however, won't help with changes. 
+   
+*** Get real data - Elixir to Kinto
+What about logbook?
+Need to revamp the schema. 
+Each document in document collection
+Each object is now a record in objects collection. 
+Personal buckets are auto-synced.
+*** Notifications
+*** Pre and post syncing data immediately / retries / backoffs
+*** Authorization
+**** Kinto proxying
+*** Display agenda
+**** UI Display
+**** Onclick and onslide events
+*** Pick and schedule things onto agenda
+*** Add REST API for sync back to emacs
+**** User security
+**** Compare the objects 
+      - Need to modify the object from ui/db and then test uploads
+**** Add REST api?
+      Start off with a simple curl client to do whole files
+      Later can make an object level api and make an elisp client - update versions / conflict resolution
+*** Capture to different documents
+*** Need to namespace buckets based on org/groupname/id? :ms.shared:
+
+*** Offline test
+*** Bin-packing
+*** User settings
+*** Daily review
+*** Weekly review
+*** Conflict resolution?
+*** Connect to phoenix channels - why? Comments/feedback?
+*** Server-side rendering
+*** Add full calendar?
+*** Check for updates of code versions and update notice
+*** Components
+https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
+*** How to include different files
+*** capture
+****** bookmarklets directly to server 
+****** pictures and attachments
+ 
+- 
+*** CRDT editing :ms.shared:
+- https://github.com/xwiki-contrib/chainpad
+- https://hal.archives-ouvertes.fr/inria-00336191/
+- https://news.ycombinator.com/item?id=12303100
+- https://pages.lip6.fr/Marek.Zawirski/papers/SwiftCloud-RR-8347.pdf
+*** Inbox - integration point for externs and updates?
+*** Security - Moving groups from public to private - offline stuff would still exist. 
+
+*** Need to be able to take an object and move it to another document and leave a reference if necessary. On import/export, need to be able to self-refer to these documents locally. :ms.shared:
+*** Encryption per bucket 
+Need to have a master password. Each user has a keychain for all accessible buckets. The buckets get synced locally, decrypted as necessary, and stuff built. Re-keying will be massively painful. 
 *** Import/Export Bugs
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
      CLOSED: [2017-08-19 Sat 22:43]
@@ -480,20 +855,6 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 [[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
 **** Still need to parse tags into database
 **** More complete tests for generate -> regenerate with UUID's
-*** display UI for agenda
-- https://www.realsimple.com/home-organizing/organizing/bullet-journal
-- http://help.bulletjournal.com/category/5-bullet-journaling-101
-- https://news.ycombinator.com/item?id=11856987
-- http://talk.dynalist.io/t/switching-to-dynalist-from-workflowy-and-todoist/475
-- memex - what did you do on what day
-- reminder to journal
-*** Add REST API
-**** User security
-**** Compare the objects 
-      - Need to modify the object from ui/db and then test uploads
-**** Add REST api?
-      Start off with a simple curl client to do whole files
-      Later can make an object level api and make an elisp client - update versions / conflict resolution
 *** Security
 https://turtlapp.com/
 https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results
@@ -502,15 +863,10 @@ https://github.com/standardfile
 *** notifications
 *** capture
 - some sort of ifttt integration? send email to an interface and it will go into todo?
-*** Cleanup
-**** Refactor parse 
-     SCHEDULED: <2017-08-24 Thu 18:00-20:00> DEADLINE: <2017-08-24 Thu 21:00>
-     :LOGBOOK:
-     CLOCK: [2017-08-24 Thu 17:30]--[2017-08-24 Thu 20:49] =>  3:19
-     :END:
-**** use ecto.multi or control the dual commit transaction
-**** Move anon functions into modules. Add spec to each one
-**** Tests
+*** UI Tests
+https://github.com/webpro/Automated-SPA-Testing
+*** Cleanup - add spec to all functions
+*** Import/export Tests
        Updates
        - An old object (all db counts same)
        - A new object gets added (db count + 1)
@@ -524,30 +880,32 @@ https://github.com/standardfile
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-08-24 Thu 20:49]
-| Headline                                         | Time      |         |         |       |      |
-|--------------------------------------------------+-----------+---------+---------+-------+------|
-| *Total time*                                     | *1d 8:09* |         |         |       |      |
-|--------------------------------------------------+-----------+---------+---------+-------+------|
-| Ttl                                              | 1d 8:09   |         |         |       |      |
-| \_  MVP                                          |           | 1d 8:09 |         |       |      |
-| \_    import/export to api.                      |           |         | 1d 4:50 |       |      |
-| \_      consolidate sections                     |           |         |         |  2:07 |      |
-| \_      Need to fix the planning parser to...    |           |         |         |  0:25 |      |
-| \_      implement db schema                      |           |         |         |  1:15 |      |
-| \_      write to database                        |           |         |         | 11:06 |      |
-| \_        Make it into a function                |           |         |         |       | 0:30 |
-| \_        Make a solid decision on what to do... |           |         |         |       | 1:03 |
-| \_        Parse and cast the dates               |           |         |         |       | 4:58 |
-| \_      Need to parse the file metadata          |           |         |         |  1:35 |      |
-| \_      regenerate file from database - with...  |           |         |         |  4:59 |      |
-| \_      Properties - parse, store, and write     |           |         |         |  1:47 |      |
-| \_      Add version and id into regenerated...   |           |         |         |  0:24 |      |
-| \_      Read file uuid from file to pull objects |           |         |         |  2:07 |      |
-| \_      Start of file exception                  |           |         |         |  0:25 |      |
-| \_      Ensure data gets updated on change       |           |         |         |  0:08 |      |
-| \_      make an interval data structure for...   |           |         |         |  1:15 |      |
-| \_      Parse the schedule properly into the...  |           |         |         |  1:17 |      |
-| \_    Cleanup                                    |           |         |    3:19 |       |      |
-| \_      Refactor parse                           |           |         |         |  3:19 |      |
+#+CAPTION: Clock summary at [2017-09-01 Fri 17:52]
+| Headline                                         | Time       |          |         |       |      |
+|--------------------------------------------------+------------+----------+---------+-------+------|
+| *Total time*                                     | *2d 12:56* |          |         |       |      |
+|--------------------------------------------------+------------+----------+---------+-------+------|
+| Ttl                                              | 2d 12:56   |          |         |       |      |
+| \_  MVP1                                         |            | 2d 12:56 |         |       |      |
+| \_    import/export to api.                      |            |          | 1d 4:50 |       |      |
+| \_      consolidate sections                     |            |          |         |  2:07 |      |
+| \_      Need to fix the planning parser to...    |            |          |         |  0:25 |      |
+| \_      implement db schema                      |            |          |         |  1:15 |      |
+| \_      write to database                        |            |          |         | 11:06 |      |
+| \_        Make it into a function                |            |          |         |       | 0:30 |
+| \_        Make a solid decision on what to do... |            |          |         |       | 1:03 |
+| \_        Parse and cast the dates               |            |          |         |       | 4:58 |
+| \_      Need to parse the file metadata          |            |          |         |  1:35 |      |
+| \_      regenerate file from database - with...  |            |          |         |  4:59 |      |
+| \_      Properties - parse, store, and write     |            |          |         |  1:47 |      |
+| \_      Add version and id into regenerated...   |            |          |         |  0:24 |      |
+| \_      Read file uuid from file to pull objects |            |          |         |  2:07 |      |
+| \_      Start of file exception                  |            |          |         |  0:25 |      |
+| \_      Ensure data gets updated on change       |            |          |         |  0:08 |      |
+| \_      make an interval data structure for...   |            |          |         |  1:15 |      |
+| \_      Parse the schedule properly into the...  |            |          |         |  1:17 |      |
+| \_    Cleanup                                    |            |          | 3:19    |       |      |
+| \_      Refactor parse                           |            |          |         |  3:19 |      |
+| \_    POC - display UI for agenda                |            |          | 1d 4:47 |       |      |
+| \_      Kinto                                    |            |          |         |  4:48 |      |
 #+END:

@@ -123,16 +123,18 @@ defmodule Ttl.Parse.Export do
   end
 
   def generate_metadata(document, add_id \\ true) do
+    [doc_id, metadata] =
+      case Application.get_env(:ttl, :storage) do
+        [backend: :kinto] -> [document["id"], document["metadata"] ]
+                 _ -> [document.id, document.metadata]
+      end
+
     acc = if add_id do
-      "#+PREFIX_DOC_ID:#{document.id}\n"
+      "#+PREFIX_DOC_ID:#{doc_id}\n"
     else
       ""
     end
 
-    metadata = case Application.get_env(:ttl, :storage) do
-            [backend: :kinto] -> document["metadata"]
-            _ -> document.metadata
-          end
     acc = Enum.reduce( metadata, acc, fn({k,v}, acc) ->
       str = "#+#{k}: #{v}"
       if String.length(str) do
@@ -144,17 +146,23 @@ defmodule Ttl.Parse.Export do
     acc = if String.length(acc) > 0, do: acc <> "\n", else: acc # adding a newline
   end
 
+  # attrs = %{:kinto_token => conn.private[:kinto_token], :add_id => true}
   def export_file(filename, string_uuid, attrs \\ %{add_id: true}) do
-    str = case Application.get_env(:ttl, :storage) do
-            [backend: :kinto] -> export(:kinto, string_uuid, attrs)
-            _ -> export(:db, string_uuid, attrs)
-    end
+    str = export(string_uuid, attrs)
     File.write(filename, str)
   end
 
-  def export(backend, string_uuid, attrs \\ %{add_id: true})
+  # attrs = %{:kinto_token => conn.private[:kinto_token], :add_id => true}
+  def export(string_uuid, attrs \\ %{add_id: true}) do
+    case Application.get_env(:ttl, :storage) do
+      [backend: :kinto] -> export_id_to_str(:kinto, string_uuid, attrs)
+      _ -> export_id_to_str(:db, string_uuid, attrs)
+    end
+  end
 
-  def export(:db, string_uuid, attrs) do
+  def export_id_to_str(backend, string_uuid, attrs \\ %{add_id: true})
+
+  def export_id_to_str(:db, string_uuid, attrs) do
     # get the data for the file
     # TODO - need to add spec format and put these functions non anon
     {:ok, binary_uuid}= Ecto.UUID.dump(string_uuid)
@@ -169,7 +177,7 @@ defmodule Ttl.Parse.Export do
     end)
   end
 
-  def export(:kinto, string_uuid, attrs) do
+  def export_id_to_str(:kinto, string_uuid, attrs) do
     # get the data for the file
     # TODO - need to add spec format and put these functions non anon
     document = Ttl.Things.kinto_get_document!(attrs[:kinto_token], string_uuid)["data"]

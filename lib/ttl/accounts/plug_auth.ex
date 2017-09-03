@@ -12,10 +12,12 @@ defmodule Ttl.Accounts.PlugAuth do
     conn =
       case get_session(conn, "authenticated") do
         true ->
+          # TODO - kinto token == user_id
           user_id = get_session(conn, "user_id")
           conn
           |> configure_session(renew: true)
           |> put_private(:user_id, user_id)
+          |> put_private(:kinto_token, user_id)
 
         nil ->
           case check_for_api_auth(conn) do
@@ -23,6 +25,7 @@ defmodule Ttl.Accounts.PlugAuth do
               conn
               |> put_private(:user_id, user_id)
               |> put_private(:kinto_token, token)
+              |> put_private(:from_api, true)
             _ -> conn
           end
     end

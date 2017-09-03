@@ -12,6 +12,15 @@ defmodule Ttl.Parse.Import do
     end
   end
 
+  #  attrs = %{:kinto_token => "1e557863-6731-452b-9dde-aa30da3c7bc4"
+  #            :mode => "default" | "force"
+  def import(file, attrs \\ %{mode: "default"}) do
+    case Application.get_env(:ttl, :storage) do
+      [backend: :kinto] -> import_file(:kinto, file, attrs)
+      _ -> import_file(:db, file, attrs)
+    end
+  end
+
   def import_file(backend, file, attrs \\ %{mode: "default"})
 
   # modes are default, force

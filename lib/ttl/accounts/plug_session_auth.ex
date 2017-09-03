@@ -1,4 +1,4 @@
-defmodule Ttl.Accounts.PlugAuth do
+defmodule Ttl.Accounts.PlugSessionAuth do
   import Plug.Conn
 
   def init(opts), do: opts

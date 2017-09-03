@@ -8,6 +8,7 @@ defmodule Ttl.Accounts.User do
   schema "accounts_users" do
     field :access_token, :string
     field :email, :string
+    field :api_key, :string
 
     timestamps()
   end

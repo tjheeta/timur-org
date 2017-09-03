@@ -601,12 +601,13 @@ KINTO_PERMISSION_URL=postgres://postgres:postgres@10.0.2.99/kinto
 Trying to generate a document will have the multi-commit issue as before:
 
 #+BEGIN_SRC shell :results output
-echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth user1:pass1
+#echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth user1:pass1
+echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth something:something
 
 #+END_SRC
 
 #+RESULTS:
-: {"permissions":{"write":["basicauth:582ff7049eb3712f30dda114970902e93d64bf4ae3bd50373799d52ddd3e1dca"]},"data":{"id":"217b5227-50b9-44a0-9dcb-171383a5bb52","completed":false,"title":"emacs","level":2,"priority":null,"status":"TODO","state":"","content":"some crazy content 2","description":"emacs","properties":[],"last_modified":1504300871026}}
+: {"permissions":{"write":["basicauth:ffe0068885f59942e2d84fa8a8add347bd9bea706ddea63d7bf6044809582210"]},"data":{"id":"f6ca4cc7-f2ee-4ba2-b96a-5aa8a6f5a6ac","completed":false,"title":"emacs","level":2,"priority":null,"status":"TODO","state":"","content":"some crazy content 2","description":"emacs","properties":[],"last_modified":1504332135099}}
 
 #+BEGIN_SRC shell :results output
 echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | 
@@ -797,28 +798,146 @@ This, however, won't help with changes.
    - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
 
-   
-*** Get real data - Elixir to Kinto
+     
+*** Braindump - Elixir to Kinto
+    :LOGBOOK:
+    CLOCK: [2017-09-01 Sat 22:30]--[2017-09-02 Sat 00:27] =>  1:57
+    CLOCK: [2017-09-01 Fri 20:24]--[2017-09-01 Fri 20:49] =>  0:25
+    :END:
+
+Logged into a session:
+http://localhost:4000/sessions/new
+http://localhost:4000/sessions/ef73a51a0770908c273ba7f20c6b6c308225c708d76981f18cf3d07a5f98
+
+Need some sort of token to be able to write to kinto appropriately.
+Stick with basicauth and use userid:sometoken to authorize against kinto. That's as static as can get. Can't use email since they might want to change it. Kinto auths with user:password for basic auth.  
+Not in the mood to implement 3-legged auth with bearer tokens:
+http://docs.kinto-storage.org/en/stable/tutorials/authentication-github.html
+"The user id github:<username> can now be used in permissions definitions. It is much more convenient than Basic Auth identifiers!"
+
+So no direct access to kinto from the client without having a mechanism to fetch the userid from elixir server.
+4-step auth - Somehow client authorizes against kinto 3-legged, kinto looks up the uuid from server.
+
+Experimental accounts api:
+http://docs.kinto-storage.org/en/stable/api/1.x/accounts.html
+
+At what point is it faster to write offline replication handler for indexeddb than muck with kinto?
+Or just write into kinto schema directly with ecto? 
+kinto.js replication needs a user/password. Login normally, use user_id as token which can be used on sync. If not proxied, can steal all the data from kinto directly on losing the user token or kinto token. The whole point of nopassword was not to be having these secrets. 
+
+- Need the server and the client to both be able to write into kinto.
+- Another option is the client also does the parsing and there is no server at all.
+
+https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/services/syncManager.js
+
+*** Elixir to Kinto
+    :LOGBOOK:
+    CLOCK: [2017-09-02 Sat 15:00]--[2017-09-02 Sat 17:30] =>  2:30
+    CLOCK: [2017-09-02 Sat 13:20]--[2017-09-02 Sat 14:23] =>  1:03
+    CLOCK: [2017-09-02 Sat 12:00]--[2017-09-02 Sat 13:10] =>  1:10
+    CLOCK: [2017-09-02 Sat 11:17]--[2017-09-02 Sat 11:47] =>  0:30
+    CLOCK: [2017-09-02 Sat 10:30]--[2017-09-02 Sat 11:16] =>  0:46
+    CLOCK: [2017-09-02 Sat 10:05]--[2017-09-02 Sat 10:30] =>  0:25
+    CLOCK: [2017-09-02 Sat 09:35]--[2017-09-02 Sat 10:00] =>  0:25
+    CLOCK: [2017-09-02 Sat 09:05]--[2017-09-02 Sat 09:30] =>  0:25
+    :END:
+
+#+BEGIN_SRC shell :results output
+    http GET "http://localhost:8888/v1/buckets/default/collections/documents/records/someid" --auth kinto_token:de4927d9-a099-4ec8-bb99-4f69888acb34
+#+END_SRC
+
+#+RESULTS:
+: {"errno":110,"code":404,"details":{"id":"someid","resource_name":"record"},"error":"Not Found"}
+
+
+
+*** TODO Security model for kinto and replication
+- Access to kinto only through phx.
+  - if not, need to verify 3rd party github:<username> as identifier for kinto auth + Repeat for phx auth 
+  - phx directly to postgres 
+- Must be authenticated for api access.
+- User forgery prevented by phx signed session cookies.
+- Rewrites the header from the client and enforces the authorization header to be only which is the session cookie.
+
+Other pros - abstracting out the data layer, could be replaced later.
+
+Server-writes - if write directly from phx to postgres in kinto schema, need to know what buckets or need to implement custom uuid generation. 
+
+**** Make an elixir-kinto adapter?
+- new table has userid + kinto token
+- connection pool
+
 What about logbook?
 Need to revamp the schema. 
-Each document in document collection
-Each object is now a record in objects collection. 
-Personal buckets are auto-synced.
-*** Notifications
-*** Pre and post syncing data immediately / retries / backoffs
+*** TODO Set constant user_hmac_secret
+*** Import/Export Bugs
+**** DONE scheduled_date_range, scheduled_time_interval not written to db
+     CLOSED: [2017-08-19 Sat 22:43]
+**** Regenerate org-file - scheduled date - the second date of the range is missing
+[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
+**** Still need to parse tags into database
+**** More complete tests for generate -> regenerate with UUID's
 *** Authorization
+**** DONE User security investigation
+     CLOSED: [2017-09-01 Fri 21:30]
+     :LOGBOOK:
+     CLOCK: [2017-09-01 Fri 20:50]--[2017-09-01 Fri 21:30] =>  0:40
+     :END:
+- Phoenix by default signs session cookie with secret_key_base
+- Can also encrypt the cookie completely
+- https://elixirforum.com/t/how-is-phoenix-token-different-from-jwt/2349/5
+- https://elixirforum.com/t/phoenix-token-encryption/3123
 **** Kinto proxying
+
+*** App - Pre and post syncing data immediately / retries / backoffs
 *** Display agenda
 **** UI Display
-**** Onclick and onslide events
+**** Onclick and onslide events - increment version
+**** Onedit - increment version
+*** Notifications
 *** Pick and schedule things onto agenda
-*** Add REST API for sync back to emacs
+*** Add REST API for sync to/from emacs
 **** User security
-**** Compare the objects 
+**** Sync
+Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
       - Need to modify the object from ui/db and then test uploads
+      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
+      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
+      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
 **** Add REST api?
       Start off with a simple curl client to do whole files
       Later can make an object level api and make an elisp client - update versions / conflict resolution
+**** Need api tokens
+*** Production Authorization 
+    :LOGBOOK:
+    CLOCK: [2017-09-01 Fri 21:30]--[2017-09-01 Fri 22:48] =>  1:18
+    :END:
+
+https://github.com/sakurity/securelogin
+http://inaka.net/blog/2016/07/27/passwordless-login-with-phoenix/
+https://medium.com/the-many/how-we-built-passwordless-authentication-with-auth0-and-elixir-phoenix-ea508c9f3490
+How can you check if a token is revoked without going to the db?
+Have a global counter of revoke, token has a counter element, if it is less than counter, it needs re-auth. Very fragile under load.
+
+**** Need api/bucket tokens for rest api
+**** Per device tokens or just revoke all and re-create current?
+**** How to revoke a user/device?
+Refresh token in db that is verified on refresh - 30 days. Just store that many days of revoke tokens on each refresh token use.
+Auth token regenerate every 15 min 
+if don't use tokens and just use a session in ets/dets, still won't work properly with long-session needing to be in mem or db. keeping n-days of revocation tokens better than keeping all auth tokens.   
+**** Ensure session cookie containing token is "HttpOnly" "Secure" (https)
+**** Cookie expiry far into the future. 
+**** Cookies are fully encrypted
+**** websocket security
+- read assets/js/socket.js
+- https://hexdocs.pm/phoenix/Phoenix.Token.html
+- https://medium.com/caspertechteam/securing-websockets-in-elixir-770cbd2da043
+- http://blog.stratumsecurity.com/2016/06/13/websockets-auth/
+- Send the token under bearer?
+
+Each document in document collection
+Each object is now a record in objects collection. 
+Personal buckets are auto-synced.
 *** Capture to different documents
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
 
@@ -851,13 +970,6 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 *** Need to be able to take an object and move it to another document and leave a reference if necessary. On import/export, need to be able to self-refer to these documents locally. :ms.shared:
 *** Encryption per bucket 
 Need to have a master password. Each user has a keychain for all accessible buckets. The buckets get synced locally, decrypted as necessary, and stuff built. Re-keying will be massively painful. 
-*** Import/Export Bugs
-**** DONE scheduled_date_range, scheduled_time_interval not written to db
-     CLOSED: [2017-08-19 Sat 22:43]
-**** Regenerate org-file - scheduled date - the second date of the range is missing
-[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
-**** Still need to parse tags into database
-**** More complete tests for generate -> regenerate with UUID's
 *** Security
 https://turtlapp.com/
 https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results
@@ -874,7 +986,7 @@ https://github.com/webpro/Automated-SPA-Testing
        - An old object (all db counts same)
        - A new object gets added (db count + 1)
        - the new object gets modified (db count same)
-
+*** Assistant - location based
 * Scratch
 
 #+BEGIN_SRC elixir :results output
@@ -883,32 +995,38 @@ https://github.com/webpro/Automated-SPA-Testing
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-09-01 Fri 17:52]
-| Headline                                         | Time       |          |         |       |      |
-|--------------------------------------------------+------------+----------+---------+-------+------|
-| *Total time*                                     | *2d 12:56* |          |         |       |      |
-|--------------------------------------------------+------------+----------+---------+-------+------|
-| Ttl                                              | 2d 12:56   |          |         |       |      |
-| \_  MVP1                                         |            | 2d 12:56 |         |       |      |
-| \_    import/export to api.                      |            |          | 1d 4:50 |       |      |
-| \_      consolidate sections                     |            |          |         |  2:07 |      |
-| \_      Need to fix the planning parser to...    |            |          |         |  0:25 |      |
-| \_      implement db schema                      |            |          |         |  1:15 |      |
-| \_      write to database                        |            |          |         | 11:06 |      |
-| \_        Make it into a function                |            |          |         |       | 0:30 |
-| \_        Make a solid decision on what to do... |            |          |         |       | 1:03 |
-| \_        Parse and cast the dates               |            |          |         |       | 4:58 |
-| \_      Need to parse the file metadata          |            |          |         |  1:35 |      |
-| \_      regenerate file from database - with...  |            |          |         |  4:59 |      |
-| \_      Properties - parse, store, and write     |            |          |         |  1:47 |      |
-| \_      Add version and id into regenerated...   |            |          |         |  0:24 |      |
-| \_      Read file uuid from file to pull objects |            |          |         |  2:07 |      |
-| \_      Start of file exception                  |            |          |         |  0:25 |      |
-| \_      Ensure data gets updated on change       |            |          |         |  0:08 |      |
-| \_      make an interval data structure for...   |            |          |         |  1:15 |      |
-| \_      Parse the schedule properly into the...  |            |          |         |  1:17 |      |
-| \_    Cleanup                                    |            |          | 3:19    |       |      |
-| \_      Refactor parse                           |            |          |         |  3:19 |      |
-| \_    POC - display UI for agenda                |            |          | 1d 4:47 |       |      |
-| \_      Kinto                                    |            |          |         |  4:48 |      |
+#+CAPTION: Clock summary at [2017-09-02 Sat 17:30]
+| Headline                                         | Time      |          |         |       |      |
+|--------------------------------------------------+-----------+----------+---------+-------+------|
+| *Total time*                                     | *3d 0:30* |          |         |       |      |
+|--------------------------------------------------+-----------+----------+---------+-------+------|
+| Ttl                                              | 3d 0:30   |          |         |       |      |
+| \_  MVP1                                         |           | 2d 12:56 |         |       |      |
+| \_    import/export to api.                      |           |          | 1d 4:50 |       |      |
+| \_      consolidate sections                     |           |          |         |  2:07 |      |
+| \_      Need to fix the planning parser to...    |           |          |         |  0:25 |      |
+| \_      implement db schema                      |           |          |         |  1:15 |      |
+| \_      write to database                        |           |          |         | 11:06 |      |
+| \_        Make it into a function                |           |          |         |       | 0:30 |
+| \_        Make a solid decision on what to do... |           |          |         |       | 1:03 |
+| \_        Parse and cast the dates               |           |          |         |       | 4:58 |
+| \_      Need to parse the file metadata          |           |          |         |  1:35 |      |
+| \_      regenerate file from database - with...  |           |          |         |  4:59 |      |
+| \_      Properties - parse, store, and write     |           |          |         |  1:47 |      |
+| \_      Add version and id into regenerated...   |           |          |         |  0:24 |      |
+| \_      Read file uuid from file to pull objects |           |          |         |  2:07 |      |
+| \_      Start of file exception                  |           |          |         |  0:25 |      |
+| \_      Ensure data gets updated on change       |           |          |         |  0:08 |      |
+| \_      make an interval data structure for...   |           |          |         |  1:15 |      |
+| \_      Parse the schedule properly into the...  |           |          |         |  1:17 |      |
+| \_    Cleanup                                    |           |          |    3:19 |       |      |
+| \_      Refactor parse                           |           |          |         |  3:19 |      |
+| \_    POC - display UI for agenda                |           |          | 1d 4:47 |       |      |
+| \_      Kinto                                    |           |          |         |  4:48 |      |
+| \_  MVP2                                         |           |    11:34 |         |       |      |
+| \_    Braindump - Elixir to Kinto                |           |          |    2:22 |       |      |
+| \_    Elixir to Kinto                            |           |          |    7:14 |       |      |
+| \_    Authorization                              |           |          |    0:40 |       |      |
+| \_      User security investigation              |           |          |         |  0:40 |      |
+| \_    Production Authorization                   |           |          |    1:18 |       |      |
 #+END:

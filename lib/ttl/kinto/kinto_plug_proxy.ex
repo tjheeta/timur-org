@@ -32,11 +32,25 @@ defmodule Ttl.KintoPlugProxy do
     # TODO - extra json encode / decode here
     # TODO - not forwarding on any of the headers for etag/match
     # IO.inspect conn.req_headers
-    headers=["Content-Type": "application/json"]
     kinto_token = conn.private.plug_session["user_id"]
+    base64_auth = "Basic " <> Base.encode64("kinto_token:#{kinto_token}")
+    headers=["Content-Type": "application/json", "Authorization": base64_auth]
+    options = []
+    #options=[hackney: [basic_auth: {"kinto_token", kinto_token}]]
 
-    options=[hackney: [basic_auth: {"kinto_token", kinto_token}]]
-    body = Poison.encode!(conn.body_params)
+    #IO.inspect conn.body_params
+    #IO.inspect conn.request_path
+
+    # intercept and modify batch queries as they send the default header
+    body = case conn.method do
+             "POST" ->
+                 if "batch" in conn.path_info do
+                   put_in(conn.body_params, ["defaults", "headers", "Authorization"], base64_auth)
+                 else
+                   conn.body_params
+                 end
+               _ -> conn.body_params
+           end |> Poison.encode!
     res = request!(conn.method, url, body, headers, options)
     send_resp(conn, res.status_code || 200, "application/json", res.body)
 

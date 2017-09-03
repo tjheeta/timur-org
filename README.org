@@ -602,12 +602,13 @@ Trying to generate a document will have the multi-commit issue as before:
 
 #+BEGIN_SRC shell :results output
 #echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth user1:pass1
+#http GET http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth something:something
 echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | http POST http://localhost:8888/v1/buckets/default/collections/newdoc/records --auth something:something
 
 #+END_SRC
 
 #+RESULTS:
-: {"permissions":{"write":["basicauth:ffe0068885f59942e2d84fa8a8add347bd9bea706ddea63d7bf6044809582210"]},"data":{"id":"f6ca4cc7-f2ee-4ba2-b96a-5aa8a6f5a6ac","completed":false,"title":"emacs","level":2,"priority":null,"status":"TODO","state":"","content":"some crazy content 2","description":"emacs","properties":[],"last_modified":1504332135099}}
+: {"data":[{"properties":[],"id":"80c6d50c-7489-4493-9d32-2e513e0874ed","priority":null,"status":"TODO","level":2,"content":"some crazy content 2","completed":false,"title":"emacs","state":"","description":"emacs","last_modified":1504404010451},{"id":"2f0159f4-af8d-4950-b118-0c013b4a90d7","description":"emacs","last_modified":1504403945540}]}
 
 #+BEGIN_SRC shell :results output
 echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' | 
@@ -753,6 +754,9 @@ https://github.com/hyperapp/hyperapp/issues/251 - testing
 ***** DONE Try to add kinto - mixin necessary?
       CLOSED: [2017-08-31 Thu 23:37]
 ** MVP2
+Last state:
+With great regret, moved phx to kinto. Massive refactor needed to not expose the data layer, copy and paste everywhere to get things working. Performance gone to hell also, for the hopes that the kinto sync is robust. Regardless, it will only need a rewrite between 100-1000 concurrent users depending on how expensive the sync is and that means it will need 5x-10x actual users. All to avoid having to write a sync library and figure out indexeddb. 
+
 *** DONE Thoughts
     CLOSED: [2017-09-01 Fri 17:47]
 Need to clearly dilineate what happens server-side vs client-side. If items are being collaborated on, could open a websocket and make a lock for it. 
@@ -799,7 +803,8 @@ This, however, won't help with changes.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
 
      
-*** Braindump - Elixir to Kinto
+*** DONE Braindump - Elixir to Kinto
+    CLOSED: [2017-09-02 Sat 17:59]
     :LOGBOOK:
     CLOCK: [2017-09-01 Sat 22:30]--[2017-09-02 Sat 00:27] =>  1:57
     CLOCK: [2017-09-01 Fri 20:24]--[2017-09-01 Fri 20:49] =>  0:25
@@ -830,7 +835,8 @@ kinto.js replication needs a user/password. Login normally, use user_id as token
 
 https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/services/syncManager.js
 
-*** Elixir to Kinto
+*** DONE Elixir to Kinto
+    CLOSED: [2017-09-02 Sat 17:36]
     :LOGBOOK:
     CLOCK: [2017-09-02 Sat 15:00]--[2017-09-02 Sat 17:30] =>  2:30
     CLOCK: [2017-09-02 Sat 13:20]--[2017-09-02 Sat 14:23] =>  1:03
@@ -850,8 +856,20 @@ https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/serv
 : {"errno":110,"code":404,"details":{"id":"someid","resource_name":"record"},"error":"Not Found"}
 
 
+*** DONE Set constant user_hmac_secret
+    CLOSED: [2017-09-02 Sat 18:00]
+$ cat kinto.env 
+KINTO_STORAGE_BACKEND=kinto.core.storage.postgresql
+KINTO_STORAGE_URL=postgres://postgres:postgres@10.0.2.99/kinto
+MULTIAUTH_POLICIES=basicauth
+KINTO_EXPERIMENTAL_PERMISSIONS_ENDPOINT=true
+KINTO_PERMISSION_BACKEND=kinto.core.permission.postgresql
+KINTO_PERMISSION_URL=postgres://postgres:postgres@10.0.2.99/kinto
+KINTO_USERID_HMAC_SECRET=not_really_a_secret
+KINTO_BATCH_MAX_REQUESTS=10000
 
-*** TODO Security model for kinto and replication
+*** DONE Security model for kinto and replication
+    CLOSED: [2017-09-03 Sun 01:17]
 - Access to kinto only through phx.
   - if not, need to verify 3rd party github:<username> as identifier for kinto auth + Repeat for phx auth 
   - phx directly to postgres 
@@ -862,22 +880,26 @@ https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/serv
 Other pros - abstracting out the data layer, could be replaced later.
 
 Server-writes - if write directly from phx to postgres in kinto schema, need to know what buckets or need to implement custom uuid generation. 
+**** DONE Setup a path for a proxy and rewrite any request headers with basic auth info
+     CLOSED: [2017-09-02 Sat 21:46]
+     :LOGBOOK:
+     CLOCK: [2017-09-02 Sat 18:00]--[2017-09-02 Sat 21:46] =>  3:46
+     :END:
+**** DONE Change client url
+     CLOSED: [2017-09-03 Sun 01:17]
+     :LOGBOOK:
+     CLOCK: [2017-09-02 Sun 22:21]--[2017-09-03 Sun 01:21] =>  3:00
+     :END:
+Missed a spot. Kinto.js cannot send a request out without knowing the cookie. The cookie is set to http-only. Ergo - kinto cannot access cookie, ergo - it is really secure.  
+"<html> <head> <script> fetch('/bla, { credentials: 'same-origin' }) </script> </head> </html>" works.
 
-**** Make an elixir-kinto adapter?
-- new table has userid + kinto token
-- connection pool
+https://developer.mozilla.org/en-US/docs/Web/API/Request/mode
+https://stackoverflow.com/questions/30013131/how-do-i-use-window-fetch-with-httponly-cookies-or-basic-auth
+https://github.com/github/fetch
+kinto-http.js has a bug that it doesn't send the credentials.
 
-What about logbook?
-Need to revamp the schema. 
-*** TODO Set constant user_hmac_secret
-*** Import/Export Bugs
-**** DONE scheduled_date_range, scheduled_time_interval not written to db
-     CLOSED: [2017-08-19 Sat 22:43]
-**** Regenerate org-file - scheduled date - the second date of the range is missing
-[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
-**** Still need to parse tags into database
-**** More complete tests for generate -> regenerate with UUID's
-*** Authorization
+*** DONE Authorization
+    CLOSED: [2017-09-03 Sun 01:25]
 **** DONE User security investigation
      CLOSED: [2017-09-01 Fri 21:30]
      :LOGBOOK:
@@ -887,10 +909,42 @@ Need to revamp the schema.
 - Can also encrypt the cookie completely
 - https://elixirforum.com/t/how-is-phoenix-token-different-from-jwt/2349/5
 - https://elixirforum.com/t/phoenix-token-encryption/3123
-**** Kinto proxying
+**** DONE Kinto proxying
+     CLOSED: [2017-09-03 Sun 01:25]
 
+*** Patch kinto-http.js
+
+line 164 of src/http.js - setting default credentials to same-origin should fix it
+  async request(url, request = { headers: {} }, options = { retry: 0 }, credentials = 'same-origin') {
+    // Ensure default request headers are always set                            
+    request.headers = { ...HTTP.DEFAULT_REQUEST_HEADERS, ...request.headers };  
+    request.credentials = credentials;          
+
+*** Import to the loggedin user 
+*** Import/Export Bugs
+**** DONE scheduled_date_range, scheduled_time_interval not written to db
+     CLOSED: [2017-08-19 Sat 22:43]
+**** Regenerate org-file - scheduled date - the second date of the range is missing
+[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
+**** Still need to parse tags into database
+**** More complete tests for generate -> regenerate with UUID's
+
+*** Cleanup
+**** Figure out how to put the SPA on phx
+**** Refactor data layer and remove copy and paste in import/exports
+**** Setup a http pool for kinto
+**** Move kinto to https
+**** Hardcoded localhost
+**** Remove all the extra phx routes
+**** Make an elixir-kinto adapter?
+- new table has userid + kinto token
+- connection pool
+- return structs
+
+What about logbook?
+Need to revamp the schema. 
 *** App - Pre and post syncing data immediately / retries / backoffs
-*** Display agenda
+*** App - Display agenda
 **** UI Display
 **** Onclick and onslide events - increment version
 **** Onedit - increment version
@@ -995,12 +1049,12 @@ https://github.com/webpro/Automated-SPA-Testing
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-09-02 Sat 17:30]
+#+CAPTION: Clock summary at [2017-09-03 Sun 01:22]
 | Headline                                         | Time      |          |         |       |      |
 |--------------------------------------------------+-----------+----------+---------+-------+------|
-| *Total time*                                     | *3d 0:30* |          |         |       |      |
+| *Total time*                                     | *3d 7:16* |          |         |       |      |
 |--------------------------------------------------+-----------+----------+---------+-------+------|
-| Ttl                                              | 3d 0:30   |          |         |       |      |
+| Ttl                                              | 3d 7:16   |          |         |       |      |
 | \_  MVP1                                         |           | 2d 12:56 |         |       |      |
 | \_    import/export to api.                      |           |          | 1d 4:50 |       |      |
 | \_      consolidate sections                     |           |          |         |  2:07 |      |
@@ -1023,9 +1077,12 @@ https://github.com/webpro/Automated-SPA-Testing
 | \_      Refactor parse                           |           |          |         |  3:19 |      |
 | \_    POC - display UI for agenda                |           |          | 1d 4:47 |       |      |
 | \_      Kinto                                    |           |          |         |  4:48 |      |
-| \_  MVP2                                         |           |    11:34 |         |       |      |
+| \_  MVP2                                         |           |    18:20 |         |       |      |
 | \_    Braindump - Elixir to Kinto                |           |          |    2:22 |       |      |
 | \_    Elixir to Kinto                            |           |          |    7:14 |       |      |
+| \_    Security model for kinto and replication   |           |          |    6:46 |       |      |
+| \_      Setup a path for a proxy and rewrite...  |           |          |         |  3:46 |      |
+| \_      Change client url                        |           |          |         |  3:00 |      |
 | \_    Authorization                              |           |          |    0:40 |       |      |
 | \_      User security investigation              |           |          |         |  0:40 |      |
 | \_    Production Authorization                   |           |          |    1:18 |       |      |

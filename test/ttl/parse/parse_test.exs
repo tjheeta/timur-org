@@ -5,20 +5,50 @@ defmodule Ttl.ParseTest do
   alias Ttl.Parse.Export
 
   # TODO - tags and multiple scheduled dates are failing
-  describe "test complex file" do
+  describe "db - test complex file" do
     test "import notes" do
-      {:ok, doc, objects} = Ttl.Parse.Import.import_file("test/ttl/fixtures/test.org")
-      :ok = Ttl.Parse.Export.export_file("/tmp/test.org", doc.id, false)
-      {diff, ret} = System.cmd("diff", ["-w" ,"test/ttl/fixtures/test.org", "/tmp/test.org"])
+      attrs = %{mode: "default", add_id: false}
+      Application.put_env(:ttl, :storage, [backend: :db] )
+
+      {:ok, doc, objects} = Ttl.Parse.Import.import_file(:db, "test/ttl/fixtures/test.org")
+      :ok = Ttl.Parse.Export.export_file("/tmp/test-db.org", doc.id, attrs)
+      {diff, ret} = System.cmd("diff", ["-w" ,"test/ttl/fixtures/test.org", "/tmp/test-db.org"])
       assert diff == ""
       assert ret == 0
     end
   end
-  describe "test README" do
+  describe "db - test README" do
     test "import readme" do
-      {:ok, doc, objects} = Ttl.Parse.Import.import_file("README.org")
-      :ok = Ttl.Parse.Export.export_file("/tmp/README.org", doc.id, false)
-      {diff, ret} = System.cmd("diff", ["-w" ,"README.org", "/tmp/README.org"])
+      attrs = %{mode: "default", add_id: false}
+      Application.put_env(:ttl, :storage, [backend: :db] )
+
+      {:ok, doc, objects} = Ttl.Parse.Import.import_file(:db, "README.org")
+      :ok = Ttl.Parse.Export.export_file("/tmp/README-db.org", doc.id, attrs)
+      {diff, ret} = System.cmd("diff", ["-w" ,"README.org", "/tmp/README-db.org"])
+      assert diff == ""
+      assert ret == 0
+    end
+  end
+  describe "kinto - test complex file" do
+    test "import notes" do
+      attrs = %{mode: "default", add_id: false, kinto_token: "testtoken"}
+      Application.put_env(:ttl, :storage, [backend: :kinto] )
+
+      {:ok, doc, objects} = Ttl.Parse.Import.import_file(:kinto, "test/ttl/fixtures/test.org", attrs)
+      :ok = Ttl.Parse.Export.export_file("/tmp/test-kinto.org", doc.id, attrs)
+      {diff, ret} = System.cmd("diff", ["-w" ,"test/ttl/fixtures/test.org", "/tmp/test-kinto.org"])
+      assert diff == ""
+      assert ret == 0
+    end
+  end
+  describe "kinto - test README" do
+    test "import readme" do
+      attrs = %{mode: "default", add_id: false, kinto_token: "testtoken"}
+      Application.put_env(:ttl, :storage, [backend: :kinto] )
+
+      {:ok, doc, objects} = Ttl.Parse.Import.import_file(:kinto, "README.org", attrs)
+      :ok = Ttl.Parse.Export.export_file("/tmp/README-kinto.org", doc.id, attrs)
+      {diff, ret} = System.cmd("diff", ["-w" ,"README.org", "/tmp/README-kinto.org"])
       assert diff == ""
       assert ret == 0
     end

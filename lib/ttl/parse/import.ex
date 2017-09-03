@@ -3,9 +3,20 @@ defmodule Ttl.Parse.Import do
   # TODO - user timezones
   alias Ttl.Parse.Document
 
+  def f_maybe_add_version(somemap) do
+    case Map.get(somemap, :version) do
+      nil ->
+        version = DateTime.utc_now |> DateTime.to_unix
+        Map.put(somemap, :version, version)
+      _ -> somemap
+    end
+  end
+
+  def import_file(backend, file, attrs \\ %{mode: "default"})
+
   # modes are default, force
   @spec import_file(String.t, map) :: {:ok, %Ttl.Parse.Document{}, [%Ttl.Parse.Object{}]}
-  def import_file(file, attrs \\ %{mode: "default"}) do
+  def import_file(:db, file, attrs) do
     # helper functions
     f_maybe_add_id = fn(somemap) ->
       case Map.get(somemap, :id) do
@@ -100,17 +111,8 @@ defmodule Ttl.Parse.Import do
   end
 
 
-  def f_maybe_add_version(somemap) do
-    case Map.get(somemap, :version) do
-      nil ->
-        version = DateTime.utc_now |> DateTime.to_unix
-        Map.put(somemap, :version, version)
-      _ -> somemap
-    end
-  end
-
   # verify we have a kinto token to write into the db
-  def import_file_kinto_wrapper(file, attrs \\ %{mode: "default"}) do
+  def import_file(:kinto, file, attrs) do
     case Map.get(attrs, :kinto_token) do
       nil -> {:error, "no kinto token"}
       x -> import_file_kinto(file, attrs)
@@ -165,7 +167,7 @@ defmodule Ttl.Parse.Import do
                nil ->
                  data = Map.from_struct(parsed_doc) |> Map.take([:id, :name, :metadata])
                  tmpdoc = %Ttl.Things.Document{id: parsed_doc.id}
-                 res = Ttl.Things.kinto_create_document(kinto_token, tmpdoc,  data)
+                 res = Ttl.Things.kinto_create_document(kinto_token, data)
                  f_to_struct.(res["data"], Ttl.Things.Document)
                  #res["data"]
                res ->

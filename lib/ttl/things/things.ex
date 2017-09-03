@@ -64,7 +64,7 @@ defmodule Ttl.Things do
     |> Repo.insert()
   end
 
-  def kinto_create_document(token, %Document{} = document, attrs, bucket \\ "default" ) do
+  def kinto_create_document(token, attrs, bucket \\ "default" ) do
     url = "/buckets/#{bucket}/collections/documents/records"
     Kinto.query_post!(token, url, attrs)
   end
@@ -150,6 +150,11 @@ defmodule Ttl.Things do
 
   """
   def get_object!(id), do: Repo.get!(Object, id)
+
+  def kinto_get_object!(token, id, bucket \\ "default") do
+    url = "/buckets/#{bucket}/collections/objects/records/#{id}"
+    Kinto.query_get!(token, url )
+  end
 
   @doc """
   Creates a object.
@@ -244,6 +249,11 @@ defmodule Ttl.Things do
 
   def kinto_get_versions_of_objects(kinto_token, document_id, bucket \\ "default" ) do
     url = "/buckets/#{bucket}/collections/objects/records?_fields=id,version&document_id=#{document_id}"
+    Kinto.query_get!( kinto_token, url)
+  end
+
+  def kinto_get_data_of_objects(kinto_token, document_id, bucket \\ "default") do
+    url = "/buckets/#{bucket}/collections/objects/records?document_id=#{document_id}"
     Kinto.query_get!( kinto_token, url)
   end
 

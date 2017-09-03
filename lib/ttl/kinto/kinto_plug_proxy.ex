@@ -25,14 +25,19 @@ defmodule Ttl.KintoPlugProxy do
   end
 
   def call(conn, _opts) do
+    # IO.inspect conn.req_headers
     [_ | uri] = conn.path_info
     uri = uri |> Enum.join("/")
     url = "http://localhost:8888/v1/#{uri}"
 
-    # TODO - extra json encode / decode here
     # TODO - not forwarding on any of the headers for etag/match
-    # IO.inspect conn.req_headers
-    kinto_token = conn.private.plug_session["user_id"]
+    # TODO - kinto_token and user_id the same for now
+
+    # IO.inspect "private_kinto_token=#{conn.private[:kinto_token]}"
+    # IO.inspect "session_userid=#{conn.private.plug_session["user_id"]}"
+
+    # Plug.session converts atoms to strings, but put_private doesn't take string
+    kinto_token = conn.private[:kinto_token] || conn.private.plug_session["user_id"]
     base64_auth = "Basic " <> Base.encode64("kinto_token:#{kinto_token}")
     headers=["Content-Type": "application/json", "Authorization": base64_auth]
     options = []

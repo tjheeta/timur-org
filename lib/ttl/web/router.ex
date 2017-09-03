@@ -7,13 +7,13 @@ defmodule Ttl.Web.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Ttl.Accounts.PlugSessionAuth
+    plug Ttl.Accounts.PlugAuth
   end
 
   pipeline :api do
     plug :accepts, ["json"]
     plug :fetch_session
-    plug Ttl.Accounts.PlugApiAuth
+    plug Ttl.Accounts.PlugAuth
   end
 
   pipeline :kinto do
@@ -21,7 +21,7 @@ defmodule Ttl.Web.Router do
     plug :accepts, ["json"]
     #plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Ttl.Accounts.PlugSessionAuth
+    plug Ttl.Accounts.PlugAuth
     plug Ttl.KintoPlugProxy
   end
 
@@ -38,10 +38,9 @@ defmodule Ttl.Web.Router do
     options "/*bla", Nowhere, :index
   end
 
-  scope "/api/", Ttl.Web do
+  scope "/api/v1", Ttl.Web do
     pipe_through :api
-
-    get "/*bla", Nowhere, :index
+    resources "/documents", ApiDocumentController
   end
 
   scope "/", Ttl.Web do

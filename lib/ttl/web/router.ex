@@ -22,7 +22,9 @@ defmodule Ttl.Web.Router do
     plug Ttl.KintoPlugProxy
   end
 
-  scope "/kintov1/", Ttl.Web do
+  # TODO - kinto.js fails if not explicitly /v1
+  # Uncaught Error: The remote URL must contain the version: http://10.0.0.175:4000/kintov1
+  scope "/v1/", Ttl.Web do
     pipe_through :kinto
     # TODO - just to generate routes which aren't used.
     # KintoPlugProxy does all the forwarding to kinto
@@ -30,6 +32,7 @@ defmodule Ttl.Web.Router do
     post "/*bla", Nowhere, :index
     put "/*bla", Nowhere, :index
     patch "/*bla", Nowhere, :index
+    options "/*bla", Nowhere, :index
   end
 
   scope "/", Ttl.Web do

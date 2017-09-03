@@ -7,15 +7,33 @@ defmodule Ttl.Web.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Ttl.Accounts.PlugAuth
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Ttl.Accounts.PlugAuth
   end
 
+  pipeline :kinto do
+    plug :fetch_session
+    plug :accepts, ["json"]
+    plug Ttl.Accounts.PlugAuth
+    plug Ttl.KintoPlugProxy
+  end
+
+  scope "/kintov1/", Ttl.Web do
+    pipe_through :kinto
+    # TODO - just to generate routes which aren't used.
+    # KintoPlugProxy does all the forwarding to kinto
+    get "/*bla", Nowhere, :index
+    post "/*bla", Nowhere, :index
+    put "/*bla", Nowhere, :index
+    patch "/*bla", Nowhere, :index
+  end
 
   scope "/", Ttl.Web do
-    pipe_through [:browser, Ttl.Accounts.PlugAuth] 
+    pipe_through :browser
 
     resources "/users", UserController
     resources "/documents", DocumentController

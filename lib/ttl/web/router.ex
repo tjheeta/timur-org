@@ -18,6 +18,8 @@ defmodule Ttl.Web.Router do
   pipeline :kinto do
     plug :fetch_session
     plug :accepts, ["json"]
+    #plug :protect_from_forgery
+    plug :put_secure_browser_headers
     plug Ttl.Accounts.PlugAuth
     plug Ttl.KintoPlugProxy
   end

@@ -533,7 +533,7 @@ Repo.all(Object)
 
 
 # debugging
-parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
+parsed_doc = Ttl.Parse.Import.parse("/home/tjheeta/org/notes.org")
 db_doc = Ttl.Things.get_document(parsed_doc.id) 
 IO.inspect parsed_doc.id
 Ttl.Things.get_document!(parsed_doc.id)
@@ -656,3 +656,55 @@ data = Ttl.Parse.regenerate_to_file("/tmp/notes.org", db_doc.id)
 length(db_doc.objects)
 data = Ttl.Parse.regenerate_to_file("/tmp/notes2.org", db_doc.id)
 
+
+### kinto fun
+parsed_doc = Ttl.Parse.Consolidate.parse_file("/home/tjheeta/repos/self/ttl/README.org") |> f_maybe_add_id.()
+parsed_doc.id
+Kinto.query_get!("/buckets/default/collections/documents/records/#{parsed_doc.id}", "bla")
+
+data = Poison.decode!('{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}')
+data
+Poison.encode!(data)
+Kinto.query_put!("/buckets/default/collections/documents/records/#{parsed_doc.id}",  "sometoken",  data)
+Kinto.query_get!("/buckets/default/collections/documents/records/#{parsed_doc.id}",  "sometoken")
+data = %{data: %{key: "val"}}
+data = %{"a": "b"}
+data = %{data: %{"a": ["abc", "def"], "b": %{"a": "b"}}}
+#echo '{"data": {"description": "emacs", "status": "TODO", "title": "emacs", "content": "some crazy content 2", "level": 2, "priority": null, "state": "", "properties": [], "completed": false }}' |
+#http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+
+echo '{"data": {"key": 123}}' | http PUT http://localhost:8888/v1/buckets/default/collections/documents/records/somerecord
+"/buckets/default/collections/documents/records/#{parsed_doc.id}"
+
+attrs = %{:mode => "default", :add_id => false, :kinto_token => "sometoken"}
+kinto_token = "sometoken"
+{:ok, input_doc, conflicts} = Ttl.Parse.Import.import_file_kinto_wrapper("/home/tjheeta/repos/self/ttl/README.org", attrs)
+Ttl.Parse.Export.export_file
+string_uuid = input_doc.id
+input_doc.objects
+"1e557863-6731-452b-9dde-aa30da3c7bc4" in input_doc.objects
+Ttl.Things.kinto_get_document!(attrs[:kinto_token], input_doc.id)
+Ttl.Things.kinto_get_data_of_objects(attrs[:kinto_token], input_doc.id)
+
+Ttl.Things.kinto_get_object!(attrs[:kinto_token], "6ec7c1d0-9f53-4ff7-9e6e-fd7d8676e972")
+Ttl.Things.kinto_get_object!(attrs[:kinto_token], "1e557863-6731-452b-9dde-aa30da3c7bc4")
+
+unsorted_data["6ec7c1d0-9f53-4ff7-9e6e-fd7d8676e972"]
+unsorted_data["6ec7c1d0-9f53-4ff7-9e6e-fd7d8676e972"]
+unsorted_data["1e557863-6731-452b-9dde-aa30da3c7bc4"]
+end
+
+
+tmp =   %{"defaults" => %{"headers" => %{"Authorization" => "Basic dXNlcjM6cGFzczM="}},
+      "requests" => [%{"body" => %{"data" => %{"completed" => false,
+                                               "id" => "4bf04c7d-9fd3-489d-8522-eff456e04d8f", "title" => "20"}},
+                       "headers" => %{"If-None-Match" => "*"}
+tmp =   %{"defaults" => %{"headers" => %{"Authorization" => "Basic dXNlcjM6cGFzczM="}},
+                         "requests" => [%{"body" => %{"data" => %{"completed" => false,
+                                                                  "id" => "4bf04c7d-9fd3-489d-8522-eff456e04d8f", "title" => "20"}},
+                                          "headers" => %{"If-None-Match" => "*"}, "method" => "PUT",
+                                          "path" => "/buckets/default/collections/tasks/records/4bf04c7d-9fd3-489d-8522-eff456e04d8f"}]}
+tmp2 =put_in(tmp, ["defaults", "headers", "Authorization"], "new value")
+
+Base.encode64("user3:pass3")
+Base.decode64("dXNlcjM6cGFzczM=")

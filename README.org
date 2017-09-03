@@ -920,15 +920,63 @@ line 164 of src/http.js - setting default credentials to same-origin should fix 
     request.headers = { ...HTTP.DEFAULT_REQUEST_HEADERS, ...request.headers };  
     request.credentials = credentials;          
 
-*** Import to the loggedin user 
+*** Add REST API for sync to/from emacs
+The organization of this is getting a bit messy. 
+The client is based on being offline first and using kinto.
+If the client wants to import a document, where is the view? 
+To import:
+1) User posts the file somewhere (api or endpoint)
+   - Curl -> api token and result
+   - PWA -> already have the session cookie, so have access to everything. 
+     - Need a view for documents and have an upload button. 
+     - state tree gets loaded from indexeddb, includes the document and all the objects
+   - Phx -> Easy, but how would this get synced back to the client? Super-weird?
+2) File gets parsed and written to kinto
+3) Kinto synchronizes the data to the client for viewing
+
+Doing an api endpoint only that is for curl / api token. Client view for upload comes later and probably in PWA. [[Upload UI]] 
+Client will periodically need to sync documents and objects collections.
+***** Add api key to plug
+      :LOGBOOK:
+      CLOCK: [2017-09-03 Sun 10:00]
+      :END:
+
+#+BEGIN_SRC shell :results output
+#    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:somekey" "http://localhost:4000/api/v1" 
+    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:fail" "http://localhost:4000/api/v1" 
+#+END_SRC
+
+#+RESULTS:
+: Not authorized
+
+**** DONE User security
+     CLOSED: [2017-09-03 Sun 09:03]
+
+**** Need api_token field - forget having a separate table for now
+**** Sync
+Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
+      - Need to modify the object from ui/db and then test uploads
+      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
+      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
+      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
+**** Add REST api?
+      Start off with a simple curl client to do whole files
+      Later can make an object level api and make an elisp client - update versions / conflict resolution
+**** Upload UI
+Need a single interface that is accessible through PWA to import/export.
+**** Need api tokens
 *** Import/Export Bugs
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
      CLOSED: [2017-08-19 Sat 22:43]
 **** Regenerate org-file - scheduled date - the second date of the range is missing
 [[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
 **** Still need to parse tags into database
+Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
 **** More complete tests for generate -> regenerate with UUID's
 
+*** Make sessions last 10 years, not expire on logout
+*** How to move between SPA and PHX? 
+Or remove all html on PHX? Just have PHX be a pure API. 
 *** Cleanup
 **** Figure out how to put the SPA on phx
 **** Refactor data layer and remove copy and paste in import/exports
@@ -943,6 +991,8 @@ line 164 of src/http.js - setting default credentials to same-origin should fix 
 
 What about logbook?
 Need to revamp the schema. 
+*** The document collection should also have a userid in upload
+Right now kinto doesn't have this concept, just maps to buckets for ownership.
 *** App - Pre and post syncing data immediately / retries / backoffs
 *** App - Display agenda
 **** UI Display
@@ -950,18 +1000,6 @@ Need to revamp the schema.
 **** Onedit - increment version
 *** Notifications
 *** Pick and schedule things onto agenda
-*** Add REST API for sync to/from emacs
-**** User security
-**** Sync
-Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
-      - Need to modify the object from ui/db and then test uploads
-      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
-      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
-      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
-**** Add REST api?
-      Start off with a simple curl client to do whole files
-      Later can make an object level api and make an elisp client - update versions / conflict resolution
-**** Need api tokens
 *** Production Authorization 
     :LOGBOOK:
     CLOCK: [2017-09-01 Fri 21:30]--[2017-09-01 Fri 22:48] =>  1:18
@@ -982,6 +1020,20 @@ if don't use tokens and just use a session in ets/dets, still won't work properl
 **** Ensure session cookie containing token is "HttpOnly" "Secure" (https)
 **** Cookie expiry far into the future. 
 **** Cookies are fully encrypted
+**** CSRF protection
+#    plug :protect_from_forgery
+Right now are avoiding XSS attacks with http-only cookies and using credentials
+CSRF is still possible. With the plug protect_from_forgery, it will write it into the session.
+Need to modify one of the plugs to write it into the header request, if not already there. 
+
+http://www.redotheweb.com/2015/11/09/api-security.html
+
+   :plug_session => %{"_csrf_token" => "LLT2BMJp7DiKlDc/DQdsMw==",
+     "current_user" => "a@b.com",
+     "user_id" => "de4927d9-a099-4ec8-bb99-4f69888acb34"},
+
+https://github.com/elixir-plug/plug/issues/504
+
 **** websocket security
 - read assets/js/socket.js
 - https://hexdocs.pm/phoenix/Phoenix.Token.html

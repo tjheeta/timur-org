@@ -168,6 +168,12 @@ Personal knowledge base:
 https://news.ycombinator.com/item?id=8270759
     
   
+*** Org-mode for editors
+https://atom.io/packages/organized - https://github.com/MattFlower/organized
+https://github.com/danielmagnussons/orgmode
+Msg thread - https://lists.gnu.org/archive/html/emacs-orgmode/2014-10/msg00212.html
+https://github.com/ajaxorg/ace/wiki/Creating-or-Extending-an-Edit-Mode
+
 
 ** Workflow
 *** Sync 
@@ -757,6 +763,8 @@ https://github.com/hyperapp/hyperapp/issues/251 - testing
 Last state:
 With great regret, moved phx to kinto. Massive refactor needed to not expose the data layer, copy and paste everywhere to get things working. Performance gone to hell also, for the hopes that the kinto sync is robust. Regardless, it will only need a rewrite between 100-1000 concurrent users depending on how expensive the sync is and that means it will need 5x-10x actual users. All to avoid having to write a sync library and figure out indexeddb. 
 
+This stage looking to sync from server to local disk cleanly and get a functional agenda. 
+
 *** DONE Thoughts
     CLOSED: [2017-09-01 Fri 17:47]
 Need to clearly dilineate what happens server-side vs client-side. If items are being collaborated on, could open a websocket and make a lock for it. 
@@ -962,9 +970,9 @@ Need to be able to upload a file to the api endpoint and have it imported
 **** DONE import endpoint (create) 
       CLOSED: [2017-09-03 Sun 21:09]
 #+BEGIN_SRC shell :results output
-#    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
- #   http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
-   http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
+  #    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+   #   http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+  http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
 #+END_SRC
 #+RESULTS:
 : {"data":[{"name":"/tmp/plug-1504/multipart-1504498094-716839023744787-2","id":"9dafb409-ab95-43ea-a774-ae31d361be5f"}]}
@@ -1000,42 +1008,31 @@ Need to be able to upload a file to the api endpoint and have it imported
 
 **** DONE Need api_token field - forget having a separate table for now
      CLOSED: [2017-09-03 Sun 14:39]
-*** Import/Export Bugs
+*** DONE Import/Export Bugs
+    CLOSED: [2017-09-04 Mon 01:07]
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
      CLOSED: [2017-08-19 Sat 22:43]
-**** Regenerate org-file - scheduled date - the second date of the range is missing
+**** DONE Regenerate org-file - scheduled date - the second date of the range is missing
+     CLOSED: [2017-09-04 Mon 01:07]
+     :LOGBOOK:
+     CLOCK: [2017-09-03 Sun 23:06]--[2017-09-04 Mon 01:07] =>  2:01
+     :END:
 [[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
-**** Still need to parse tags into database
-Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
-**** More complete tests for generate -> regenerate with UUID's
+*** Sync - export with ids
+*** Sync REST client - python?
+   http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
 
-*** Sync
-Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
-      - Need to modify the object from ui/db and then test uploads
-      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
-      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
-      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
-**** Recursive sync testing
-**** Add REST client?
-      Start off with a simple script to do whole files
-*** Upload UI
-Need a single interface that is accessible through PWA to import/export.
-The organization of this is getting a bit messy. 
-The client is based on being offline first and using kinto.
-If the client wants to import a document, where is the view? 
-To import:
-1) User posts the file somewhere (api or endpoint)
-   - Curl -> api token and result
-   - PWA -> already have the session cookie, so have access to everything. 
-     - Need a view for documents and have an upload button. 
-     - state tree gets loaded from indexeddb, includes the document and all the objects
-   - Phx -> Easy, but how would this get synced back to the client? Super-weird?
-2) File gets parsed and written to kinto
-3) Kinto synchronizes the data to the client for viewing
-*** Make sessions last 10 years, not expire on logout
+1) Start off with a simple script to do whole files
+2) Show api needs options to add id
+3) Backups of files synced
+
 *** How to move between SPA and PHX? 
 Or remove all html on PHX? Just have PHX be a pure API. 
-*** Cleanup
+*** Cleanup backlog
+**** Make sessions last 10 years, not expire on logout
+**** state may get populated incorrectly if the first word is caps.
+Doesn't affect export or headline though...it's a bug that is not quite a bug
+Essentially, searches for those titles may break .
 **** The document collection should also have a userid in upload
 Right now kinto doesn't have this concept, just maps to buckets for ownership.
 **** name metadata isn't right on import
@@ -1061,6 +1058,7 @@ Kinto token needs to be fixed, that is userid/client_id. If they get api_key or 
 **** Setup a http pool for kinto
 **** Move kinto to https
 **** Hardcoded localhost
+**** Postgres? Remove or refactor and keep for later?
 **** Remove all the extra phx routes
 **** Make an elixir-kinto adapter?
 - new table has userid + kinto token
@@ -1071,12 +1069,164 @@ What about logbook?
 Need to revamp the schema. 
 **** add spec to all functions
 *** App - Pre and post syncing data immediately / retries / backoffs
-*** App - Display agenda
+*** App - How to have multiple pages/routes without going insane.
+*** Pick and schedule things onto agenda :ms.agenda:
+*** Secondary collection for tags and properties :ms.agenda:
+     :LOGBOOK:
+     CLOCK: [2017-09-03 Sun 21:50]--[2017-09-03 Sun 22:15] =>  0:25
+     :END:
+Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
+Considering this is in each object, will have to store as an array of str. Can kinto search on that?
+
+Will also need to do this locally in indexeddb . 
+https://www.codeproject.com/Articles/744986/How-to-do-some-magic-with-indexedDB
+
+Kinto doesn't seem to be able to do it.
+1) subarray in object - doesn't appear to work
+2) separated by :, strings in tag array - maybe do to rebuild the file, but doesn't look like the js adapter will do it out of box.
+3) separate tags collection - and dealing with referential integrity issues may be the best bet.
+   - on import - store the tag as a string. guaranteed to be right. secondary tags collection for finding objects with tags.
+[[*test via hash][test via hash]] seems to work for python api. Need to sync it locally and then test via js . Api doesn't look like it supports. 
+***** DONE testing kinto
+      CLOSED: [2017-09-03 Sun 22:58]
+
+****** Testing via array
+#+BEGIN_SRC shell :results output
+#    http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+
+#echo '{"data": {"id": "tjtest2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test", "test1", "test2"] }}' | 
+#echo '{"data": {"id": "tjtest3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test3", "tag1"] }}' | 
+#echo '{"data": {"id": "tjtest4" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test4", "tag1"] }}' | 
+#echo '{"data": {"id": "tjtest5" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": "tag1" }}' | 
+echo '{"data": {"id": "tjtest6" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["tag1"] }}' | 
+    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+
+#    http GET "http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1" X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[test]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tags1,test3]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=tag1 - 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - 0 records
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1,test3 - 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - should be 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=["tag1"] - 1 record
+#+END_SRC
+
+****** test via hash
+#+BEGIN_SRC shell :results output
+#echo '{"data": {"id": "hash1" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag3": 1} }}' | 
+#echo '{"data": {"id": "hash2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag2": 1} }}' | 
+echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit2", "LAST_REPEAT":1234}, "tags": {"tagx": 1, "tag2": 1} }}' | 
+    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?properties.STYLE=habit
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag1=1
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag2=1
+#+END_SRC
+
+#+RESULTS:
+: {"permissions":{"write":["basicauth:09e0334b23e025416bf1836378ad07e2d14488137383f8232ac74987fc1ce4e6"]},"data":{"properties":{"STYLE":"habit2","LAST_REPEAT":1234},"id":"hash3","tags":{"tag2":1,"tagx":1},"status":"TODO","title":"tjtest","description":"tjtest","last_modified":1504513377299}}
+
+
+**** More complete tests for generate -> regenerate with UUID's
+
+*** Sync testing and performance
+Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
+      - Need to modify the object from ui/db and then test uploads
+      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
+      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
+      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
+**** Recursive sync testing
+Import file
+Export file with new ids
+Import -> same amount of entries in database
+Make change to file - modify vs add new nodes without ids
+Export -> same result
+*** Offline test
+*** Notifications
+- If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
+*** App - Display agenda :ms.agenda:
 **** UI Display
 **** Onclick and onslide events - increment version
 **** Onedit - increment version
-*** Notifications
-*** Pick and schedule things onto agenda
+*** App - Components
+https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
+*** App - How to include different files
+*** Need to namespace buckets based on org/groupname/id? :ms.shared:
+
+*** Bin-packing
+*** User settings
+*** Daily review
+*** Weekly review
+*** Connect to phoenix channels - why? Comments/feedback?
+*** Check for updates of code versions and update notice
+*** notifications
+*** App - UI Tests
+https://github.com/webpro/Automated-SPA-Testing
+*** Import/export Tests
+       Updates
+       - An old object (all db counts same)
+       - A new object gets added (db count + 1)
+       - the new object gets modified (db count same)
+** MVPX
+*** Add an editor?
+http://scripting.com/2013/09/16/concordOurGplOutliner
+https://github.com/tjheeta/concord
+
+*** Attachments and inline viewing
+**** Inline viewing
+[[file:~/org/jive/main/mako/deploy_flow.png][file:~/org/jive/main/mako/deploy_flow.png]]
+:org-toggle-inline-images or c-c, c-x, c-v 
+
+**** Attachments
+
+*** Server-side rendering - how does this even matter?
+*** capture
+**** bookmarklets directly to server
+**** attachments                                                     :ATTACH:
+     :PROPERTIES:
+     :Attachments: deploy_flow.png developer_access.png
+     :ID:       002c1bf3-a3cb-45a2-856a-93f7fbb3e6a0
+     :END:
+- The directory is actually in ttl/data (based on where this org file is
+- http://orgmode.org/manual/Attachments.html
+**** pictures and attachments
+     :PROPERTIES:
+     :ID:       9e0c00b2-4301-4b75-bf4e-a11f4ab31fcb
+     :END:
+https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it
+**** some sort of ifttt integration? send email to an interface and it will go into todo?
+*** parse additional properties for scheduling + contexts + tags
+estimated time
+*** Inbox - integration point for externs and updates?
+*** Add full calendar?
+*** Google calendar / ICS
+*** Conflict resolution?
+- Show conflicts
+- Pick versions
+- Force upload
+*** Capture to different documents
+*** Set concurrency controls?
+- Will need to pass on headers in KintoPlugProxy
+*** Upload UI
+Need a single interface that is accessible through PWA to import/export.
+The organization of this is getting a bit messy. 
+The client is based on being offline first and using kinto.
+If the client wants to import a document, where is the view? 
+To import:
+1) User posts the file somewhere (api or endpoint)
+   - Curl -> api token and result
+   - PWA -> already have the session cookie, so have access to everything. 
+     - Need a view for documents and have an upload button. 
+     - state tree gets loaded from indexeddb, includes the document and all the objects
+   - Phx -> Easy, but how would this get synced back to the client? Super-weird?
+2) File gets parsed and written to kinto
+3) Kinto synchronizes the data to the client for viewing
+**** Document api needs to have multiple options
+- force upload
+- name
+- if no file, just create a blank doc?
+*** Autocomplete tags and documents
 *** Production Authorization 
     :LOGBOOK:
     CLOCK: [2017-09-01 Fri 21:30]--[2017-09-01 Fri 22:48] =>  1:18
@@ -1121,55 +1271,20 @@ https://github.com/elixir-plug/plug/issues/504
 Each document in document collection
 Each object is now a record in objects collection. 
 Personal buckets are auto-synced.
-*** Capture to different documents
-*** Need to namespace buckets based on org/groupname/id? :ms.shared:
-
-*** Offline test
-*** Bin-packing
-*** User settings
-*** Daily review
-*** Weekly review
-*** Conflict resolution?
-*** Connect to phoenix channels - why? Comments/feedback?
-*** Server-side rendering
-*** Add full calendar?
-*** Check for updates of code versions and update notice
-*** Components
-https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
-*** How to include different files
-*** capture
-****** bookmarklets directly to server 
-****** pictures and attachments
- 
-- 
-*** CRDT editing :ms.shared:
-- https://github.com/xwiki-contrib/chainpad
-- https://hal.archives-ouvertes.fr/inria-00336191/
-- https://news.ycombinator.com/item?id=12303100
-- https://pages.lip6.fr/Marek.Zawirski/papers/SwiftCloud-RR-8347.pdf
-*** Inbox - integration point for externs and updates?
-*** Security - Moving groups from public to private - offline stuff would still exist. 
-
-*** Need to be able to take an object and move it to another document and leave a reference if necessary. On import/export, need to be able to self-refer to these documents locally. :ms.shared:
+*** Assistant - location based
+*** Elisp client - update versions / conflict resolution, local changes :ms.faraway:
 *** Encryption per bucket 
 Need to have a master password. Each user has a keychain for all accessible buckets. The buckets get synced locally, decrypted as necessary, and stuff built. Re-keying will be massively painful. 
 *** Security
 https://turtlapp.com/
 https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results
 https://github.com/standardfile
-*** parse additional properties for scheduling + contexts + tags
-*** notifications
-*** capture
-- some sort of ifttt integration? send email to an interface and it will go into todo?
-*** UI Tests
-https://github.com/webpro/Automated-SPA-Testing
-*** Elisp client - update versions / conflict resolution, local changes :ms.faraway:
-*** Import/export Tests
-       Updates
-       - An old object (all db counts same)
-       - A new object gets added (db count + 1)
-       - the new object gets modified (db count same)
-*** Assistant - location based
+*** Security - Moving groups from public to private - offline stuff would still exist. 
+*** CRDT editing :ms.shared:
+- https://github.com/xwiki-contrib/chainpad
+- https://hal.archives-ouvertes.fr/inria-00336191/
+- https://news.ycombinator.com/item?id=12303100
+- https://pages.lip6.fr/Marek.Zawirski/papers/SwiftCloud-RR-8347.pdf
 * Scratch
 
 #+BEGIN_SRC elixir :results output
@@ -1178,41 +1293,48 @@ https://github.com/webpro/Automated-SPA-Testing
 
 * clocktable
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-09-03 Sun 01:22]
-| Headline                                         | Time      |          |         |       |      |
-|--------------------------------------------------+-----------+----------+---------+-------+------|
-| *Total time*                                     | *3d 7:16* |          |         |       |      |
-|--------------------------------------------------+-----------+----------+---------+-------+------|
-| Ttl                                              | 3d 7:16   |          |         |       |      |
-| \_  MVP1                                         |           | 2d 12:56 |         |       |      |
-| \_    import/export to api.                      |           |          | 1d 4:50 |       |      |
-| \_      consolidate sections                     |           |          |         |  2:07 |      |
-| \_      Need to fix the planning parser to...    |           |          |         |  0:25 |      |
-| \_      implement db schema                      |           |          |         |  1:15 |      |
-| \_      write to database                        |           |          |         | 11:06 |      |
-| \_        Make it into a function                |           |          |         |       | 0:30 |
-| \_        Make a solid decision on what to do... |           |          |         |       | 1:03 |
-| \_        Parse and cast the dates               |           |          |         |       | 4:58 |
-| \_      Need to parse the file metadata          |           |          |         |  1:35 |      |
-| \_      regenerate file from database - with...  |           |          |         |  4:59 |      |
-| \_      Properties - parse, store, and write     |           |          |         |  1:47 |      |
-| \_      Add version and id into regenerated...   |           |          |         |  0:24 |      |
-| \_      Read file uuid from file to pull objects |           |          |         |  2:07 |      |
-| \_      Start of file exception                  |           |          |         |  0:25 |      |
-| \_      Ensure data gets updated on change       |           |          |         |  0:08 |      |
-| \_      make an interval data structure for...   |           |          |         |  1:15 |      |
-| \_      Parse the schedule properly into the...  |           |          |         |  1:17 |      |
-| \_    Cleanup                                    |           |          |    3:19 |       |      |
-| \_      Refactor parse                           |           |          |         |  3:19 |      |
-| \_    POC - display UI for agenda                |           |          | 1d 4:47 |       |      |
-| \_      Kinto                                    |           |          |         |  4:48 |      |
-| \_  MVP2                                         |           |    18:20 |         |       |      |
-| \_    Braindump - Elixir to Kinto                |           |          |    2:22 |       |      |
-| \_    Elixir to Kinto                            |           |          |    7:14 |       |      |
-| \_    Security model for kinto and replication   |           |          |    6:46 |       |      |
-| \_      Setup a path for a proxy and rewrite...  |           |          |         |  3:46 |      |
-| \_      Change client url                        |           |          |         |  3:00 |      |
-| \_    Authorization                              |           |          |    0:40 |       |      |
-| \_      User security investigation              |           |          |         |  0:40 |      |
-| \_    Production Authorization                   |           |          |    1:18 |       |      |
+#+CAPTION: Clock summary at [2017-09-04 Mon 01:07]
+| Headline                                         | Time       |          |         |       |      |
+|--------------------------------------------------+------------+----------+---------+-------+------|
+| *Total time*                                     | *3d 14:56* |          |         |       |      |
+|--------------------------------------------------+------------+----------+---------+-------+------|
+| Ttl                                              | 3d 14:56   |          |         |       |      |
+| \_  MVP1                                         |            | 2d 12:56 |         |       |      |
+| \_    import/export to api.                      |            |          | 1d 4:50 |       |      |
+| \_      consolidate sections                     |            |          |         |  2:07 |      |
+| \_      Need to fix the planning parser to...    |            |          |         |  0:25 |      |
+| \_      implement db schema                      |            |          |         |  1:15 |      |
+| \_      write to database                        |            |          |         | 11:06 |      |
+| \_        Make it into a function                |            |          |         |       | 0:30 |
+| \_        Make a solid decision on what to do... |            |          |         |       | 1:03 |
+| \_        Parse and cast the dates               |            |          |         |       | 4:58 |
+| \_      Need to parse the file metadata          |            |          |         |  1:35 |      |
+| \_      regenerate file from database - with...  |            |          |         |  4:59 |      |
+| \_      Properties - parse, store, and write     |            |          |         |  1:47 |      |
+| \_      Add version and id into regenerated...   |            |          |         |  0:24 |      |
+| \_      Read file uuid from file to pull objects |            |          |         |  2:07 |      |
+| \_      Start of file exception                  |            |          |         |  0:25 |      |
+| \_      Ensure data gets updated on change       |            |          |         |  0:08 |      |
+| \_      make an interval data structure for...   |            |          |         |  1:15 |      |
+| \_      Parse the schedule properly into the...  |            |          |         |  1:17 |      |
+| \_    Cleanup                                    |            |          |    3:19 |       |      |
+| \_      Refactor parse                           |            |          |         |  3:19 |      |
+| \_    POC - display UI for agenda                |            |          | 1d 4:47 |       |      |
+| \_      Kinto                                    |            |          |         |  4:48 |      |
+| \_  MVP2                                         |            | 1d 2:00  |         |       |      |
+| \_    Braindump - Elixir to Kinto                |            |          |    2:22 |       |      |
+| \_    Elixir to Kinto                            |            |          |    7:14 |       |      |
+| \_    Security model for kinto and replication   |            |          |    6:46 |       |      |
+| \_      Setup a path for a proxy and rewrite...  |            |          |         |  3:46 |      |
+| \_      Change client url                        |            |          |         |  3:00 |      |
+| \_    Authorization                              |            |          |    0:40 |       |      |
+| \_      User security investigation              |            |          |         |  0:40 |      |
+| \_    Add REST API for sync to/from emacs        |            |          |    5:14 |       |      |
+| \_      Add api key to plug                      |            |          |         |  0:38 |      |
+| \_      fix that api + session should get...     |            |          |         |  3:42 |      |
+| \_      delete document (delete)                 |            |          |         |  0:54 |      |
+| \_    Import/Export Bugs                         |            |          |    2:01 |       |      |
+| \_      Regenerate org-file - scheduled date...  |            |          |         |  2:01 |      |
+| \_    Secondary collection for tags              |            |          |    0:25 |       |      |
+| \_    Production Authorization                   |            |          |    1:18 |       |      |
 #+END:

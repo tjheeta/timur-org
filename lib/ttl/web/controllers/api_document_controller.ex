@@ -16,9 +16,19 @@ defmodule Ttl.Web.ApiDocumentController do
                  filename: filename,
                  path: path} = params["file"]
     attrs = %{:kinto_token => conn.private[:kinto_token], :mode => "default"}
-    {res, doc, objects_with_conflict} = Ttl.Parse.Import.import(path, attrs)
+    {res, doc, objects_status} = Ttl.Parse.Import.import(path, attrs)
 
-    data = %{"ok" => res, "id" => doc.id, "name" => doc.name, "conflicts" => objects_with_conflict}
+    #data = %{"ok" => res, "id" => doc.id, "name" => doc.name, "conflicts" => status["objects_with_conflict"], "skipped" =>  }
+    data = %{
+      "ok" => res,
+      "id" => doc.id,
+      "lastModified" =>  objects_status["last_modified"],
+      "conflicts" => objects_status["conflicts"],
+      "errors" => objects_status["errors"],
+      "skipped" => objects_status["skipped"],
+      "published" => objects_status["published"],
+      "resolved" => objects_status["resolved"]
+    }
     render(conn, "sync.json", data: data)
   end
 

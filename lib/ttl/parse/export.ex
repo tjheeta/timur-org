@@ -152,7 +152,7 @@ defmodule Ttl.Parse.Export do
 
     acc = Enum.reduce( metadata, acc, fn({k,v}, acc) ->
       str = "#+#{k}: #{v}"
-      if String.length(str) do
+      if String.length(str) && k != "PREFIX_DOC_ID" do
         acc <> str <> "\n"
       else
         acc

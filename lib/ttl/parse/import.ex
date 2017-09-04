@@ -115,6 +115,7 @@ defmodule Ttl.Parse.Import do
     objects_update_invalid = Enum.map(objects_update_invalid, fn(x) -> {x.changes["id"], x.changes["title"]} end)
 
     # default - update everything valid - send back the id's with conflict and invalid
+    # TODO - this has a bug as it will remove all the invalid objects from the document. But deprecating postgres, so don't care
     {:ok, db_doc} = f_update_database.(db_doc, objects_to_update_valid)
     {:ok, db_doc, objects_update_invalid ++ objects_with_conflict}
   end
@@ -211,6 +212,15 @@ defmodule Ttl.Parse.Import do
     {objects_to_update, objects_no_change, objects_with_conflict}
   end
 
+
+  # {:ok,
+  #  db_doc,
+  #  %{
+  #    "conflicts" => objects_with_conflict,
+  #    "skipped" => objects_no_change,
+  #    "published" => objects_to_update
+  #  }
+  # }
   @spec import_file_kinto(String.t, map) :: {:ok, %Ttl.Things.Document{}, [%Ttl.Parse.Object{}]}
   def import_file_kinto(file, attrs \\ %{mode: "default"}) do
     # helper functions
@@ -267,7 +277,14 @@ defmodule Ttl.Parse.Import do
 
     #IO.inspect Enum.map(objects_to_update, fn(x) -> x.id end)
     IO.inspect "update = #{length(objects_to_update)}, nochange = #{length(objects_no_change)}, conflict = #{length(objects_with_conflict)}"
-    {:ok, db_doc, objects_with_conflict}
+    {:ok,
+     db_doc,
+     %{
+       "conflicts" => objects_with_conflict,
+       "skipped" => objects_no_change,
+       "published" => objects_to_update
+     }
+    }
   end
 
 end

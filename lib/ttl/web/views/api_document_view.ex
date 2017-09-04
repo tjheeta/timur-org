@@ -25,15 +25,13 @@ defmodule Ttl.Web.ApiDocumentView do
     %{
      "ok" => data["ok"],
      "id" => data["id"],
-     "lastModified" =>  data["last_modified"],
+     "lastModified" => data["last_modified"],
      "conflicts" => data["conflicts"],
      "errors" => data["errors"],
-     "created" => data["created"],
-     "updated" => data["updated"],
-     "deleted" => data["deleted"],
-     "skipped" => data["skipped"],
-     "published" => data["published"],
+     "skipped" => length(data["skipped"]),
+     "published" => length(data["published"]),
      "resolved" => data["resolved"]
     }
   end
+
 end

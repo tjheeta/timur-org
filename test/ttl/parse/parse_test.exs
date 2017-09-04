@@ -37,6 +37,7 @@ defmodule Ttl.ParseTest do
       {:ok, doc, objects} = Ttl.Parse.Import.import_file(:kinto, "test/ttl/fixtures/test.org", attrs)
       :ok = Ttl.Parse.Export.export_file("/tmp/test-kinto.org", doc.id, attrs)
       {diff, ret} = System.cmd("diff", ["-w" ,"test/ttl/fixtures/test.org", "/tmp/test-kinto.org"])
+      Ttl.Things.kinto_delete_document("testtoken", doc.id)
       assert diff == ""
       assert ret == 0
     end
@@ -49,6 +50,7 @@ defmodule Ttl.ParseTest do
       {:ok, doc, objects} = Ttl.Parse.Import.import_file(:kinto, "README.org", attrs)
       :ok = Ttl.Parse.Export.export_file("/tmp/README-kinto.org", doc.id, attrs)
       {diff, ret} = System.cmd("diff", ["-w" ,"README.org", "/tmp/README-kinto.org"])
+      Ttl.Things.kinto_delete_document("testtoken", doc.id)
       assert diff == ""
       assert ret == 0
     end

@@ -64,7 +64,7 @@ defmodule Ttl.Parse.Elements do
   defp parse_planning_line(line, lnb) do
     r = (Regex.named_captures(~r/(CLOSED:\s*([\[<])(?<closed>[^>\]]+)([\]>]))/, line) || %{} )
     r = (Regex.named_captures(~r/(DEADLINE:\s*([\[<])(?<deadline>[^>\]]+)([\]>]))/, line) || %{}) |> Map.merge(r)
-    r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>(CLOSED|DEADLINE)\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
+    r = (Regex.named_captures(~r/(SCHEDULED:\s*([\[<])(?<scheduled_start>[^>\]]+)([\]>])((--)([\[<])(?<scheduled_end>[^>\]]+)([\]>]))?)/, line) || %{})  |> Map.merge(r)
 
     { scheduled_start, scheduled_time_interval, scheduled_repeat_interval} = case Map.get(r, "scheduled_start") do
                                                                                nil -> { nil, 0, "" }

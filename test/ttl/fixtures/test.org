@@ -64,9 +64,33 @@ CLOSED: [2016-05-31 Tue 18:42] SCHEDULED: <2016-05-31 Tue>
 ** DONE [#A] groceries 
 CLOSED: [2016-05-31 Tue 18:42] SCHEDULED: <2016-05-31 Tue>
 ** DONE - dfadf adfaf
-CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00>--<2016-06-02 9:00-17:00>
+CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 09:00-17:00>--<2016-06-02 Thu 09:00-17:00>
 ** DONE - dafaf
 CLOSED: [2016-06-02 Thu 21:23] SCHEDULED: <2016-06-01 Wed>
+* Date range tests
+** DONE - Test
+SCHEDULED: <2019-10-09 Wed 09:00-22:00>--<2019-10-20 Sun 09:00-22:00>
+** DONE - Testing is fun
+CLOSED: [2020-06-02 Tue 21:23] SCHEDULED: <2020-10-09 Fri>--<2022-10-20 Thu>
+** TODO More testing
+SCHEDULED: <2017-09-11 Mon 09:00-17:00>
+** T1
+SCHEDULED: <2019-10-09 Wed 09:00-22:00>--<2019-10-20 Sun 09:00-22:00>
+** T2
+CLOSED: [2019-10-20 Sun 09:23] SCHEDULED: <2019-10-09 Wed 09:00-22:00>--<2019-10-20 Sun 09:00-22:00>
+** T3
+CLOSED: [2019-10-20 Sun 09:23] SCHEDULED: <2019-10-09 Wed 09:00-22:00>--<2019-10-20 Sun 09:00-22:00> DEADLINE: <2019-10-20 Sun 09:23> 
+** T4
+CLOSED: [2019-10-20 Sun 09:23] SCHEDULED: <2019-10-09 Wed +1y>--<2019-10-20 Sun> DEADLINE: <2019-10-20 Sun 09:23> 
+** T5
+CLOSED: [2019-10-20 Sun 09:23] SCHEDULED: <2019-10-09 Wed 09:00-22:00 +1y>--<2019-10-20 Sun 09:00-22:00> DEADLINE: <2019-10-20 Sun 09:23> 
+** T6
+SCHEDULED: <2017-09-22 Fri> DEADLINE: <2017-09-15 Fri> 
+** T7
+   DEADLINE: <2017-09-13 Wed>
+** DONE Meeting in Amsterdam
+CLOSED: [2017-09-04 Mon 00:01] SCHEDULED: <2004-08-23 Mon>--<2004-08-26 Thu> DEADLINE: <2017-09-05 Tue> 
+* Tag and property test
 ** Inafaf                                                         :tag1:tag2:
 SCHEDULED: <2017-10-01 Sun>
 :PROPERTIES:
@@ -102,7 +126,7 @@ adfaf
 - State "DONE"       from "TODO"       [2016-08-10 Wed 19:45]
 - State "DONE"       from "TODO"       [2016-06-05 Sun 14:50]
 
-** DONE [#B] badf
+** DONE [#B] badf                                                   :new:tag:
 CLOSED: [2016-06-09 Thu 09:26] SCHEDULED: <2016-06-07 Tue>
 *** [#C] test
 **** [#D] test 2 

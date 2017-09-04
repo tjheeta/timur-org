@@ -1,18 +1,37 @@
 defmodule Ttl.Parse.Export do
 
   defp db_date_to_string(date, bracket, time_interval, date_range, repeat_interval ) do
-    # TODO - this entire nonsense could have been avoided if I just put in unixtime 
-    # Kinto stores as text as naive datetime. Ecto and postgres something else
 
     date = case Application.get_env(:ttl, :storage) do
              [backend: :kinto] ->
                naive = Timex.parse!(date, "{ISO:Extended}")
                { {naive.year, naive.month, naive.day}, {naive.hour, naive.minute, naive.second} }
-               _ ->
+             _ ->
                # remove the last tuple
                { ymd, {h, m, s, _}} = date
                { ymd, {h, m, s}}
+           end
+
+    # TODO - the second date
+    # The hours will remain the same since we don't have enough information for that
+    # org-mode scheduling is also a bit weird on this in the planning header, so keep it simple
+    date1_str = db_date_to_string_helper(date, bracket, time_interval, repeat_interval)
+
+    date2_str = if date_range > 0 do
+
+      duration  = Timex.Duration.from_days(date_range)
+      date2 = Timex.to_datetime(date) |> Timex.add(duration) |> Timex.to_erl
+      "--" <> db_date_to_string_helper(date2, bracket, time_interval, "")
+    else
+        ""
     end
+    date1_str <> date2_str
+
+  end
+  defp db_date_to_string_helper(date, bracket, time_interval, repeat_interval ) do
+    # TODO - this entire nonsense could have been avoided if I just put in unixtime 
+    # Kinto stores as text as naive datetime. Ecto and postgres something else
+
     { ymd, {h, m, s}} = date
 
     date_str =
@@ -33,14 +52,12 @@ defmodule Ttl.Parse.Export do
           Timex.format!(date, "%Y-%m-%d %a %H:%M-#{end_time} #{repeat_interval}", :strftime)
       end |> String.trim_trailing
 
-    # TODO - the second date
-
     case bracket do
-      "[" -> "[" <> date_str <> "] "
-      "]" -> "[" <> date_str <> "] "
-      "[]" -> "[" <> date_str <> "] "
-      :square -> "[" <> date_str <> "] "
-      _ -> "<" <> date_str <> "> "
+      "[" -> "[" <> date_str <> "]"
+      "]" -> "[" <> date_str <> "]"
+      "[]" -> "[" <> date_str <> "]"
+      :square -> "[" <> date_str <> "]"
+      _ -> "<" <> date_str <> ">"
     end
   end
 
@@ -94,13 +111,17 @@ defmodule Ttl.Parse.Export do
     acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
 
     planning_string = ""
-    planning_string = planning_string <> if closed,  do: "CLOSED: " <>
+    planning_string = planning_string <> if closed,  do: " CLOSED: " <>
       db_date_to_string(closed, :square, 0, 0, ""), else: ""
-    planning_string = planning_string <> if scheduled,  do: "SCHEDULED: " <>
+    planning_string = planning_string <> if scheduled,  do: " SCHEDULED: " <>
       db_date_to_string(scheduled, :notsquare, scheduled_time_interval, scheduled_date_range, scheduled_repeat_interval), else: ""
-    planning_string = planning_string <> if deadline,  do: "DEADLINE: " <>
+    planning_string = planning_string <> if deadline,  do: " DEADLINE: " <>
       db_date_to_string(deadline, :notsquare, 0, 0, ""), else: ""
     planning_string = planning_string <> (if String.length(planning_string) > 5, do: "\n", else: "")
+
+    # strip starting/any double spaces
+    planning_string = planning_string |> String.trim_leading |> String.replace("  ", " ") 
+
     acc = acc <> planning_string
 
     property_string = case add_id do

@@ -920,7 +920,106 @@ line 164 of src/http.js - setting default credentials to same-origin should fix 
     request.headers = { ...HTTP.DEFAULT_REQUEST_HEADERS, ...request.headers };  
     request.credentials = credentials;          
 
-*** Add REST API for sync to/from emacs
+*** DONE Add REST API for sync to/from emacs
+    CLOSED: [2017-09-03 Sun 21:14]
+Doing an api endpoint only that is for curl / api token. Client view for upload comes later and probably in PWA. [[Upload UI]] 
+Client will periodically need to sync documents and objects collections.
+**** DONE Add api key to plug
+      CLOSED: [2017-09-03 Sun 10:38]
+      :LOGBOOK:
+      CLOCK: [2017-09-03 Sun 10:00]--[2017-09-03 Sun 10:38] => 0:38
+      :END:
+
+#+BEGIN_SRC shell :results output
+#    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:fail" "http://localhost:4000/api/v1" 
+    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:somekey" "http://localhost:4000/api/v1/documents" 
+#+END_SRC
+
+#+RESULTS:
+: {"data":[{"name":"/tmp/plug-1504/multipart-1504474364-875480956313730-1","id":"bad5ed41-e053-4f57-a66b-d30df6edce35"},{"name":"/tmp/plug-1504/multipart-1504474293-102208735700548-2","id":"0072d402-55f4-4e83-8657-b8e09f73f25f"},{"name":"/tmp/plug-1504/multipart-1504474253-149974857867695-1","id":"d7d1eaf7-d106-49b6-a6f3-42d0f908f0b6"},{"name":"/tmp/plug-1504/multipart-1504474221-746897423043180-2","id":"50f98993-8eec-4541-ae72-dc32c28bc56a"},{"name":"/tmp/plug-1504/multipart-1504473279-701812867137179-2","id":"256b079d-b56c-4b39-aad5-36efec30a910"}]}
+
+
+**** DONE fix that api + session should get same results
+      CLOSED: [2017-09-03 Sun 14:42]
+      :LOGBOOK:
+      CLOCK: [2017-09-03 Sun 11:00]--[2017-09-03 Sun 14:42] => 3:42
+      :END:
+#+BEGIN_SRC shell :results output
+#    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:fail" "http://localhost:4000/api/v1" 
+
+# access to kinto is only through session cookie, not api_key?
+# curl -X POST -d "test" http://localhost:4000/v1/buckets/default/collections/documents/records -H 'Cookie: _ttl_key=SFMyNTY.g3QAAAADbQAAAAtfY3NyZl90b2tlbm0AAAAYcXZ4VEdicHB0QXNJK0VBaEJreFNFUT09bQAAAAxjdXJyZW50X3VzZXJtAAAAF3Rlc3R1c2VyQGZ4bWFuaWZvbGQuY29tbQAAAAd1c2VyX2lkbQAAACRkZTQ5MjdkOS1hMDk5LTRlYzgtYmI5OS00ZjY5ODg4YWNiMzQ._OzavlEQsF4VR-N9iU-Poj2fX3whC1FpVvpxSsXue48'
+#    echo '{"data": {"name": "tmpfile.org" }}' | http POST http://localhost:8888/v1/buckets/default/collections/documents/records --auth user1:pass1
+
+#    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:somekey" "http://localhost:4000/api/v1/documents" 
+#    | http "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" "x-api-key:somekey" "http://localhost:4000/api/v1/documents" 
+    http GET http://10.0.0.175:4000/v1/buckets/default/collections/tasks/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+#+END_SRC
+
+The api auth and the session auth now work and give same access.
+Need to be able to upload a file to the api endpoint and have it imported
+
+**** DONE import endpoint (create) 
+      CLOSED: [2017-09-03 Sun 21:09]
+#+BEGIN_SRC shell :results output
+#    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+ #   http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+   http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
+#+END_SRC
+#+RESULTS:
+: {"data":[{"name":"/tmp/plug-1504/multipart-1504498094-716839023744787-2","id":"9dafb409-ab95-43ea-a774-ae31d361be5f"}]}
+**** DONE Export endpoint (show)
+      CLOSED: [2017-09-03 Sun 21:09]
+
+#+BEGIN_SRC shell :results output
+#    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+ #   http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
+#    http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+    http GET http://10.0.0.175:4000/api/v1/documents/9dafb409-ab95-43ea-a774-ae31d361be5f X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+#+END_SRC
+
+**** DONE delete document (delete)
+      CLOSED: [2017-09-03 Sun 21:09]
+      :LOGBOOK:
+      CLOCK: [2017-09-03 Sun 20:15]--[2017-09-03 Sun 21:09] =>  0:54
+      :END:
+#+BEGIN_SRC shell :results output
+#    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+ #   http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
+#    http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+    #http DELETE http://10.0.0.175:4000/api/v1/documents/0072d402-55f4-4e83-8657-b8e09f73f25f X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+    #http DELETE http://10.0.0.175:4000/api/v1/documents/d7d1eaf7-d106-49b6-a6f3-42d0f908f0b6 X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+    #http DELETE http://10.0.0.175:4000/api/v1/documents/50f98993-8eec-4541-ae72-dc32c28bc56a X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+    http DELETE http://10.0.0.175:4000/api/v1/documents/256b079d-b56c-4b39-aad5-36efec30a910 X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+#+END_SRC
+
+#+RESULTS:
+
+**** DONE User security
+     CLOSED: [2017-09-03 Sun 09:03]
+
+**** DONE Need api_token field - forget having a separate table for now
+     CLOSED: [2017-09-03 Sun 14:39]
+*** Import/Export Bugs
+**** DONE scheduled_date_range, scheduled_time_interval not written to db
+     CLOSED: [2017-08-19 Sat 22:43]
+**** Regenerate org-file - scheduled date - the second date of the range is missing
+[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
+**** Still need to parse tags into database
+Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
+**** More complete tests for generate -> regenerate with UUID's
+
+*** Sync
+Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
+      - Need to modify the object from ui/db and then test uploads
+      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
+      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
+      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
+**** Recursive sync testing
+**** Add REST client?
+      Start off with a simple script to do whole files
+*** Upload UI
+Need a single interface that is accessible through PWA to import/export.
 The organization of this is getting a bit messy. 
 The client is based on being offline first and using kinto.
 If the client wants to import a document, where is the view? 
@@ -933,52 +1032,31 @@ To import:
    - Phx -> Easy, but how would this get synced back to the client? Super-weird?
 2) File gets parsed and written to kinto
 3) Kinto synchronizes the data to the client for viewing
-
-Doing an api endpoint only that is for curl / api token. Client view for upload comes later and probably in PWA. [[Upload UI]] 
-Client will periodically need to sync documents and objects collections.
-***** Add api key to plug
-      :LOGBOOK:
-      CLOCK: [2017-09-03 Sun 10:00]
-      :END:
-
-#+BEGIN_SRC shell :results output
-#    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:somekey" "http://localhost:4000/api/v1" 
-    curl -H "x-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34" -H "x-api-key:fail" "http://localhost:4000/api/v1" 
-#+END_SRC
-
-#+RESULTS:
-: Not authorized
-
-**** DONE User security
-     CLOSED: [2017-09-03 Sun 09:03]
-
-**** Need api_token field - forget having a separate table for now
-**** Sync
-Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
-      - Need to modify the object from ui/db and then test uploads
-      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
-      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
-      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
-**** Add REST api?
-      Start off with a simple curl client to do whole files
-      Later can make an object level api and make an elisp client - update versions / conflict resolution
-**** Upload UI
-Need a single interface that is accessible through PWA to import/export.
-**** Need api tokens
-*** Import/Export Bugs
-**** DONE scheduled_date_range, scheduled_time_interval not written to db
-     CLOSED: [2017-08-19 Sat 22:43]
-**** Regenerate org-file - scheduled date - the second date of the range is missing
-[[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
-**** Still need to parse tags into database
-Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
-**** More complete tests for generate -> regenerate with UUID's
-
 *** Make sessions last 10 years, not expire on logout
 *** How to move between SPA and PHX? 
 Or remove all html on PHX? Just have PHX be a pure API. 
 *** Cleanup
+**** The document collection should also have a userid in upload
+Right now kinto doesn't have this concept, just maps to buckets for ownership.
+**** name metadata isn't right on import
+**** Go through each query and make sure error conditions are satisfied.
+[[file:lib/ttl/web/controllers/api_document_controller.ex::def%20delete(conn,%20%25{"id"%20=>%20id})%20do][example]]
+**** Go through things.ex and normalize structures/responses?
+**** Fallback controller
+[[file:lib/ttl/web/controllers/api_document_controller.ex::#%20TODO%20-%20fallback][fallback location]]
+[[file:lib/ttl/web/controllers/fallback_controller.ex::#%20TODO%20not%20being%20used%20yet][fallback controller]]
+**** kinto token == user id
+Are we going to have a separate kinto_token? Will the token be available to clients ever?
+[[file:lib/ttl/accounts/plug_auth.ex::#%20TODO%20-%20kinto%20token%20==%20user_id][cleanup in auth]]
+**** Tests for authorization
 **** Figure out how to put the SPA on phx
+**** DONE Why are we treating api auth different from session auth? 
+     CLOSED: [2017-09-03 Sun 14:12]
+Shouldn't it check if api key
+If not, check session key
+Merge the two together and give access to everything if moving to SPA.
+Regarding kinto, people can put arbitrary data in local indexeddb anyway. 
+Kinto token needs to be fixed, that is userid/client_id. If they get api_key or session cookie, they have access. 
 **** Refactor data layer and remove copy and paste in import/exports
 **** Setup a http pool for kinto
 **** Move kinto to https
@@ -991,8 +1069,7 @@ Or remove all html on PHX? Just have PHX be a pure API.
 
 What about logbook?
 Need to revamp the schema. 
-*** The document collection should also have a userid in upload
-Right now kinto doesn't have this concept, just maps to buckets for ownership.
+**** add spec to all functions
 *** App - Pre and post syncing data immediately / retries / backoffs
 *** App - Display agenda
 **** UI Display
@@ -1086,7 +1163,7 @@ https://github.com/standardfile
 - some sort of ifttt integration? send email to an interface and it will go into todo?
 *** UI Tests
 https://github.com/webpro/Automated-SPA-Testing
-*** Cleanup - add spec to all functions
+*** Elisp client - update versions / conflict resolution, local changes :ms.faraway:
 *** Import/export Tests
        Updates
        - An old object (all db counts same)

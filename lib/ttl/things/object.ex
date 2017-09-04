@@ -26,9 +26,9 @@ defmodule Ttl.Things.Object do
     field :version, :integer
     field :document_id, :binary_id
     field :properties, :map
-    field :closed, :utc_datetime
-    field :deadline, :utc_datetime
-    field :scheduled, :utc_datetime
+    field :closed, :integer
+    field :deadline, :integer
+    field :scheduled, :integer
     field :scheduled_date_range, :integer
     field :scheduled_repeat_interval, :string
     field :scheduled_time_interval, :integer

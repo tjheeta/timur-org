@@ -2,15 +2,7 @@ defmodule Ttl.Parse.Export do
 
   defp db_date_to_string(date, bracket, time_interval, date_range, repeat_interval ) do
 
-    date = case Application.get_env(:ttl, :storage) do
-             [backend: :kinto] ->
-               naive = Timex.parse!(date, "{ISO:Extended}")
-               { {naive.year, naive.month, naive.day}, {naive.hour, naive.minute, naive.second} }
-             _ ->
-               # remove the last tuple
-               { ymd, {h, m, s, _}} = date
-               { ymd, {h, m, s}}
-           end
+    date = Timex.from_unix(date) |> Timex.to_erl
 
     # TODO - the second date
     # The hours will remain the same since we don't have enough information for that

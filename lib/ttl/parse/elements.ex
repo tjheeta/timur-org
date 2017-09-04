@@ -47,7 +47,7 @@ defmodule Ttl.Parse.Elements do
 
       #duration  = Timex.Duration.from_seconds(seconds_diff)
       #Timex.add(start_t, duration) == end_t
-      { Timex.to_naive_datetime(start_t), seconds_diff, r["repeat_interval"] }
+      { Timex.to_unix(start_t_tuple), seconds_diff, r["repeat_interval"] }
     end
     f_capture_date.(date)
   end
@@ -75,7 +75,8 @@ defmodule Ttl.Parse.Elements do
                              "" -> 0
                              x ->
                                {tmp_end, _, _ } = helper_f_capture_date(x)
-                               Timex.diff(tmp_end, scheduled_start, :days)
+                               #Timex.diff(tmp_end, scheduled_start, :days)
+                               if tmp_end > scheduled_start, do: round((tmp_end - scheduled_start)/86400), else: 0
                            end
     deadline = case Map.get(r, "deadline") do
                  nil -> nil

@@ -148,6 +148,7 @@ defmodule Ttl.Parse.Import do
   #  - stored_object exists and is < version. We aren't incrementing versions, so not possible.
   #    And we want to make sure we are updating the correct version. After update accepted, then increment?
   #  - stored_object exists and is > version - what to do?
+  #    - We know mobile changed the file. We don't know if it was changed locally
   #    - force_update - client wins
   #    - fail the object in particular, return the stored state
   #    - server wins
@@ -161,21 +162,12 @@ defmodule Ttl.Parse.Import do
   def f_compare_object_versions(parsed_objects, document_id, kinto_token) do
 
     f_compare_helper = fn(x, y) ->
-      #IO.inspect "HERE"
-      #IO.inspect Map.keys(x)
-      #IO.inspect "DONE"
       Enum.reduce_while(x, true, fn({x_k, x_v}, acc) ->
-        #IO.inspect x_k
-        #IO.inspect x_v
-
         case Map.fetch(y, Atom.to_string(x_k)) do
           {:ok, y_v} ->
             if x_v == y_v do
               {:cont, true}
             else
-              IO.inspect "HALTING"
-              IO.inspect x_v
-              IO.inspect y_v
               {:halt, false}
             end
           :error -> {:halt, false}
@@ -192,7 +184,6 @@ defmodule Ttl.Parse.Import do
 
     {objects_to_update, objects_with_conflict} = Enum.split_with(parsed_objects, fn(x) ->
       id = x.id
-      #IO.inspect "x=#{x.version}, objversion=#{db_objects[id]}"
       cond do
         db_objects[id] == nil -> true
         x.version == db_objects[id] -> true
@@ -206,27 +197,14 @@ defmodule Ttl.Parse.Import do
 
     db_objects = Ttl.Things.kinto_get_objects_by_document_id(kinto_token, document_id)["data"]
     |> Enum.reduce(%{}, fn(x, acc) ->
-      #item = f_to_struct(x, Ttl.Parse.Object) |> Map.from_struct
-      #Map.merge(acc, %{x["id"] => item })
       Map.merge(acc, %{x["id"] => x})
     end)
 
-#p = %{closed: nil, content: "\n", deadline: nil, defer_count: 0, document_id: "23ca609d-f5f7-4cd6-8743-5da9aaa9259a", id: "424ba29b-fc23-4060-81d2-4c998c32d175", level: 1, min_time_needed: 5, permissions: 0, priority: "", properties: %{}, scheduled: nil, scheduled_date_range: nil, scheduled_repeat_interval: nil, scheduled_time_interval: nil, state: "", subobjects: [], tags: "", time_spent: 0, title: "Ttl", version: "1504545916"}
-
-#d = %Ttl.Things.Object{ blob: nil, closed: nil, content: "\n", deadline: nil, defer_count: 0, document_id: "23ca609d-f5f7-4cd6-8743-5da9aaa9259a", id: "424ba29b-fc23-4060-81d2-4c998c32d175", inserted_at: nil, level: 1, min_time_needed: 5, path: nil, permissions: 0, priority: "", properties: %{}, scheduled: nil, scheduled_date_range: nil, scheduled_repeat_interval: nil, scheduled_time_interval: nil, state: "", tags: "", time_left: nil, time_spent: 0, title: "Ttl", updated_at: nil, version: "1504545916"}
-#                       d == p 
     {objects_to_update, objects_no_change} = Enum.split_with(parsed_objects, fn(x) ->
       id = x.id
-
-      # IO.inspect x
-      # IO.inspect db_objects[id]
-      # IO.inspect x == db_objects[id]
-      # IO.inspect f_compare_helper.(x, db_objects[id])
-      # IO.inspect "BEFORE RAISE"
-      # raise "oops"
       cond do
         db_objects[id] == nil -> true
-        f_compare_helper.(x, db_objects[id]) -> true
+        f_compare_helper.(x, db_objects[id]) == false -> true # if different, than update
         true -> false
       end
     end)
@@ -244,9 +222,6 @@ defmodule Ttl.Parse.Import do
         _ -> somemap
       end
     end
-
-
-    # parsed_doc = Ttl.Parse.parse("/home/tjheeta/org/notes.org")
 
     kinto_token = Map.get(attrs, :kinto_token)
     # Can't use the file name as the indicator as the thing could move around on fs
@@ -289,7 +264,8 @@ defmodule Ttl.Parse.Import do
     db_doc = Ttl.Things.kinto_update_document(kinto_token, db_doc, %{objects: ordered_object_ids} )["data"] |> f_to_struct(Ttl.Things.Document)
     # this will replace the objects with what is on disk, not patch
     Ttl.Things.kinto_create_or_update_objects(kinto_token, objects_to_update)
-    # TODO - find out which objects did not update and return conflicts
+
+    #IO.inspect Enum.map(objects_to_update, fn(x) -> x.id end)
     IO.inspect "update = #{length(objects_to_update)}, nochange = #{length(objects_no_change)}, conflict = #{length(objects_with_conflict)}"
     {:ok, db_doc, objects_with_conflict}
   end

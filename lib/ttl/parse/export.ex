@@ -54,7 +54,7 @@ defmodule Ttl.Parse.Export do
       select: %{fragment("cast(id as text)") =>
         [ fragment("cast(id as text)"), o.level, o.title, o.state, o.priority, o.content, o.properties,
           o.scheduled, o.scheduled_date_range, o.scheduled_repeat_interval, o.scheduled_time_interval,
-          o.closed, o.deadline, o.version ]
+          o.closed, o.deadline, o.version, o.tags ]
       }
     #q_map = from o in "things_objects",
     #  where: o.document_id == ^document_id,
@@ -75,12 +75,12 @@ defmodule Ttl.Parse.Export do
     # deconstruct the query based on where it has come from
     [ id, level, title, state, priority, content, properties,
       scheduled, scheduled_date_range, scheduled_repeat_interval, scheduled_time_interval,
-      closed, deadline, version ] =
+      closed, deadline, version, tags ] =
       case Application.get_env(:ttl, :storage) do
         [backend: :kinto] ->
           [ data["id"], data["level"], data["title"], data["state"], data["priority"], data["content"], data["properties"],
             data["scheduled"], data["scheduled_date_range"], data["scheduled_repeat_interval"], data["scheduled_time_interval"],
-            data["closed"], data["deadline"], data["version"] ]
+            data["closed"], data["deadline"], data["version"], data["tags"] ]
         _ -> data
       end
 
@@ -90,6 +90,7 @@ defmodule Ttl.Parse.Export do
     acc = if !empty?(state), do: acc <> state <> " ", else: acc
     acc = if !empty?(priority), do: acc <> priority <> " ", else: acc
     acc = if !empty?(title), do: acc <> title <> " ", else: acc
+    acc = if !empty?(tags), do: acc <> tags <> " ", else: acc
     acc = (if String.length(acc) > 5, do: String.trim_trailing(acc, " ") <> "\n", else: acc)
 
     planning_string = ""

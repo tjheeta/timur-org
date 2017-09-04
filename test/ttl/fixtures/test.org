@@ -67,7 +67,7 @@ CLOSED: [2016-05-31 Tue 18:42] SCHEDULED: <2016-05-31 Tue>
 CLOSED: [2016-06-02 Thu 21:22] SCHEDULED: <2016-06-01 Wed 9:00-17:00>--<2016-06-02 9:00-17:00>
 ** DONE - dafaf
 CLOSED: [2016-06-02 Thu 21:23] SCHEDULED: <2016-06-01 Wed>
-** Inafaf 
+** Inafaf                                                         :tag1:tag2:
 SCHEDULED: <2017-10-01 Sun>
 :PROPERTIES:
 :LAST_REPEAT: [2017-03-17 Fri 09:04]
@@ -108,7 +108,7 @@ CLOSED: [2016-06-09 Thu 09:26] SCHEDULED: <2016-06-07 Tue>
 **** [#D] test 2 
 **** test 2  :tag:
 ** TODO [#A] lkj;df
-** DONE [#A] dadfa
+** DONE [#A] dadfa                                    :tag1:tag3:complex_tag:
 CLOSED: [2016-06-05 Sun 13:35] SCHEDULED: <2016-06-04 Sat>
 ** DONE [#A] lkadfaf
 CLOSED: [2016-06-05 Sun 11:29] SCHEDULED: <2016-06-04 Sat>

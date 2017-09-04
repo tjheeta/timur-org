@@ -32,6 +32,7 @@ defmodule Ttl.Things.Object do
     field :scheduled_date_range, :integer
     field :scheduled_repeat_interval, :string
     field :scheduled_time_interval, :integer
+    field :tags, :string
 
     timestamps()
   end
@@ -39,7 +40,7 @@ defmodule Ttl.Things.Object do
   @doc false
   def changeset(%Object{} = object, attrs) do
     tmp = object
-    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions, :properties, :closed,  :deadline, :scheduled, :scheduled_date_range, :scheduled_repeat_interval, :scheduled_time_interval])
+    |> cast(attrs, [:id, :document_id, :path, :level, :title, :content, :blob, :state, :priority, :version, :defer_count, :min_time_needed, :time_spent, :time_left, :permissions, :properties, :closed,  :deadline, :scheduled, :scheduled_date_range, :scheduled_repeat_interval, :scheduled_time_interval, :tags])
     |> validate_required([:id, :document_id, :version])
   end
 end

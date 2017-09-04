@@ -28,6 +28,14 @@ defmodule Ttl.Web.ApiDocumentController do
     render(conn, "show.json", document: docstr)
   end
 
+  # TODO - error conditions
+  def delete(conn, %{"id" => id}) do
+    Ttl.Things.kinto_delete_document(conn.private[:kinto_token], id)
+    send_resp(conn, :no_content, "")
+#    with {:ok, %User{}} <- Accounts.delete_user(user) do
+#    end
+  end
+
 # def update(conn, %{"id" => id, "user" => user_params}) do
 #   user = Accounts.get_user!(id)
 
@@ -36,10 +44,4 @@ defmodule Ttl.Web.ApiDocumentController do
 #   end
 # end
 
-# def delete(conn, %{"id" => id}) do
-#   user = Accounts.get_user!(id)
-#   with {:ok, %User{}} <- Accounts.delete_user(user) do
-#     send_resp(conn, :no_content, "")
-#   end
-# end
 end

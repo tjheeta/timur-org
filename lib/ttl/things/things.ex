@@ -106,6 +106,26 @@ defmodule Ttl.Things do
   def delete_document(%Document{} = document) do
     Repo.delete(document)
   end
+  def kinto_delete_document(token, id, bucket \\ "default") do
+    # http://docs.kinto-storage.org/en/stable/api/1.x/batch.html
+    doc_url = "/buckets/#{bucket}/collections/documents/records"
+    obj_url = "/buckets/#{bucket}/collections/objects/records"
+    res = kinto_get_document!(token, id)
+    batch_data = if res["data"]["id"] == id do
+      obj_batch = Enum.map(res["data"]["objects"], fn(obj_id) ->
+        %{method: "DELETE", path: "#{obj_url}/#{obj_id}"}
+      end)
+      doc_batch = %{method: "DELETE", path: "#{doc_url}/#{id}"}
+      %{"requests" => obj_batch ++ [doc_batch]}
+    else
+      nil
+    end
+    if batch_data do
+      Kinto.query_batch(token, batch_data)
+    else
+      nil
+    end
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking document changes.

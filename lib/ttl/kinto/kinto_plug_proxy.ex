@@ -28,7 +28,7 @@ defmodule Ttl.KintoPlugProxy do
     # IO.inspect conn.req_headers
     [_ | uri] = conn.path_info
     uri = uri |> Enum.join("/")
-    url = "http://localhost:8888/v1/#{uri}"
+    url = "http://localhost:8888/v1/#{uri}?#{conn.query_string}"
 
     # TODO - not forwarding on any of the headers for etag/match
     # TODO - kinto_token and user_id the same for now

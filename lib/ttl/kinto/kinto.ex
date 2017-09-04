@@ -6,6 +6,14 @@ defmodule Kinto do
     code details
   )
 
+  def query_batch(token, data) do
+    options=[hackney: [basic_auth: {"kinto_token", token}]]
+    headers=["Content-Type": "application/json"]
+    res = post!("/batch", Poison.encode!(data), headers, options)
+    res.body
+
+  end
+
   def query_batch(token, url, method, data) do
     # http://docs.kinto-storage.org/en/stable/api/1.x/batch.html
     options=[hackney: [basic_auth: {"kinto_token", token}]]

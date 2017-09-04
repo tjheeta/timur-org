@@ -1,8 +1,22 @@
+#+PREFIX_DOC_ID:23ca609d-f5f7-4cd6-8743-5da9aaa9259a
+
 * Ttl
+:PROPERTIES:
+:PREFIX_OBJ_ID: 424ba29b-fc23-4060-81d2-4c998c32d175
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 ** What
+:PROPERTIES:
+:PREFIX_OBJ_ID: 488db892-03a9-477f-aed3-181fb2fca489
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
    
 *** Good
+:PROPERTIES:
+:PREFIX_OBJ_ID: 077efe34-f508-456e-b9f7-c36afecb8108
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 The beautiful thing about org-mode is the customizability. 
  - org-agenda
  - org-habit
@@ -23,6 +37,10 @@ The beautiful thing about org-mode is the customizability.
 Acts as an agenda, outliner, wiki, blog, etc. It's secure because single-user. Easy to backup, etc. The best of all worlds if there is only a single device.
 
 *** Bad
+:PROPERTIES:
+:PREFIX_OBJ_ID: cd0366de-f75d-42e6-8c50-ad4bef77181e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 1) Cannot easily capture web data, pictures, video, clips, etc.
 2) Not simple/easy to access over mobile. Though there are mobileorg and orgzly. 
 3) Collaboration (though will need to think about security model here)
@@ -31,6 +49,10 @@ Acts as an agenda, outliner, wiki, blog, etc. It's secure because single-user. E
    - Comments 
 
 *** How
+:PROPERTIES:
+:PREFIX_OBJ_ID: de19db34-4eb9-490c-804f-8fbc31602bda
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - Capture
 - Schedule the time to do it.
 
@@ -156,6 +178,10 @@ State:
   - started
 
 *** Others
+:PROPERTIES:
+:PREFIX_OBJ_ID: 58b68b71-bd48-4914-b8e3-556c6bffa91e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://checkvist.com/checklists/627469-name-your-project-and-press-enter
 https://workflowy.com/ -- the most mature app
 https://www.moo.do -- really nice Google Apps integration
@@ -169,6 +195,10 @@ https://news.ycombinator.com/item?id=8270759
     
   
 *** Org-mode for editors
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1af09e1a-d5ba-446f-a8d5-c4ec09faeb28
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://atom.io/packages/organized - https://github.com/MattFlower/organized
 https://github.com/danielmagnussons/orgmode
 Msg thread - https://lists.gnu.org/archive/html/emacs-orgmode/2014-10/msg00212.html
@@ -176,7 +206,15 @@ https://github.com/ajaxorg/ace/wiki/Creating-or-Extending-an-Edit-Mode
 
 
 ** Workflow
-*** Sync 
+:PROPERTIES:
+:PREFIX_OBJ_ID: 600e97e9-6859-4430-8292-1ed4f811bbdc
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Sync
+:PROPERTIES:
+:PREFIX_OBJ_ID: c58dcd6c-6918-4dd5-ab12-838f938b426a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 This will send the entire file over and at high load and high users cause issues. Will need a emacs client to update properties. 
 
 - Have things locally.
@@ -191,18 +229,34 @@ This will send the entire file over and at high load and high users cause issues
   - Import/export whole documents (this can be used by emacs and/or the web editor)
 
 *** Collaboration
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2bf012f3-3f4a-44b3-bbd8-cea4d5d18a00
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 A simple use case is someone making a list for someone else to do. Grocery list, etc. 
 When is something allowed to be delegated? What are the viewing permissions? Are there spaces with permissions/groups instead? 
 Commenting then can be on objects as a generic comment service. However, how would the comments be fetched? They would have to have the same permissions as the parent. Don't want the comment service to have to call back to the parent service for permissions. The other option is replicating / synchronizing the permissions over the the comment system. Another option is only have trusted systems call the comment system and never have it public.    
 *** Capturing
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4cc0a3db-0981-49dc-8538-83b1f3305b21
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Major issue is capturing images, bookmarks, webpages. 
 
 https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets. 
 
 ** DONE MVP1
-   CLOSED: [2017-09-01 Fri 17:23]
+CLOSED: [2017-09-01 Fri 17:23]
+:PROPERTIES:
+:PREFIX_OBJ_ID: bcc942f0-8b2d-4b64-a4b3-c2a9369483cf
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** DONE Thoughts on parsing and db schema:
-    CLOSED: [2017-08-24 Thu 20:59]
+CLOSED: [2017-08-24 Thu 20:59]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2a4ef938-1978-44c4-a8ab-f459d6f0992f
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
   - Can store the entire file and then the tags/headers in separate tables for scheduling
     - If the agenda is modified on web, item state to done, the file needs to be re-written also. Need to keep both in sync.
   - Represent the entire file as an AST and then store it
@@ -266,7 +320,11 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
 
 
 *** DONE Thoughts on UI Interface
-    CLOSED: [2017-08-24 Thu 20:59]
+CLOSED: [2017-08-24 Thu 20:59]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f494f655-5573-480a-8895-8a2a8c500732
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 - If this is for power-users, it has to be able to integrate with org-mode. To import/export out of text mode, there needs to be a UUID for each element.
 
@@ -279,15 +337,31 @@ https://github.com/alphapapa/org-protocol-capture-html has some bookmarklets.
 - https://www.reddit.com/r/emacs/comments/6r5htr/capturing_short_notes_on_the_go_then_sync_to_org/
 
   
-*** DONE import/export to api. 
-    CLOSED: [2017-08-19 Sat 22:11]
+*** DONE import/export to api.
+CLOSED: [2017-08-19 Sat 22:11]
+:PROPERTIES:
+:PREFIX_OBJ_ID: fbf78824-4608-4eee-b6f6-1799439ba909
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE write a parser (not going to do in elisp since may want non-emacs users)
-     CLOSED: [2017-08-15 Tue 18:27]
+CLOSED: [2017-08-15 Tue 18:27]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4966bcc3-d996-4e17-bfe1-83a2e8b1314f
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE create db schema
 CLOSED: [2017-08-13 Sun 15:01]
+:PROPERTIES:
+:PREFIX_OBJ_ID: d5ee191b-2a55-4f68-97a9-d9f233c7dc14
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 [[DBSCHEMA]]
 **** DONE consolidate sections
 CLOSED: [2017-08-13 Sun 15:00]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1118528a-2138-4fb4-9edf-747f879abac7
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 :LOGBOOK:
 CLOCK: [2017-08-13 Sun 12:14]--[2017-08-13 Sun 12:39] =>  0:25
 CLOCK: [2017-08-13 Sun 11:44]--[2017-08-13 Sun 12:09] =>  0:25
@@ -297,20 +371,36 @@ CLOCK: [2017-08-13 Sun 06:46]--[2017-08-13 Sun 07:12] =>  0:26
 :END:
 **** DONE Need to fix the planning parser to grab the dates
 CLOSED: [2017-08-13 Sun 15:00]
+:PROPERTIES:
+:PREFIX_OBJ_ID: e556819d-f6e9-4b69-8883-5597fea84b3d
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 :LOGBOOK:
 CLOCK: [2017-08-13 Sun 12:48]--[2017-08-13 Sun 13:13] =>  0:25
 :END:
 **** DONE consolidate header (property, planning)
 CLOSED: [2017-08-13 Sun 15:00]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 86ecb3a1-8e38-43f9-8015-2c0bc67b9e74
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE implement db schema
 CLOSED: [2017-08-14 Mon 16:44]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6ea2dcb2-b50f-450c-ab89-6f19f78e5036
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 :LOGBOOK:
 CLOCK: [2017-08-14 Mon 16:14]--[2017-08-14 Mon 16:39] =>  0:25
 CLOCK: [2017-08-14 Mon 15:44]--[2017-08-14 Mon 16:09] =>  0:25
 CLOCK: [2017-08-14 Mon 15:09]--[2017-08-14 Mon 15:34] =>  0:25
 :END:
 **** DONE write to database
-     CLOSED: [2017-08-15 Tue 21:48]
+CLOSED: [2017-08-15 Tue 21:48]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 78d373aa-ebc0-41cb-a5a3-b728d7573cbf
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 :LOGBOOK:
 CLOCK: [2017-08-15 Tue 11:13]--[2017-08-15 Tue 11:38] =>  0:25
 CLOCK: [2017-08-15 Tue 10:44]--[2017-08-15 Tue 11:09] =>  0:25
@@ -333,19 +423,31 @@ Turns out Ecto casting from naive datetime to datetime was the issue.
 
 Takes a document, parses it, and can insert all the objects into the database
 
-***** DONE Make it into a function 
-      CLOSED: [2017-08-15 Tue 20:06]
+***** DONE Make it into a function
+CLOSED: [2017-08-15 Tue 20:06]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0a519045-a15d-4cc9-bdd4-ddab43f85681
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       :LOGBOOK:
       CLOCK: [2017-08-15 Tue 19:30]--[2017-08-15 Tue 20:00] =>  0:30
       :END:
 ***** DONE Make a solid decision on what to do on failed update / version conflict
-      CLOSED: [2017-08-15 Tue 21:40]
+CLOSED: [2017-08-15 Tue 21:40]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4cfec74b-ec3f-4980-80d6-bccacd0d785a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       :LOGBOOK:
       CLOCK: [2017-08-15 Tue 21:00]--[2017-08-15 Tue 21:38] =>  0:38
       CLOCK: [2017-08-15 Tue 20:13]--[2017-08-15 Tue 20:38] =>  0:25
       :END:
 ***** DONE Parse and cast the dates
-      CLOSED: [2017-08-15 Tue 18:19]
+CLOSED: [2017-08-15 Tue 18:19]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f440df0e-a0ad-4301-92bc-75654e324b72
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       http://orgmode.org/manual/Timestamps.html#Timestamps
 
       :LOGBOOK:
@@ -359,15 +461,27 @@ Takes a document, parses it, and can insert all the objects into the database
       CLOCK: [2017-08-15 Tue 11:43]--[2017-08-15 Tue 12:08] =>  0:25
       :END:
 ***** DONE Or maybe need to do versioning right now?
-      CLOSED: [2017-08-15 Tue 18:22]
+CLOSED: [2017-08-15 Tue 18:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 5bccb18f-aef7-4f01-85c4-9f6a6d15ba82
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE Need to parse the file metadata
-     CLOSED: [2017-08-15 Tue 23:18]
+CLOSED: [2017-08-15 Tue 23:18]
+:PROPERTIES:
+:PREFIX_OBJ_ID: fcf4a9e8-9feb-4072-804f-c47cb71cdf2b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       CLOCK: [2017-08-15 Tue 21:45]--[2017-08-15 Tue 23:20] =>  1:40
 written to the database as jsonb
 http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
 
 **** DONE regenerate file from database - with uuid's
-     CLOSED: [2017-08-16 Wed 19:18]
+CLOSED: [2017-08-16 Wed 19:18]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 54576b3d-e9bd-4c1c-9cf1-d5364acdb83d
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-16 Wed 18:45]--[2017-08-16 Wed 19:20] =>  0:35
      CLOCK: [2017-08-16 Wed 18:15]--[2017-08-16 Wed 18:40] =>  0:25
@@ -388,38 +502,74 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
     - ttl_dev=# with x (id_list) as (select objects from things_documents) select o.id, o.title from things_objects o, d.metadata from things_documents d,  x where id = any (x.id_list) order by array_position(x.id_list, o.id  );
     - 
 ***** DONE adjust the levels for files with no bullets to 0 - this will fix for files with no headline
-      CLOSED: [2017-08-16 Wed 07:22]
+CLOSED: [2017-08-16 Wed 07:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6f039ea0-a95f-4b8d-b857-87708bb8c2bb
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 ***** DONE bug with closed planning data not being parsed
-      CLOSED: [2017-08-16 Wed 07:43]
+CLOSED: [2017-08-16 Wed 07:43]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8f3c1ff2-d02c-4da8-87ea-51f64866753c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 **** DONE Bugs - adil file has extra newline at start
-     CLOSED: [2017-08-16 Wed 19:18]
+CLOSED: [2017-08-16 Wed 19:18]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 889a479b-064b-46ac-830d-440ea34f4754
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE Properties - parse, store, and write
-     CLOSED: [2017-08-16 Wed 22:59]
+CLOSED: [2017-08-16 Wed 22:59]
+:PROPERTIES:
+:PREFIX_OBJ_ID: dfffb620-084d-4c5e-bfaf-1a5e71516f97
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-16 Wed 21:10]--[2017-08-16 Wed 22:57] =>  1:47
      :END: 
 **** DONE Add file uuid into regenerate
-     CLOSED: [2017-08-16 Wed 23:39]
-**** DONE Add version and id into regenerated object 
-     CLOSED: [2017-08-17 Thu 00:03]
+CLOSED: [2017-08-16 Wed 23:39]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6fbb1440-3b77-4aa6-8c3d-86f1005b6398
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** DONE Add version and id into regenerated object
+CLOSED: [2017-08-17 Thu 00:03]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3c63d4c0-49a8-4ad0-9434-833e75485a62
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-16 Wed 23:39]--[2017-08-17 Thu 00:03] =>  0:24
      :END:
 **** DONE Read file uuid from file to pull objects
-     CLOSED: [2017-08-17 Thu 11:38]
+CLOSED: [2017-08-17 Thu 11:38]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 069a1c01-f83f-436e-bf83-ab533ef56c7e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 10:00]--[2017-08-17 Thu 10:57] =>  0:57
      CLOCK: [2017-08-17 Thu 08:55]--[2017-08-17 Thu 09:20] =>  0:25
      CLOCK: [2017-08-17 Thu 08:05]--[2017-08-17 Thu 08:50] =>  0:45
      :END:
 **** DONE Start of file exception
-     CLOSED: [2017-08-17 Thu 11:38]
+CLOSED: [2017-08-17 Thu 11:38]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 76354c5f-ab9d-47c0-a650-27e9819e0a63
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 11:04]--[2017-08-17 Thu 11:29] =>  0:25
      :END:
 **** DONE Ensure data gets updated on change
-     CLOSED: [2017-08-17 Thu 13:05]
+CLOSED: [2017-08-17 Thu 13:05]
+:PROPERTIES:
+:PREFIX_OBJ_ID: c406a88d-5a92-48a0-a840-979497d5609c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 12:58]--[2017-08-17 Thu 13:06] =>  0:08
      :END:
@@ -431,7 +581,11 @@ http://ehneilsen.net/notebook/orgExamples/org-examples.html#sec-2
        - the new object gets modified (db count same)
 
 **** DONE make an interval data structure for schedule parsing and bin-packing calendar with contexts / tags
-     CLOSED: [2017-08-17 Thu 17:53]
+CLOSED: [2017-08-17 Thu 17:53]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 43ef17aa-b3f3-42ce-998a-e71e45da294b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-19 Sat 11:12]--[2017-08-19 Sat 11:37] =>  0:25
      CLOCK: [2017-08-19 Sat 10:37]--[2017-08-19 Sat 11:02] =>  0:25
@@ -466,7 +620,11 @@ However, need ability to defer scheduled tasks and logging.
 
 
 **** DONE Parse the schedule properly into the interval structure
-     CLOSED: [2017-08-19 Sat 17:53]
+CLOSED: [2017-08-19 Sat 17:53]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 04c7f3f9-33ef-4694-a684-3c70099df52c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-17 Thu 18:55]--[2017-08-17 Thu 19:20] =>  0:25
      CLOCK: [2017-08-17 Thu 18:25]--[2017-08-17 Thu 18:50] =>  0:25
@@ -476,21 +634,49 @@ Current state - schedule start_date parsing has been done. End_date, duration, r
 
  
 **** DONE Bugs parsing schedule time interval + repeat - is this done later?
-     CLOSED: [2017-08-19 Sat 17:53]
+CLOSED: [2017-08-19 Sat 17:53]
+:PROPERTIES:
+:PREFIX_OBJ_ID: a7947ab8-987e-45da-a8d8-f29b3395ea94
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE Bugs regeneration date format should be the same
-     CLOSED: [2017-08-19 Sat 22:07]
-**** DONE Parse or skip logbook 
-     CLOSED: [2017-08-19 Sat 22:07]
+CLOSED: [2017-08-19 Sat 22:07]
+:PROPERTIES:
+:PREFIX_OBJ_ID: a3489e02-49f8-4bde-8fbb-157fe4464e94
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** DONE Parse or skip logbook
+CLOSED: [2017-08-19 Sat 22:07]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 23d3c239-e8fd-43aa-b1a7-c39745754d10
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       - probably a separate table. Same as tags. Did insert_all with ecto which may complicate this implementation
 *** DONE Cleanup
-    CLOSED: [2017-09-01 Fri 17:51]
-**** DONE Refactor parse 
-     CLOSED: [2017-09-01 Fri 17:23] SCHEDULED: <2017-08-24 Thu 18:00-20:00> DEADLINE: <2017-08-24 Thu 21:00>
+CLOSED: [2017-09-01 Fri 17:51]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 27f614ae-92a2-4d1c-be3b-9be9d0e2bdf5
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** DONE Refactor parse
+CLOSED: [2017-09-01 Fri 17:23] SCHEDULED: <2017-08-24 Thu 18:00-20:00> DEADLINE: <2017-08-24 Thu 21:00>
+:PROPERTIES:
+:PREFIX_OBJ_ID: 059e8cb6-74ae-43cf-b284-4d2bd75d5bac
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-24 Thu 17:30]--[2017-08-24 Thu 20:49] =>  3:19
      :END:
 **** use ecto.multi or control the dual commit transaction
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0f791bbe-106a-4356-a988-d8efdc9c4ff5
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** DONE POC - display UI for agenda
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8abad6f5-821d-41aa-b554-a0b7b4470c50
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
    :LOGBOOK:
    CLOCK: [2017-09-01 Fri 00:00]--[2017-09-01 Fri 23:59] => 23:59
    :END:
@@ -515,6 +701,10 @@ Client downloads entire documents and has all the data now.
   - memex - what did you do on what day
   - reminder to journal
 **** PWA
+:PROPERTIES:
+:PREFIX_OBJ_ID: 12840c0e-104e-4a2c-8d45-3dab79205d7e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 Looks like an app-shell needs to be implemented and workboxjs seems to be the newest gold standard. 
 
@@ -557,8 +747,16 @@ https://github.com/GoogleChrome/voice-memos
 https://github.com/jakearchibald/trained-to-thrill/
 
 **** Drab
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3390425a-2741-4544-a626-4cdb4fded538
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Spent a few hours off and on investigating Drab. Server-side dom modifications is nice, but not sure how to deal with offline. Will have to build custom sync mechanism. 
 **** Clojurescript
+:PROPERTIES:
+:PREFIX_OBJ_ID: a532981f-0e7e-4d36-91a6-6c94abf5d9b1
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Want to use. Community is small compared to others though.
 
 We'd have to make the externs for kinto. 
@@ -573,6 +771,10 @@ https://github.com/gadfly361/cljs-todomvc
 https://github.com/tel/oak 
 
 **** Kinto
+:PROPERTIES:
+:PREFIX_OBJ_ID: 64d9a65e-a2c2-4cc9-a1a4-ae87f9cdb92f
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-08-30 Wed 19:00]--[2017-08-30 Wed 23:48] =>  4:48
      :END:
@@ -590,7 +792,11 @@ Only other choice for offline storage was pouchdb, however, the cons are:
 Close to the same data schema is possible with documents moving to a "collection" and all the objects into the "records". Groups, permissions, sharing out of the box. Possible performance issues on large datasets, but very unlikely. Fairly robust permissions for grouping:
 http://docs.kinto-storage.org/en/stable/tutorials/permission-setups.html
 
-***** Kinto setup 
+***** Kinto setup
+:PROPERTIES:
+:PREFIX_OBJ_ID: ade4a1f9-fa02-4771-bbe6-c519be37b7a6
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Using docker image:
 #!/bin/sh
 docker run --rm --name  kinto --env-file ./kinto.env -p 8888:8888 kinto/kinto-server
@@ -603,7 +809,11 @@ KINTO_EXPERIMENTAL_PERMISSIONS_ENDPOINT=true
 KINTO_PERMISSION_BACKEND=kinto.core.permission.postgresql
 KINTO_PERMISSION_URL=postgres://postgres:postgres@10.0.2.99/kinto
 
-***** Kinto schema - export doc 
+***** Kinto schema - export doc
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2c16fe72-d853-4f88-a621-aa680e81cb37
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Trying to generate a document will have the multi-commit issue as before:
 
 #+BEGIN_SRC shell :results output
@@ -704,6 +914,10 @@ X-Content-Type-Options: nosniff
 #+end_example
 
 ***** Kinto schema - How to generate the agendas
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6b8d5efe-fbb9-4ba0-b5d1-acb56990a628
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 http://docs.kinto-storage.org/en/stable/api/1.x/filtering.html
 
 #+BEGIN_SRC shell :results output
@@ -714,6 +928,10 @@ http://docs.kinto-storage.org/en/stable/api/1.x/filtering.html
 : {"data":[{"status":"TODO","state":"","id":"981f166f-f033-4826-93eb-b5c3dc385815","priority":null,"properties":[],"description":"emacs","level":2,"title":"emacs","content":"some crazy content 2","last_modified":1504138324556}]}
 
 ***** Kinto permissions
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2dc92910-b813-4acf-ac24-8c6dfeee31ea
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Synchronization happens at a bucket level. Each user has a default bucket which they sync automatically. Everything after that for 
   - tasks = new Kinto(remotedb).collection("tasks"), tasks.sync(syncOptions)
 Separately need to fetch from different buckets. 
@@ -722,13 +940,21 @@ Operates on the bucket + records level .
 Can set sharing permission at the bucket, collection, or record level. Fetching anything of interest, however, is a completely different problem.
 
 **** Todo app examples with Kinto
+:PROPERTIES:
+:PREFIX_OBJ_ID: 28289a40-eea2-411e-9c06-7d7f40de5f4e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 file:///home/tjheeta/repos/self/all-todo-test/kinto.js/demo/index.html
 https://github.com/Kinto/kinto/wiki/App-examples
 http://leplatrem.github.io/kinto-demo-calendar/#public
 https://github.com/leplatrem/kinto-demo-calendar/
 https://github.com/leplatrem/Routina
 
-**** Frontend thoughts 
+**** Frontend thoughts
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1ee4c9b2-6d0f-4400-9211-dd5eb0f6c0f6
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 JS frontend is insane.
 
 https://github.com/facebook/react  
@@ -749,24 +975,44 @@ https://cycle.js.org/ -
 
 
 **** DONE Learning hyperapp to build a PWA/SPA
-     CLOSED: [2017-09-01 Fri 10:16]
+CLOSED: [2017-09-01 Fri 10:16]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 25f83815-6b65-47d9-83c9-cd11203119e6
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://github.com/ramda/ramda - hyperapp probably needs something like this
 https://github.com/lodash/lodash - or this
 https://github.com/hyperapp/hyperapp/issues/244#issuecomment-321145114
 https://github.com/hyperapp/hyperapp/blob/master/docs/vdom-events.md - adapting an external library
 https://github.com/hyperapp/hyperapp/issues/251 - testing
 ***** DONE Need to figure out how to route to the next page - almost done
-      CLOSED: [2017-08-31 Thu 01:11]
+CLOSED: [2017-08-31 Thu 01:11]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8cc73536-e8b2-4b73-b8bd-f301f0836850
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 ***** DONE Try to add kinto - mixin necessary?
-      CLOSED: [2017-08-31 Thu 23:37]
+CLOSED: [2017-08-31 Thu 23:37]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 212f7942-e4e5-4f49-aa4d-aed1b3688e34
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 ** MVP2
+:PROPERTIES:
+:PREFIX_OBJ_ID: 05dd8759-e124-420d-93c4-a3ac4cc7cb0c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Last state:
 With great regret, moved phx to kinto. Massive refactor needed to not expose the data layer, copy and paste everywhere to get things working. Performance gone to hell also, for the hopes that the kinto sync is robust. Regardless, it will only need a rewrite between 100-1000 concurrent users depending on how expensive the sync is and that means it will need 5x-10x actual users. All to avoid having to write a sync library and figure out indexeddb. 
 
 This stage looking to sync from server to local disk cleanly and get a functional agenda. 
 
 *** DONE Thoughts
-    CLOSED: [2017-09-01 Fri 17:47]
+CLOSED: [2017-09-01 Fri 17:47]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4b74dbe6-fa86-4e21-8388-02b9c1ee60ac
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Need to clearly dilineate what happens server-side vs client-side. If items are being collaborated on, could open a websocket and make a lock for it. 
 Comments - are they a separate system or do we write into the same schema?
 Offline - editing is based on whether they are personal documents or not. Need a lock for shared. If go offline, warn that may have to merge conflicts or save duplicate version, but can continue editing.
@@ -793,7 +1039,11 @@ This, however, won't help with changes.
 - Are comments objects? For instance, a collection of these objects can also represent a forum thread. A comment could be represented by a headline. Could put comments into their own collection? Maybe want to turn comments into objects. 
   
 *** DONE Conclusion
-    CLOSED: [2017-09-01 Fri 18:01]
+CLOSED: [2017-09-01 Fri 18:01]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0453b393-cf0e-4496-a126-2b4610181583
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 1) Single user productivity 
    - agenda
    - notifications
@@ -812,7 +1062,11 @@ This, however, won't help with changes.
 
      
 *** DONE Braindump - Elixir to Kinto
-    CLOSED: [2017-09-02 Sat 17:59]
+CLOSED: [2017-09-02 Sat 17:59]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0a4420ec-ed11-476e-bb26-855e8aef6770
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
     :LOGBOOK:
     CLOCK: [2017-09-01 Sat 22:30]--[2017-09-02 Sat 00:27] =>  1:57
     CLOCK: [2017-09-01 Fri 20:24]--[2017-09-01 Fri 20:49] =>  0:25
@@ -844,7 +1098,11 @@ kinto.js replication needs a user/password. Login normally, use user_id as token
 https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/services/syncManager.js
 
 *** DONE Elixir to Kinto
-    CLOSED: [2017-09-02 Sat 17:36]
+CLOSED: [2017-09-02 Sat 17:36]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0f902f85-c65b-43f7-8de8-5628bf1d8caf
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
     :LOGBOOK:
     CLOCK: [2017-09-02 Sat 15:00]--[2017-09-02 Sat 17:30] =>  2:30
     CLOCK: [2017-09-02 Sat 13:20]--[2017-09-02 Sat 14:23] =>  1:03
@@ -865,7 +1123,11 @@ https://github.com/standardnotes/web/blob/master/app/assets/javascripts/app/serv
 
 
 *** DONE Set constant user_hmac_secret
-    CLOSED: [2017-09-02 Sat 18:00]
+CLOSED: [2017-09-02 Sat 18:00]
+:PROPERTIES:
+:PREFIX_OBJ_ID: abecfc61-94a9-4836-b5ad-75850027f589
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 $ cat kinto.env 
 KINTO_STORAGE_BACKEND=kinto.core.storage.postgresql
 KINTO_STORAGE_URL=postgres://postgres:postgres@10.0.2.99/kinto
@@ -877,7 +1139,11 @@ KINTO_USERID_HMAC_SECRET=not_really_a_secret
 KINTO_BATCH_MAX_REQUESTS=10000
 
 *** DONE Security model for kinto and replication
-    CLOSED: [2017-09-03 Sun 01:17]
+CLOSED: [2017-09-03 Sun 01:17]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4cefa8ce-f9cf-447d-b07e-f8421a587fbe
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - Access to kinto only through phx.
   - if not, need to verify 3rd party github:<username> as identifier for kinto auth + Repeat for phx auth 
   - phx directly to postgres 
@@ -889,12 +1155,20 @@ Other pros - abstracting out the data layer, could be replaced later.
 
 Server-writes - if write directly from phx to postgres in kinto schema, need to know what buckets or need to implement custom uuid generation. 
 **** DONE Setup a path for a proxy and rewrite any request headers with basic auth info
-     CLOSED: [2017-09-02 Sat 21:46]
+CLOSED: [2017-09-02 Sat 21:46]
+:PROPERTIES:
+:PREFIX_OBJ_ID: cc5988bb-1e69-4b96-a392-3fbe327b382a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-02 Sat 18:00]--[2017-09-02 Sat 21:46] =>  3:46
      :END:
 **** DONE Change client url
-     CLOSED: [2017-09-03 Sun 01:17]
+CLOSED: [2017-09-03 Sun 01:17]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f6ed03d4-b3d7-4d20-ac20-6303ce389463
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-02 Sun 22:21]--[2017-09-03 Sun 01:21] =>  3:00
      :END:
@@ -907,9 +1181,17 @@ https://github.com/github/fetch
 kinto-http.js has a bug that it doesn't send the credentials.
 
 *** DONE Authorization
-    CLOSED: [2017-09-03 Sun 01:25]
+CLOSED: [2017-09-03 Sun 01:25]
+:PROPERTIES:
+:PREFIX_OBJ_ID: af00f2f5-679c-4840-8562-8ff49e029fc7
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE User security investigation
-     CLOSED: [2017-09-01 Fri 21:30]
+CLOSED: [2017-09-01 Fri 21:30]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f10aaf77-0f7e-406c-b0ee-8ef38e93f9f5
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-01 Fri 20:50]--[2017-09-01 Fri 21:30] =>  0:40
      :END:
@@ -918,9 +1200,17 @@ kinto-http.js has a bug that it doesn't send the credentials.
 - https://elixirforum.com/t/how-is-phoenix-token-different-from-jwt/2349/5
 - https://elixirforum.com/t/phoenix-token-encryption/3123
 **** DONE Kinto proxying
-     CLOSED: [2017-09-03 Sun 01:25]
+CLOSED: [2017-09-03 Sun 01:25]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 550dbeb1-e624-4b38-9099-e9239670bcb4
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 *** Patch kinto-http.js
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1cba1049-da0d-415b-ad2f-966ee8a0d2ff
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 line 164 of src/http.js - setting default credentials to same-origin should fix it
   async request(url, request = { headers: {} }, options = { retry: 0 }, credentials = 'same-origin') {
@@ -929,11 +1219,19 @@ line 164 of src/http.js - setting default credentials to same-origin should fix 
     request.credentials = credentials;          
 
 *** DONE Add REST API for sync to/from emacs
-    CLOSED: [2017-09-03 Sun 21:14]
+CLOSED: [2017-09-03 Sun 21:14]
+:PROPERTIES:
+:PREFIX_OBJ_ID: aa0eebb0-5ef2-48f9-a7ed-faf1a4c44985
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Doing an api endpoint only that is for curl / api token. Client view for upload comes later and probably in PWA. [[Upload UI]] 
 Client will periodically need to sync documents and objects collections.
 **** DONE Add api key to plug
-      CLOSED: [2017-09-03 Sun 10:38]
+CLOSED: [2017-09-03 Sun 10:38]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4ccf8c3b-ff34-4a19-ae24-5cd1f92c08c3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       :LOGBOOK:
       CLOCK: [2017-09-03 Sun 10:00]--[2017-09-03 Sun 10:38] => 0:38
       :END:
@@ -948,7 +1246,11 @@ Client will periodically need to sync documents and objects collections.
 
 
 **** DONE fix that api + session should get same results
-      CLOSED: [2017-09-03 Sun 14:42]
+CLOSED: [2017-09-03 Sun 14:42]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 69168924-85e1-4393-aedf-cb58d167f666
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       :LOGBOOK:
       CLOCK: [2017-09-03 Sun 11:00]--[2017-09-03 Sun 14:42] => 3:42
       :END:
@@ -967,8 +1269,12 @@ Client will periodically need to sync documents and objects collections.
 The api auth and the session auth now work and give same access.
 Need to be able to upload a file to the api endpoint and have it imported
 
-**** DONE import endpoint (create) 
-      CLOSED: [2017-09-03 Sun 21:09]
+**** DONE import endpoint (create)
+CLOSED: [2017-09-03 Sun 21:09]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2023c827-e8b2-4419-b413-85be17cc8249
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 #+BEGIN_SRC shell :results output
   #    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
    #   http GET http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
@@ -977,7 +1283,11 @@ Need to be able to upload a file to the api endpoint and have it imported
 #+RESULTS:
 : {"data":[{"name":"/tmp/plug-1504/multipart-1504498094-716839023744787-2","id":"9dafb409-ab95-43ea-a774-ae31d361be5f"}]}
 **** DONE Export endpoint (show)
-      CLOSED: [2017-09-03 Sun 21:09]
+CLOSED: [2017-09-03 Sun 21:09]
+:PROPERTIES:
+:PREFIX_OBJ_ID: d335d8ab-dfc7-473f-8a52-ca64752ca327
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 #+BEGIN_SRC shell :results output
 #    http GET http://10.0.0.175:4000/v1/buckets/default/collections/documents/records X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
@@ -987,7 +1297,11 @@ Need to be able to upload a file to the api endpoint and have it imported
 #+END_SRC
 
 **** DONE delete document (delete)
-      CLOSED: [2017-09-03 Sun 21:09]
+CLOSED: [2017-09-03 Sun 21:09]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 9b479567-032b-47f3-958a-61efe0db5cab
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
       :LOGBOOK:
       CLOCK: [2017-09-03 Sun 20:15]--[2017-09-03 Sun 21:09] =>  0:54
       :END:
@@ -1004,63 +1318,215 @@ Need to be able to upload a file to the api endpoint and have it imported
 #+RESULTS:
 
 **** DONE User security
-     CLOSED: [2017-09-03 Sun 09:03]
+CLOSED: [2017-09-03 Sun 09:03]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 94f782d5-23d0-415b-9cb4-6326ef00a75b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 **** DONE Need api_token field - forget having a separate table for now
-     CLOSED: [2017-09-03 Sun 14:39]
+CLOSED: [2017-09-03 Sun 14:39]
+:PROPERTIES:
+:PREFIX_OBJ_ID: cfef3004-d4c3-41b7-8fd8-09d0b8cdcd84
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** DONE Import/Export Bugs
-    CLOSED: [2017-09-04 Mon 01:07]
+CLOSED: [2017-09-04 Mon 01:07]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2cdb3dea-b686-4690-97fc-bdaa8bffb4a3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE scheduled_date_range, scheduled_time_interval not written to db
-     CLOSED: [2017-08-19 Sat 22:43]
+CLOSED: [2017-08-19 Sat 22:43]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3d52e664-26e9-4627-a63b-7c0fae0d7974
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** DONE Regenerate org-file - scheduled date - the second date of the range is missing
-     CLOSED: [2017-09-04 Mon 01:07]
+CLOSED: [2017-09-04 Mon 01:07]
+:PROPERTIES:
+:PREFIX_OBJ_ID: bfd0d667-74ab-4d09-81c8-0281b79dbee2
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-03 Sun 23:06]--[2017-09-04 Mon 01:07] =>  2:01
      :END:
 [[file:~/repos/self/ttl/lib/ttl/parse/export.ex::defp%20db_date_to_string(date,%20bracket,%20time_interval,%20date_range,%20repeat_interval%20)%20do][fix it here]]
-*** Sync - export with ids
-*** Sync REST client - python?
+*** DONE Sync - export with ids
+CLOSED: [2017-09-04 Mon 10:51]
+:PROPERTIES:
+:PREFIX_OBJ_ID: ca8e18b8-5bd4-48d8-b54a-f7e5faffac74
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** DONE Recursive sync
+CLOSED: [2017-09-04 Mon 14:55]
+:PROPERTIES:
+:PREFIX_OBJ_ID: df7fb446-ae7a-4f50-be58-25632395fa1b
+:PREFIX_OBJ_VERSION: 1504549576
+:END:
+Started testing this manually with python sync client
+Had to actually compare the actual objects on the sync since no local knowledge of what changed.
+It seems to only be updating the properties that we've put into the file correctly without screwing up the db.
+*** DONE Recursive sync testing
+CLOSED: [2017-09-04 Mon 14:54]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 26194598-0eab-44c0-a9e4-1b7f03ed095c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+:LOGBOOK:
+CLOCK: [2017-09-04 Mon 11:00]--[2017-09-04 Mon 14:54] =>  3:54
+:END:
+Import file
+Export file with new ids
+Import -> same amount of entries in database
+Make change to file - modify vs add new nodes without ids
+Export -> same result
+*** Update the version on the server
+:PROPERTIES:
+:PREFIX_OBJ_ID: 036eede3-ebc0-44b9-94b6-83bac6c73a8d
+:PREFIX_OBJ_VERSION: 1504549576
+:END:
+Not sure if this will help. We still don't know if we modified an object locally or not. 
+*** DONE Sync REST client - python?
+    CLOSED: [2017-09-04 Mon 15:42]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f2008494-48e2-4202-8312-175465553819
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+:LOGBOOK:
+CLOCK: [2017-09-04 Mon 08:00]--[2017-09-04 Mon 10:50] =>  2:50
+:END:
    http --form POST http://10.0.0.175:4000/api/v1/documents X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey file@README.org
 
 1) Start off with a simple script to do whole files
 2) Show api needs options to add id
 3) Backups of files synced
-
-*** How to move between SPA and PHX? 
+   
+*** How to move between SPA and PHX?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 056561e5-a3d0-40d8-aa7d-0c810c8b973c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Or remove all html on PHX? Just have PHX be a pure API. 
 *** Cleanup backlog
+:PROPERTIES:
+:PREFIX_OBJ_ID: 81781c9f-870e-4a6f-9625-b782ae9fa3f4
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** Proper prefix for exported file
+:PROPERTIES:
+:PREFIX_OBJ_ID: 94e9b908-be40-41cd-9f95-16f4265b86be
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+./ttl/parse/document.ex:47:      f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_ID", :id)
+./ttl/parse/document.ex:50:      f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_VERSION", :version)
+./ttl/parse/document.ex:147:    |> Ttl.Parse.Consolidate.consolidate_objects_to_document(%Document{name: file, metadata: file_metadata, id: file_metadata["PREFIX_DOC_ID"]})
+./ttl/parse/export.ex:128:      true ->  ":PREFIX_OBJ_ID: #{id}\n:PREFIX_OBJ_VERSION: #{version}\n"
+./ttl/parse/export.ex:156:      "#+PREFIX_DOC_ID:#{doc_id}\n"
 **** Make sessions last 10 years, not expire on logout
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2dd20515-11a6-4cdb-895c-4a4ea0f2d183
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** state may get populated incorrectly if the first word is caps.
+:PROPERTIES:
+:PREFIX_OBJ_ID: 459ab0b9-159e-4bf7-96b3-76ef3cd0be4b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Doesn't affect export or headline though...it's a bug that is not quite a bug
 Essentially, searches for those titles may break .
 **** The document collection should also have a userid in upload
+:PROPERTIES:
+:PREFIX_OBJ_ID: c9f78316-af4f-41ba-870b-0dbf8aab7fa4
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Right now kinto doesn't have this concept, just maps to buckets for ownership.
 **** name metadata isn't right on import
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3da61137-c066-4e05-baa9-13b25307ae3e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Go through each query and make sure error conditions are satisfied.
+:PROPERTIES:
+:PREFIX_OBJ_ID: 49ce15b4-9b42-4009-b5b9-9b8ed1688b19
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 [[file:lib/ttl/web/controllers/api_document_controller.ex::def%20delete(conn,%20%25{"id"%20=>%20id})%20do][example]]
 **** Go through things.ex and normalize structures/responses?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 27b618e3-92fd-40e7-bc4f-5376c9fdb1cb
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Fallback controller
+:PROPERTIES:
+:PREFIX_OBJ_ID: 53c7f6eb-8d1d-4d74-94e2-f270c2f76bef
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 [[file:lib/ttl/web/controllers/api_document_controller.ex::#%20TODO%20-%20fallback][fallback location]]
 [[file:lib/ttl/web/controllers/fallback_controller.ex::#%20TODO%20not%20being%20used%20yet][fallback controller]]
 **** kinto token == user id
+:PROPERTIES:
+:PREFIX_OBJ_ID: 05e5abe2-dd8d-4508-925e-e5a21377c21d
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Are we going to have a separate kinto_token? Will the token be available to clients ever?
 [[file:lib/ttl/accounts/plug_auth.ex::#%20TODO%20-%20kinto%20token%20==%20user_id][cleanup in auth]]
 **** Tests for authorization
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7b706ae0-ab23-462c-98dd-cc2b5430a41f
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Figure out how to put the SPA on phx
-**** DONE Why are we treating api auth different from session auth? 
-     CLOSED: [2017-09-03 Sun 14:12]
+:PROPERTIES:
+:PREFIX_OBJ_ID: ff134a71-4107-4291-af26-5dd7d33471a0
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** DONE Why are we treating api auth different from session auth?
+CLOSED: [2017-09-03 Sun 14:12]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7ec112aa-3fd0-4724-8d33-9de189d364dd
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Shouldn't it check if api key
 If not, check session key
 Merge the two together and give access to everything if moving to SPA.
 Regarding kinto, people can put arbitrary data in local indexeddb anyway. 
 Kinto token needs to be fixed, that is userid/client_id. If they get api_key or session cookie, they have access. 
 **** Refactor data layer and remove copy and paste in import/exports
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8dabaf9f-a10d-401d-b86d-58b32e892044
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Setup a http pool for kinto
+:PROPERTIES:
+:PREFIX_OBJ_ID: 84758f14-88ad-4f8b-84c6-44e61fcf3c9a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Move kinto to https
+:PROPERTIES:
+:PREFIX_OBJ_ID: f9ec6509-0f69-43e6-a7f9-158c4a0a2010
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Hardcoded localhost
+:PROPERTIES:
+:PREFIX_OBJ_ID: e7dd4790-9904-4017-b36d-0823f7575770
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Postgres? Remove or refactor and keep for later?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 5e3b520f-4de6-4bed-be0d-c9c9905c76a3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Remove all the extra phx routes
+:PROPERTIES:
+:PREFIX_OBJ_ID: 28238b15-39ca-42ef-b6cb-5fef367cc0d8
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Make an elixir-kinto adapter?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 23551a8c-0298-4382-8e2c-4f63b762cc22
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - new table has userid + kinto token
 - connection pool
 - return structs
@@ -1068,10 +1534,30 @@ Kinto token needs to be fixed, that is userid/client_id. If they get api_key or 
 What about logbook?
 Need to revamp the schema. 
 **** add spec to all functions
+:PROPERTIES:
+:PREFIX_OBJ_ID: 86754ab7-6153-4131-a373-f53916ec8d51
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** App - Pre and post syncing data immediately / retries / backoffs
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** App - How to have multiple pages/routes without going insane.
+:PROPERTIES:
+:PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Pick and schedule things onto agenda :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0a7ae43d-40ee-4546-9119-478e9fa4ba05
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Secondary collection for tags and properties :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7b9809c1-30c5-4713-9cf2-5afdf94a45bd
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-03 Sun 21:50]--[2017-09-03 Sun 22:15] =>  0:25
      :END:
@@ -1088,9 +1574,17 @@ Kinto doesn't seem to be able to do it.
    - on import - store the tag as a string. guaranteed to be right. secondary tags collection for finding objects with tags.
 [[*test via hash][test via hash]] seems to work for python api. Need to sync it locally and then test via js . Api doesn't look like it supports. 
 ***** DONE testing kinto
-      CLOSED: [2017-09-03 Sun 22:58]
+CLOSED: [2017-09-03 Sun 22:58]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6b07d942-e974-4f7c-83c4-8887cea72930
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 ****** Testing via array
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1d26baff-c40c-4fb8-b926-5e4463ef1f43
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 #+BEGIN_SRC shell :results output
 #    http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
 
@@ -1113,6 +1607,10 @@ echo '{"data": {"id": "tjtest6" , "description": "tjtest", "status": "TODO", "ti
 #+END_SRC
 
 ****** test via hash
+:PROPERTIES:
+:PREFIX_OBJ_ID: 754d6013-f6f1-4409-b3af-b94ee4f5d762
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 #+BEGIN_SRC shell :results output
 #echo '{"data": {"id": "hash1" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag3": 1} }}' | 
 #echo '{"data": {"id": "hash2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag2": 1} }}' | 
@@ -1129,61 +1627,171 @@ echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "titl
 
 
 **** More complete tests for generate -> regenerate with UUID's
+:PROPERTIES:
+:PREFIX_OBJ_ID: 12ac98ab-8e85-4d5b-ac5b-65b349763b35
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
-*** Sync testing and performance
-Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
-      - Need to modify the object from ui/db and then test uploads
-      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
-      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
-      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
-**** Recursive sync testing
-Import file
-Export file with new ids
-Import -> same amount of entries in database
-Make change to file - modify vs add new nodes without ids
-Export -> same result
 *** Offline test
+:PROPERTIES:
+:PREFIX_OBJ_ID: 17280cc5-82a8-4e33-858a-76a169604cfe
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Notifications
+:PROPERTIES:
+:PREFIX_OBJ_ID: 279bb6fc-3a9e-4882-8a02-a2dd05c30171
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
 *** App - Display agenda :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** UI Display
+:PROPERTIES:
+:PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Onclick and onslide events - increment version
+:PROPERTIES:
+:PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Onedit - increment version
+:PROPERTIES:
+:PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** App - Components
+:PROPERTIES:
+:PREFIX_OBJ_ID: 28874fb3-77d9-4fe0-ac0e-b99ed88495d2
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 *** App - How to include different files
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
+:PROPERTIES:
+:PREFIX_OBJ_ID: d557e25c-6fb5-49da-a402-6266db0aec94
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 *** Bin-packing
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4c90e670-217e-4f08-9056-bf4504c3cf57
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** User settings
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4d2da14e-2cf9-4998-8ac1-1c30fb5a7e9a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Daily review
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7cae55ad-fc6b-4406-a39f-18f26ed6b2fe
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Weekly review
+:PROPERTIES:
+:PREFIX_OBJ_ID: aa94c30e-6c23-444d-84c1-0b7ef5b25489
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Connect to phoenix channels - why? Comments/feedback?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1b10ae3a-c93c-4ecc-8fb6-ee798848a2c1
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Check for updates of code versions and update notice
+:PROPERTIES:
+:PREFIX_OBJ_ID: ad2aa3e2-5b64-492e-ac24-f78416cc2467
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** notifications
+:PROPERTIES:
+:PREFIX_OBJ_ID: 67c1191d-6438-4799-9ac3-946fbeac1e60
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** App - UI Tests
+:PROPERTIES:
+:PREFIX_OBJ_ID: 02ed58fd-1d92-4e80-80cf-2b3830f3812e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://github.com/webpro/Automated-SPA-Testing
 *** Import/export Tests
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1132d68f-647a-4613-b88b-e8fd70115c97
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
        Updates
        - An old object (all db counts same)
        - A new object gets added (db count + 1)
        - the new object gets modified (db count same)
 ** MVPX
+:PROPERTIES:
+:PREFIX_OBJ_ID: 9282f3e7-02b1-479f-b5b8-900f56983a55
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Sync upgrades, testing, and performance
+:PROPERTIES:
+:PREFIX_OBJ_ID: c1b9b8a6-5ca8-4711-bfe3-ef072fe6ff52
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+Upload file -> import -> conflict items -> export -> return {new_file, conflicts, updated, published, etc.)
+      - Need to modify the object from ui/db and then test uploads
+      - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
+      - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
+      - Version could be a JSON CRDT to enable merging, but need to make emacs module also
 *** Add an editor?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4a9e1f1e-95f0-4edf-8778-7615ebb424e1
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 http://scripting.com/2013/09/16/concordOurGplOutliner
 https://github.com/tjheeta/concord
 
 *** Attachments and inline viewing
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7746eaf9-c86a-4e49-a68a-ce77d4435838
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Inline viewing
+:PROPERTIES:
+:PREFIX_OBJ_ID: c6c5ea9a-b884-47eb-9dd6-bb4d0a18b7cd
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 [[file:~/org/jive/main/mako/deploy_flow.png][file:~/org/jive/main/mako/deploy_flow.png]]
 :org-toggle-inline-images or c-c, c-x, c-v 
 
 **** Attachments
+:PROPERTIES:
+:PREFIX_OBJ_ID: 11f69fc5-d8b2-46dc-8053-e1861f69c1c8
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 *** Server-side rendering - how does this even matter?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3bcd143e-c3c4-4a08-96fa-cdcb7a119fe1
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** capture
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2fa12119-1461-4eb7-925e-d60391cfb8a3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** bookmarklets directly to server
-**** attachments                                                     :ATTACH:
+:PROPERTIES:
+:PREFIX_OBJ_ID: febf7f07-0d30-40bb-900f-9bd48708d6cb
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** attachments :ATTACH:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1d6e755c-8843-4a5c-be07-ab1bdbf39012
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :PROPERTIES:
      :Attachments: deploy_flow.png developer_access.png
      :ID:       002c1bf3-a3cb-45a2-856a-93f7fbb3e6a0
@@ -1191,24 +1799,64 @@ https://github.com/tjheeta/concord
 - The directory is actually in ttl/data (based on where this org file is
 - http://orgmode.org/manual/Attachments.html
 **** pictures and attachments
+:PROPERTIES:
+:PREFIX_OBJ_ID: 662af498-2928-494c-99dd-f25408639d0d
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
      :PROPERTIES:
      :ID:       9e0c00b2-4301-4b75-bf4e-a11f4ab31fcb
      :END:
 https://stackoverflow.com/questions/17435995/paste-an-image-on-clipboard-to-emacs-org-mode-file-without-saving-it
 **** some sort of ifttt integration? send email to an interface and it will go into todo?
+:PROPERTIES:
+:PREFIX_OBJ_ID: f88ddad2-9363-44e0-bb50-03e3b9b3e7f9
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** parse additional properties for scheduling + contexts + tags
+:PROPERTIES:
+:PREFIX_OBJ_ID: e745aa9f-19c4-4ff5-910b-521b2ad8bf5c
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 estimated time
 *** Inbox - integration point for externs and updates?
+:PROPERTIES:
+:PREFIX_OBJ_ID: c15223f2-2f2d-4472-be41-c79519b40778
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Add full calendar?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2995a091-f3cb-48d6-8d01-dec83bb91491
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Google calendar / ICS
+:PROPERTIES:
+:PREFIX_OBJ_ID: b36305ab-3021-4d03-908b-430c9496be52
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Conflict resolution?
+:PROPERTIES:
+:PREFIX_OBJ_ID: e293e164-3c35-406f-8fcb-52d7808bdc48
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - Show conflicts
 - Pick versions
 - Force upload
 *** Capture to different documents
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1a4b22bf-b3e0-4077-b0eb-b080092d5128
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Set concurrency controls?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 42ba485a-27bd-4177-b695-7eab3c7280f3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - Will need to pass on headers in KintoPlugProxy
 *** Upload UI
+:PROPERTIES:
+:PREFIX_OBJ_ID: c5ecf787-a801-44d2-9688-838c31429414
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Need a single interface that is accessible through PWA to import/export.
 The organization of this is getting a bit messy. 
 The client is based on being offline first and using kinto.
@@ -1223,11 +1871,23 @@ To import:
 2) File gets parsed and written to kinto
 3) Kinto synchronizes the data to the client for viewing
 **** Document api needs to have multiple options
+:PROPERTIES:
+:PREFIX_OBJ_ID: d4d845bf-bdb9-4b49-9b05-41d8c556d4d9
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - force upload
 - name
 - if no file, just create a blank doc?
 *** Autocomplete tags and documents
-*** Production Authorization 
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2473d79b-6515-45c6-a857-71b89c7ae17e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Production Authorization
+:PROPERTIES:
+:PREFIX_OBJ_ID: 314840b3-22cf-40e6-95bd-831f09a95443
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
     :LOGBOOK:
     CLOCK: [2017-09-01 Fri 21:30]--[2017-09-01 Fri 22:48] =>  1:18
     :END:
@@ -1239,15 +1899,43 @@ How can you check if a token is revoked without going to the db?
 Have a global counter of revoke, token has a counter element, if it is less than counter, it needs re-auth. Very fragile under load.
 
 **** Need api/bucket tokens for rest api
+:PROPERTIES:
+:PREFIX_OBJ_ID: bba5fcda-5672-4c17-bdc5-4052ea2ea42a
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Per device tokens or just revoke all and re-create current?
+:PROPERTIES:
+:PREFIX_OBJ_ID: 37ed1092-eced-41e9-a74b-160312f90ce9
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** How to revoke a user/device?
+:PROPERTIES:
+:PREFIX_OBJ_ID: dda405ca-0168-4766-ab75-14e437b39703
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Refresh token in db that is verified on refresh - 30 days. Just store that many days of revoke tokens on each refresh token use.
 Auth token regenerate every 15 min 
 if don't use tokens and just use a session in ets/dets, still won't work properly with long-session needing to be in mem or db. keeping n-days of revocation tokens better than keeping all auth tokens.   
 **** Ensure session cookie containing token is "HttpOnly" "Secure" (https)
-**** Cookie expiry far into the future. 
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0c6ff003-7017-4951-ad5d-7abe5198d569
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** Cookie expiry far into the future.
+:PROPERTIES:
+:PREFIX_OBJ_ID: c8b5be7d-db44-4a26-8387-c629e9a37ead
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** Cookies are fully encrypted
+:PROPERTIES:
+:PREFIX_OBJ_ID: 5b9dd721-9c57-4d7b-a3f8-ee57f634b6d3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 **** CSRF protection
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2321f190-3543-4b4a-850c-74a1e68057a3
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 #    plug :protect_from_forgery
 Right now are avoiding XSS attacks with http-only cookies and using credentials
 CSRF is still possible. With the plug protect_from_forgery, it will write it into the session.
@@ -1262,6 +1950,10 @@ http://www.redotheweb.com/2015/11/09/api-security.html
 https://github.com/elixir-plug/plug/issues/504
 
 **** websocket security
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0f0cfa12-5194-4b94-916e-deb72720bede
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - read assets/js/socket.js
 - https://hexdocs.pm/phoenix/Phoenix.Token.html
 - https://medium.com/caspertechteam/securing-websockets-in-elixir-770cbd2da043
@@ -1272,26 +1964,58 @@ Each document in document collection
 Each object is now a record in objects collection. 
 Personal buckets are auto-synced.
 *** Assistant - location based
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8dfadc39-71c2-4a11-9eb0-c9d13b241ee5
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Elisp client - update versions / conflict resolution, local changes :ms.faraway:
-*** Encryption per bucket 
+:PROPERTIES:
+:PREFIX_OBJ_ID: d5895ecd-6de4-4132-8488-0820467f3158
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Encryption per bucket
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3e461bbc-2bfe-4301-8d2c-c35775bc9cc5
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 Need to have a master password. Each user has a keychain for all accessible buckets. The buckets get synced locally, decrypted as necessary, and stuff built. Re-keying will be massively painful. 
 *** Security
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7d945e20-b230-478c-961b-eb89436b0132
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 https://turtlapp.com/
 https://standardnotes.org/blog/7/announcing-our-2017-security-audit-results
 https://github.com/standardfile
-*** Security - Moving groups from public to private - offline stuff would still exist. 
+*** Security - Moving groups from public to private - offline stuff would still exist.
+:PROPERTIES:
+:PREFIX_OBJ_ID: f80700ae-b7fc-4ce1-8f50-0181f489e2a6
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** CRDT editing :ms.shared:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 50c1bc91-3376-47ee-a3d2-6d47ec35fc69
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 - https://github.com/xwiki-contrib/chainpad
 - https://hal.archives-ouvertes.fr/inria-00336191/
 - https://news.ycombinator.com/item?id=12303100
 - https://pages.lip6.fr/Marek.Zawirski/papers/SwiftCloud-RR-8347.pdf
 * Scratch
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6b7a1a14-af89-4ab5-babd-186a855b4c51
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 
 #+BEGIN_SRC elixir :results output
 2 + 2
 #+END_SRC
 
 * clocktable
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1d103559-59c8-400e-90ce-d4080062ff2d
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 #+BEGIN: clocktable :maxlevel 5 :scope file
 #+CAPTION: Clock summary at [2017-09-04 Mon 01:07]
 | Headline                                         | Time       |          |         |       |      |

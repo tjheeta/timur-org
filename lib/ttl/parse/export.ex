@@ -125,7 +125,7 @@ defmodule Ttl.Parse.Export do
     acc = acc <> planning_string
 
     property_string = case add_id do
-      true ->  "PREFIX_OBJ_ID: #{id}\n:PREFIX_OBJ_VERSION: #{version}\n"
+      true ->  ":PREFIX_OBJ_ID: #{id}\n:PREFIX_OBJ_VERSION: #{version}\n"
       false -> ""
     end
 
@@ -135,10 +135,11 @@ defmodule Ttl.Parse.Export do
         str = ":#{k}:    #{v}\n"
         acc <> str
       end) 
-      ":PROPERTIES:\n#{tmpstr}:END:\n"
+      property_string <> tmpstr
     else
       property_string
     end
+    property_string = if property_string != "",  do: ":PROPERTIES:\n#{property_string}:END:\n", else: ""
     acc = acc <> property_string
 
     if content, do: acc <> content, else: acc
@@ -203,7 +204,7 @@ defmodule Ttl.Parse.Export do
     # get the data for the file
     # TODO - need to add spec format and put these functions non anon
     document = Ttl.Things.kinto_get_document!(attrs[:kinto_token], string_uuid)["data"]
-    unsorted_data = Ttl.Things.kinto_get_data_of_objects(attrs[:kinto_token], string_uuid)["data"] |> Enum.reduce(%{}, fn(x, acc) ->
+    unsorted_data = Ttl.Things.kinto_get_objects_by_document_id(attrs[:kinto_token], string_uuid)["data"] |> Enum.reduce(%{}, fn(x, acc) ->
       Map.merge(acc, %{x["id"] => x})
     end)
     sorted_data = for id <- document["objects"], do: Map.get(unsorted_data,id)

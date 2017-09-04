@@ -272,7 +272,7 @@ defmodule Ttl.Things do
     Kinto.query_get!( kinto_token, url)
   end
 
-  def kinto_get_data_of_objects(kinto_token, document_id, bucket \\ "default") do
+  def kinto_get_objects_by_document_id(kinto_token, document_id, bucket \\ "default") do
     url = "/buckets/#{bucket}/collections/objects/records?document_id=#{document_id}"
     Kinto.query_get!( kinto_token, url)
   end

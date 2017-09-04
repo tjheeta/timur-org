@@ -6,6 +6,10 @@ defmodule Ttl.Web.ApiDocumentView do
     %{data: render_many(documents, ApiDocumentView, "document.json")}
   end
 
+  def render("index.json", %{document: document}) do
+    %{data: render_one(document, ApiDocumentView, "document.json")}
+  end
+
   def render("show.json", %{document: document}) do
     %{:text => document, :attachments => nil}
   end
@@ -15,5 +19,21 @@ defmodule Ttl.Web.ApiDocumentView do
       id: document["id"],
       name: document["name"]
      }
+  end
+
+  def render("sync.json", %{data: data}) do
+    %{
+     "ok" => data["ok"],
+     "id" => data["id"],
+     "lastModified" =>  data["last_modified"],
+     "conflicts" => data["conflicts"],
+     "errors" => data["errors"],
+     "created" => data["created"],
+     "updated" => data["updated"],
+     "deleted" => data["deleted"],
+     "skipped" => data["skipped"],
+     "published" => data["published"],
+     "resolved" => data["resolved"]
+    }
   end
 end

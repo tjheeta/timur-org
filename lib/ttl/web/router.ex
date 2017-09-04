@@ -40,7 +40,11 @@ defmodule Ttl.Web.Router do
 
   scope "/api/v1", Ttl.Web do
     pipe_through :api
-    resources "/documents", ApiDocumentController
+    get "/documents", ApiDocumentController, :index
+    get "/documents/:id", ApiDocumentController, :show
+    post "/documents", ApiDocumentController, :create
+    delete "/documents/:id", ApiDocumentController, :delete
+#    resources "/documents", ApiDocumentController
   end
 
   scope "/", Ttl.Web do

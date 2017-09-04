@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import requests
 import json
 import time
@@ -45,30 +46,7 @@ class Sync:
         with open(filename, "w") as f:
             f.write(download_result["text"])
 
-# #text = json.dumps(output["text"])
-# text = output["text"]
-# f.write(text)
-
-
-#    http DELETE http://10.0.0.175:4000/api/v1/documents/3e9d2eb9-8fde-49a7-9372-5fe40af57b6f X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
-# url = "http://10.0.0.175:4000/api/v1/documents"
-# headers = {'X-api-client': 'de4927d9-a099-4ec8-bb99-4f69888acb34', 'X-api-key': 'somekey'}
-# files = {'file': open('README.org', 'rb')}
-# r = requests.post(url, headers=headers, files=files )
-# id = r.json()["data"]["id"]
-#r = requests.get(url, headers=headers)
-# r.json()["data"][0]["id"]
-
 sync = Sync()
-filename = "tmp.org"
+[filename] = sys.argv[1:]
+#filename = "tmp.org"
 sync.sync(filename)
-# result = sync.upload(filename)
-# id = result["id"]
-# #id = "47de3858-965e-485e-8df6-dae81e7e4d14"
-# output = sync.download(id)
-# f = open(filename + ".synced", "w")
-# #text = json.dumps(output["text"])
-# text = output["text"]
-# f.write(text)
-#print text
-#print result

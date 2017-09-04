@@ -1,6 +1,7 @@
 # App artifacts
 /_build
 /db
+/data
 /deps
 /*.ez
 *.swp

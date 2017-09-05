@@ -1005,7 +1005,7 @@ CLOSED: [2017-08-31 Thu 23:37]
 Last state:
 With great regret, moved phx to kinto. Massive refactor needed to not expose the data layer, copy and paste everywhere to get things working. Performance gone to hell also, for the hopes that the kinto sync is robust. Regardless, it will only need a rewrite between 100-1000 concurrent users depending on how expensive the sync is and that means it will need 5x-10x actual users. All to avoid having to write a sync library and figure out indexeddb. 
 
-This stage looking to sync from server to local disk cleanly and get a functional agenda. 
+This stage looking to sync from server to local disk cleanly and a functional agenda. 
 
 *** DONE Thoughts
 CLOSED: [2017-09-01 Fri 17:47]
@@ -1060,7 +1060,6 @@ CLOSED: [2017-09-01 Fri 18:01]
    - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
 
-     
 *** DONE Braindump - Elixir to Kinto
 CLOSED: [2017-09-02 Sat 17:59]
 :PROPERTIES:
@@ -1120,7 +1119,6 @@ CLOSED: [2017-09-02 Sat 17:36]
 
 #+RESULTS:
 : {"errno":110,"code":404,"details":{"id":"someid","resource_name":"record"},"error":"Not Found"}
-
 
 *** DONE Set constant user_hmac_secret
 CLOSED: [2017-09-02 Sat 18:00]
@@ -1381,14 +1379,8 @@ Export file with new ids
 Import -> same amount of entries in database
 Make change to file - modify vs add new nodes without ids
 Export -> same result
-*** Update the version on the server
-:PROPERTIES:
-:PREFIX_OBJ_ID: 036eede3-ebc0-44b9-94b6-83bac6c73a8d
-:PREFIX_OBJ_VERSION: 1504549576
-:END:
-Not sure if this will help. We still don't know if we modified an object locally or not. 
 *** DONE Sync REST client - python?
-    CLOSED: [2017-09-04 Mon 15:42]
+CLOSED: [2017-09-04 Mon 15:42]
 :PROPERTIES:
 :PREFIX_OBJ_ID: f2008494-48e2-4202-8312-175465553819
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1402,17 +1394,135 @@ CLOCK: [2017-09-04 Mon 08:00]--[2017-09-04 Mon 10:50] =>  2:50
 2) Show api needs options to add id
 3) Backups of files synced
    
-*** How to move between SPA and PHX?
+*** App - How to move between SPA and PHX?
 :PROPERTIES:
 :PREFIX_OBJ_ID: 056561e5-a3d0-40d8-aa7d-0c810c8b973c
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 Or remove all html on PHX? Just have PHX be a pure API. 
+*** App - Pre and post syncing data immediately / retries / backoffs
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** App - How to have multiple pages/routes without going insane.
+:PROPERTIES:
+:PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** App - Components
+:PROPERTIES:
+:PREFIX_OBJ_ID: 28874fb3-77d9-4fe0-ac0e-b99ed88495d2
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
+*** App - How to include different files
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Pick and schedule things onto agenda :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 0a7ae43d-40ee-4546-9119-478e9fa4ba05
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Secondary collection for tags and properties :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 7b9809c1-30c5-4713-9cf2-5afdf94a45bd
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+     :LOGBOOK:
+     CLOCK: [2017-09-03 Sun 21:50]--[2017-09-03 Sun 22:15] =>  0:25
+     :END:
+Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
+Considering this is in each object, will have to store as an array of str. Can kinto search on that?
+
+Will also need to do this locally in indexeddb . 
+https://www.codeproject.com/Articles/744986/How-to-do-some-magic-with-indexedDB
+
+Kinto doesn't seem to be able to do it.
+1) subarray in object - doesn't appear to work
+2) separated by :, strings in tag array - maybe do to rebuild the file, but doesn't look like the js adapter will do it out of box.
+3) separate tags collection - and dealing with referential integrity issues may be the best bet.
+   - on import - store the tag as a string. guaranteed to be right. secondary tags collection for finding objects with tags.
+[[*test via hash][test via hash]] seems to work for python api. Need to sync it locally and then test via js . Api doesn't look like it supports. 
+***** DONE testing kinto
+CLOSED: [2017-09-03 Sun 22:58]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 6b07d942-e974-4f7c-83c4-8887cea72930
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+
+****** Testing via array
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1d26baff-c40c-4fb8-b926-5e4463ef1f43
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+#+BEGIN_SRC shell :results output
+#    http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
+
+#echo '{"data": {"id": "tjtest2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test", "test1", "test2"] }}' | 
+#echo '{"data": {"id": "tjtest3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test3", "tag1"] }}' | 
+#echo '{"data": {"id": "tjtest4" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test4", "tag1"] }}' | 
+#echo '{"data": {"id": "tjtest5" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": "tag1" }}' | 
+echo '{"data": {"id": "tjtest6" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["tag1"] }}' | 
+    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+
+#    http GET "http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1" X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[test]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tags1,test3]
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=tag1 - 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - 0 records
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1,test3 - 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - should be 1 record
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=["tag1"] - 1 record
+#+END_SRC
+
+****** test via hash
+:PROPERTIES:
+:PREFIX_OBJ_ID: 754d6013-f6f1-4409-b3af-b94ee4f5d762
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+#+BEGIN_SRC shell :results output
+#echo '{"data": {"id": "hash1" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag3": 1} }}' | 
+#echo '{"data": {"id": "hash2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag2": 1} }}' | 
+echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit2", "LAST_REPEAT":1234}, "tags": {"tagx": 1, "tag2": 1} }}' | 
+    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
+
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?properties.STYLE=habit
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag1=1
+#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag2=1
+#+END_SRC
+
+#+RESULTS:
+: {"permissions":{"write":["basicauth:09e0334b23e025416bf1836378ad07e2d14488137383f8232ac74987fc1ce4e6"]},"data":{"properties":{"STYLE":"habit2","LAST_REPEAT":1234},"id":"hash3","tags":{"tag2":1,"tagx":1},"status":"TODO","title":"tjtest","description":"tjtest","last_modified":1504513377299}}
+
+
+**** More complete tests for generate -> regenerate with UUID's
+:PROPERTIES:
+:PREFIX_OBJ_ID: 12ac98ab-8e85-4d5b-ac5b-65b349763b35
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+
+*** Offline test
+:PROPERTIES:
+:PREFIX_OBJ_ID: 17280cc5-82a8-4e33-858a-76a169604cfe
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
 *** Cleanup backlog
 :PROPERTIES:
 :PREFIX_OBJ_ID: 81781c9f-870e-4a6f-9625-b782ae9fa3f4
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
+**** DONE Bugs with syncing new items show conflicts
+     CLOSED: [2017-09-04 Mon 18:40]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 9190ac66-3a08-4863-acd2-d572720978e5
+:PREFIX_OBJ_VERSION: 1504575249
+:END:
+On the initial sync, it is written to kinto as an int. On the resync, the version is written to kinto as a string.
+Change parser to read version as int. Good for now.
 **** Proper prefix for exported file
 :PROPERTIES:
 :PREFIX_OBJ_ID: 94e9b908-be40-41cd-9f95-16f4265b86be
@@ -1538,111 +1648,23 @@ Need to revamp the schema.
 :PREFIX_OBJ_ID: 86754ab7-6153-4131-a373-f53916ec8d51
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** App - Pre and post syncing data immediately / retries / backoffs
+*** More complex syncing - needed when client becomes more complex
 :PROPERTIES:
-:PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
-:PREFIX_OBJ_VERSION: 1504545916
+:PREFIX_OBJ_ID: 91f72942-5676-40cc-a0c0-3029ecf62dbc
+:PREFIX_OBJ_VERSION: 1504574498
 :END:
-*** App - How to have multiple pages/routes without going insane.
+**** [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20compare%20the%20document%20also%20as%20it%20contains%20the%20order%20of%20the%20ids][compare document also]]
+**** sync - calculate the deleted items and remove objects
 :PROPERTIES:
-:PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
-:PREFIX_OBJ_VERSION: 1504545916
+:PREFIX_OBJ_ID: 4491c74c-a1e0-4517-8c81-fa3d82eeed81
+:PREFIX_OBJ_VERSION: 1504568348
 :END:
-*** Pick and schedule things onto agenda :ms.agenda:
+**** Update the version on the server
 :PROPERTIES:
-:PREFIX_OBJ_ID: 0a7ae43d-40ee-4546-9119-478e9fa4ba05
-:PREFIX_OBJ_VERSION: 1504545916
+:PREFIX_OBJ_ID: 036eede3-ebc0-44b9-94b6-83bac6c73a8d
+:PREFIX_OBJ_VERSION: 1504549576
 :END:
-*** Secondary collection for tags and properties :ms.agenda:
-:PROPERTIES:
-:PREFIX_OBJ_ID: 7b9809c1-30c5-4713-9cf2-5afdf94a45bd
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-     :LOGBOOK:
-     CLOCK: [2017-09-03 Sun 21:50]--[2017-09-03 Sun 22:15] =>  0:25
-     :END:
-Now that this is with kinto, will have to be per object - maybe store a secondary collection in a bucket with count
-Considering this is in each object, will have to store as an array of str. Can kinto search on that?
-
-Will also need to do this locally in indexeddb . 
-https://www.codeproject.com/Articles/744986/How-to-do-some-magic-with-indexedDB
-
-Kinto doesn't seem to be able to do it.
-1) subarray in object - doesn't appear to work
-2) separated by :, strings in tag array - maybe do to rebuild the file, but doesn't look like the js adapter will do it out of box.
-3) separate tags collection - and dealing with referential integrity issues may be the best bet.
-   - on import - store the tag as a string. guaranteed to be right. secondary tags collection for finding objects with tags.
-[[*test via hash][test via hash]] seems to work for python api. Need to sync it locally and then test via js . Api doesn't look like it supports. 
-***** DONE testing kinto
-CLOSED: [2017-09-03 Sun 22:58]
-:PROPERTIES:
-:PREFIX_OBJ_ID: 6b07d942-e974-4f7c-83c4-8887cea72930
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-
-****** Testing via array
-:PROPERTIES:
-:PREFIX_OBJ_ID: 1d26baff-c40c-4fb8-b926-5e4463ef1f43
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-#+BEGIN_SRC shell :results output
-#    http POST http://localhost:8888/v1/buckets/default/collections/tasks/records --auth user2:pass2
-
-#echo '{"data": {"id": "tjtest2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test", "test1", "test2"] }}' | 
-#echo '{"data": {"id": "tjtest3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test3", "tag1"] }}' | 
-#echo '{"data": {"id": "tjtest4" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["test4", "tag1"] }}' | 
-#echo '{"data": {"id": "tjtest5" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": "tag1" }}' | 
-echo '{"data": {"id": "tjtest6" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": [], "tags": ["tag1"] }}' | 
-    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
-
-#    http GET "http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1" X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[test]
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[]
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tags1,test3]
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=tag1 - 1 record
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - 0 records
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?in_tags=tag1,test3 - 1 record
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=[tag1] - should be 1 record
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags=["tag1"] - 1 record
-#+END_SRC
-
-****** test via hash
-:PROPERTIES:
-:PREFIX_OBJ_ID: 754d6013-f6f1-4409-b3af-b94ee4f5d762
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-#+BEGIN_SRC shell :results output
-#echo '{"data": {"id": "hash1" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag3": 1} }}' | 
-#echo '{"data": {"id": "hash2" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit", "LAST_REPEAT":1234}, "tags": {"tag1":1, "tag2": 1} }}' | 
-echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "title": "tjtest", "properties": {"STYLE": "habit2", "LAST_REPEAT":1234}, "tags": {"tagx": 1, "tag2": 1} }}' | 
-    http POST http://10.0.0.175:4000/v1/buckets/default/collections/objects/records  X-api-client:de4927d9-a099-4ec8-bb99-4f69888acb34 X-api-key:somekey
-
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?properties.STYLE=habit
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag1=1
-#http://10.0.0.175:4000/v1/buckets/default/collections/objects/records?tags.tag2=1
-#+END_SRC
-
-#+RESULTS:
-: {"permissions":{"write":["basicauth:09e0334b23e025416bf1836378ad07e2d14488137383f8232ac74987fc1ce4e6"]},"data":{"properties":{"STYLE":"habit2","LAST_REPEAT":1234},"id":"hash3","tags":{"tag2":1,"tagx":1},"status":"TODO","title":"tjtest","description":"tjtest","last_modified":1504513377299}}
-
-
-**** More complete tests for generate -> regenerate with UUID's
-:PROPERTIES:
-:PREFIX_OBJ_ID: 12ac98ab-8e85-4d5b-ac5b-65b349763b35
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-
-*** Offline test
-:PROPERTIES:
-:PREFIX_OBJ_ID: 17280cc5-82a8-4e33-858a-76a169604cfe
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-*** Notifications
-:PROPERTIES:
-:PREFIX_OBJ_ID: 279bb6fc-3a9e-4882-8a02-a2dd05c30171
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-- If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
+Not sure if this will help. We still don't know if we modified an object locally or not. 
 *** App - Display agenda :ms.agenda:
 :PROPERTIES:
 :PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
@@ -1663,17 +1685,13 @@ echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "titl
 :PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** App - Components
+*** Notifications
 :PROPERTIES:
-:PREFIX_OBJ_ID: 28874fb3-77d9-4fe0-ac0e-b99ed88495d2
+:PREFIX_OBJ_ID: 279bb6fc-3a9e-4882-8a02-a2dd05c30171
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
-*** App - How to include different files
-:PROPERTIES:
-:PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
+- If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
+*** Syncing via - [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20need%20f_last_modified%20from%20disk%20and%20f_last_sync%20times%20to%20do%20this%20properly][f_last_modified and f_last_synced]]
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
 :PROPERTIES:
 :PREFIX_OBJ_ID: d557e25c-6fb5-49da-a402-6266db0aec94
@@ -1726,7 +1744,7 @@ https://github.com/webpro/Automated-SPA-Testing
 :PREFIX_OBJ_ID: 1132d68f-647a-4613-b88b-e8fd70115c97
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-       Updates
+Updates
        - An old object (all db counts same)
        - A new object gets added (db count + 1)
        - the new object gets modified (db count same)

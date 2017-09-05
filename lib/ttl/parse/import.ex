@@ -208,7 +208,6 @@ defmodule Ttl.Parse.Import do
       end
     end)
 
-    IO.inspect length(publish)
     # TODO - need f_last_modified from disk and f_last_sync times to do this properly
     # Right now just use the version. local_version == server_version => publish
     {publish2, diff} = Enum.split_while(diff, fn(x) ->

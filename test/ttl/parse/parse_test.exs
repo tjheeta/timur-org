@@ -19,7 +19,7 @@ defmodule Ttl.ParseTest do
   end
   describe "db - test README" do
     test "import readme" do
-      attrs = %{mode: "default", add_id: false}
+      attrs = %{mode: "default", add_id: true}
       Application.put_env(:ttl, :storage, [backend: :db] )
 
       {:ok, doc, objects} = Ttl.Parse.Import.import_file(:db, "README.org")
@@ -44,7 +44,7 @@ defmodule Ttl.ParseTest do
   end
   describe "kinto - test README" do
     test "import readme" do
-      attrs = %{mode: "default", add_id: false, kinto_token: "testtoken"}
+      attrs = %{mode: "default", add_id: true, kinto_token: "testtoken"}
       Application.put_env(:ttl, :storage, [backend: :kinto] )
 
       {:ok, doc, objects} = Ttl.Parse.Import.import_file(:kinto, "README.org", attrs)

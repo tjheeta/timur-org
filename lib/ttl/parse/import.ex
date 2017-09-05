@@ -146,7 +146,6 @@ defmodule Ttl.Parse.Import do
   # On a change, we can get the server to assign the object a new version
   # However, server already assigns new last_modified.
 
-
   # The only piece of data we have is the local modification time.
   # Need second metadata -> last sync time
   # local modification time > last sync time -> could be conflicts
@@ -202,20 +201,22 @@ defmodule Ttl.Parse.Import do
     {publish, skip, diff} = Enum.reduce(parsed_objects, {[], [], []}, fn(x, {publish, skip, diff}) ->
       id = x.id
       cond do
-        db_objects[id] == nil -> {[x | publish] , skip, diff } # no id on remote
+        db_objects[id] == nil ->
+          {[x | publish] , skip, diff } # no id on remote
         f_compare_helper.(x, db_objects[id]) == true -> { publish , [x |skip], diff } # objects identical
         true -> { publish , skip, [ x | diff ] } # objects changed
       end
     end)
 
+    IO.inspect length(publish)
     # TODO - need f_last_modified from disk and f_last_sync times to do this properly
     # Right now just use the version. local_version == server_version => publish
-    {publish, diff} = Enum.split_while(diff, fn(x) ->
-      IO.inspect x.version
-      IO.inspect db_objects[x.id]["version"]
+    {publish2, diff} = Enum.split_while(diff, fn(x) ->
       x.version == db_objects[x.id]["version"]
     end)
+    publish = publish2 ++ publish
 
+    #IO.inspect "parsed = #{length(parsed_objects)}, publish = #{length(publish)}, skip = #{length(skip)}, conflict = #{length(diff)}"
     {publish, skip, diff}
   end
 

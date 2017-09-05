@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import os
+import codecs
 import sys
 import requests
 import json
@@ -42,8 +44,10 @@ class Sync:
             return 1
 
         download_result = self.download(id)
-        copyfile(filename, filename + "." + str(self.unixtime()))
-        with open(filename, "w") as f:
+        backup_name = filename.replace("/", "_")
+        path = os.path.expanduser("~/.org_backups/" + backup_name + "." + str(self.unixtime()))
+        copyfile(filename, path)
+        with codecs.open(filename, "w", "utf-8") as f:
             f.write(download_result["text"])
 
 sync = Sync()

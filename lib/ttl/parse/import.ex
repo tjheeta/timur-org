@@ -140,26 +140,37 @@ defmodule Ttl.Parse.Import do
   end
 
   ### Versioning notes
-  # Can't use Kinto sync unless we write ourselves a Kinto -> org adapter.
-  #- current_object has no version or id -> it has not been stored
-  #  - stored_object doesn't exist. Perfect
-  #  - can't compare even if it identical
-  #- current_object has version AND id
-  #  - stored_object exists and is == version. Perfect
-  #  - stored_object exists and is < version. We aren't incrementing versions, so not possible.
-  #    And we want to make sure we are updating the correct version. After update accepted, then increment?
-  #  - stored_object exists and is > version - what to do?
-  #    - We know mobile changed the file. We don't know if it was changed locally
-  #    - force_update - client wins
-  #    - fail the object in particular, return the stored state
-  #    - server wins
-  #    - merge the changes - not building this right now - org-mode doesn't support crdt anyway
 
   # On the text editor side, we aren't updating versions.
-  # On the mobile side - we could?
-  # kinto uses last_modified timestamp to sync to dbs
-  # the version number is the equivalent of last modified but outside of kinto
-  # This means if the version ondisk == db -> good
+  # Assuming every other client can change the version, but can use last_modified
+  # On a change, we can get the server to assign the object a new version
+  # However, server already assigns new last_modified.
+
+
+  # The only piece of data we have is the local modification time.
+  # Need second metadata -> last sync time
+  # local modification time > last sync time -> could be conflicts
+  #
+  # if diff
+  #   false -> skipping
+  #   true ->
+  #     no local id => not exist on server => publish
+  #     not exist local ? => update
+  #     (f_mod > obj_last_modified) => publish
+  #     (f_mod < obj_last_modified) =>
+  #         if f_mod == f_sync => update
+  #         else
+  #          - ask user for resolution
+  #          - force_update - client wins
+  #          - fail the object in particular, return the stored state
+  #          - server wins
+  #          - merge the changes - not building this right now - org-mode doesn't support crdt anyway
+  # we don't have the f_mod or f_sync time right now.
+  # we do have the version and we can assume that the client will always update the version number
+  # So for objects with a diff:
+  #   local_version == remote_version => publish
+  #   local_version < remote_version => TODO need f_mod and f_sync, but update for now
+
   def f_compare_object_versions(parsed_objects, document_id, kinto_token) do
 
     f_compare_helper = fn(x, y) ->
@@ -176,21 +187,6 @@ defmodule Ttl.Parse.Import do
       end)
     end
 
-    db_objects = Ttl.Things.kinto_get_versions_of_objects(kinto_token, document_id)
-    db_objects = Enum.map(db_objects["data"], fn(x) ->
-      #{Map.get(x, "id"), Map.get(x, "last_modified") }
-      {Map.get(x, "id"), Map.get(x, "version") }
-    end) |> Enum.into(%{})
-
-
-    {objects_to_update, objects_with_conflict} = Enum.split_with(parsed_objects, fn(x) ->
-      id = x.id
-      cond do
-        db_objects[id] == nil -> true
-        x.version == db_objects[id] -> true
-        true -> false
-      end
-    end)
     # if we don't check which objects are changed and upload them all, kinto will resync the full db
     # almost guaranteeing conflicts in this case if forget to sync
     # no way to know what objects have been modified locally yet
@@ -201,24 +197,35 @@ defmodule Ttl.Parse.Import do
       Map.merge(acc, %{x["id"] => x})
     end)
 
-    {objects_to_update, objects_no_change} = Enum.split_with(parsed_objects, fn(x) ->
+    # TODO - compare the document also as it contains the order of the ids
+
+    {publish, skip, diff} = Enum.reduce(parsed_objects, {[], [], []}, fn(x, {publish, skip, diff}) ->
       id = x.id
       cond do
-        db_objects[id] == nil -> true
-        f_compare_helper.(x, db_objects[id]) == false -> true # if different, than update
-        true -> false
+        db_objects[id] == nil -> {[x | publish] , skip, diff } # no id on remote
+        f_compare_helper.(x, db_objects[id]) == true -> { publish , [x |skip], diff } # objects identical
+        true -> { publish , skip, [ x | diff ] } # objects changed
       end
     end)
-    {objects_to_update, objects_no_change, objects_with_conflict}
+
+    # TODO - need f_last_modified from disk and f_last_sync times to do this properly
+    # Right now just use the version. local_version == server_version => publish
+    {publish, diff} = Enum.split_while(diff, fn(x) ->
+      IO.inspect x.version
+      IO.inspect db_objects[x.id]["version"]
+      x.version == db_objects[x.id]["version"]
+    end)
+
+    {publish, skip, diff}
   end
 
 
   # {:ok,
   #  db_doc,
   #  %{
-  #    "conflicts" => objects_with_conflict,
-  #    "skipped" => objects_no_change,
-  #    "published" => objects_to_update
+  #    "conflicts" => []
+  #    "skipped" => []
+  #    "published" => []
   #  }
   # }
   @spec import_file_kinto(String.t, map) :: {:ok, %Ttl.Things.Document{}, [%Ttl.Parse.Object{}]}
@@ -264,7 +271,7 @@ defmodule Ttl.Parse.Import do
     end)
 
 
-    {objects_to_update, objects_no_change, objects_with_conflict} = cond do
+    {publish, skip, diff} = cond do
       attrs.mode == "force" -> {parsed_objects, []}
       true -> f_compare_object_versions(parsed_objects, db_doc.id, kinto_token)
     end
@@ -273,16 +280,16 @@ defmodule Ttl.Parse.Import do
     # TODO - kinto can batch these together
     db_doc = Ttl.Things.kinto_update_document(kinto_token, db_doc, %{objects: ordered_object_ids} )["data"] |> f_to_struct(Ttl.Things.Document)
     # this will replace the objects with what is on disk, not patch
-    Ttl.Things.kinto_create_or_update_objects(kinto_token, objects_to_update)
+    Ttl.Things.kinto_create_or_update_objects(kinto_token, publish)
 
     #IO.inspect Enum.map(objects_to_update, fn(x) -> x.id end)
-    IO.inspect "update = #{length(objects_to_update)}, nochange = #{length(objects_no_change)}, conflict = #{length(objects_with_conflict)}"
+    IO.inspect "publish = #{length(publish)}, skip = #{length(skip)}, conflict = #{length(diff)}"
     {:ok,
      db_doc,
      %{
-       "conflicts" => objects_with_conflict,
-       "skipped" => objects_no_change,
-       "published" => objects_to_update
+       "conflicts" => diff,
+       "skipped" => skip,
+       "published" => publish
      }
     }
   end

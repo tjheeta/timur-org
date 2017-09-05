@@ -47,7 +47,11 @@ defmodule Ttl.Parse.Consolidate do
       f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_ID", :id)
     end
     f_maybe_set_version_from_properties_map = fn(object) ->
-      f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_VERSION", :version)
+      object = f_maybe_set_var_from_properties_map.(object, "PREFIX_OBJ_VERSION", :version)
+      case is_binary(object.version) do
+        true -> Map.put(object, :version, String.to_integer(object.version))
+        false -> object
+      end
     end
 
     # find the latest object

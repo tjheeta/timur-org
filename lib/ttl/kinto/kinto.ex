@@ -16,7 +16,7 @@ defmodule Kinto do
 
   def query_batch(token, url, method, data) do
     # http://docs.kinto-storage.org/en/stable/api/1.x/batch.html
-    options=[hackney: [basic_auth: {"kinto_token", token}]]
+    options=[hackney: [basic_auth: {"kinto_token", token}], timeout: 5_000, recv_timeout: 30_000]
     headers=["Content-Type": "application/json"]
 
     defaults = %{method: method, path: url}

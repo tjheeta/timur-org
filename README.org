@@ -1395,7 +1395,7 @@ CLOCK: [2017-09-04 Mon 08:00]--[2017-09-04 Mon 10:50] =>  2:50
 3) Backups of files synced
    
 *** DONE Sync bugs
-    CLOSED: [2017-09-04 Mon 19:19]
+CLOSED: [2017-09-04 Mon 19:19]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 1bc1e75b-457c-4124-9fe6-0e5a037d7ab0
 :PREFIX_OBJ_VERSION: 1504577559
@@ -1434,6 +1434,11 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 :PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
+*** Agenda - use todoapp and display records
+:PROPERTIES:
+:PREFIX_OBJ_ID: 454da379-91d5-43e2-941f-a10426638809
+:PREFIX_OBJ_VERSION: 1504580938
+:END:
 *** App - Display agenda :ms.agenda:
 :PROPERTIES:
 :PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
@@ -1449,10 +1454,15 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 :PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-**** Onedit - increment version
+**** Onedit - increment version?
 :PROPERTIES:
 :PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
 :PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Mobile deletes an object - has to reflect in document
+:PROPERTIES:
+:PREFIX_OBJ_ID: b1a3d99f-cc1c-4ff3-b267-32f5b212f620
+:PREFIX_OBJ_VERSION: 1504580938
 :END:
 *** Syncing via - [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20need%20f_last_modified%20from%20disk%20and%20f_last_sync%20times%20to%20do%20this%20properly][f_last_modified and f_last_synced]]
 :PROPERTIES:
@@ -1686,27 +1696,6 @@ Need to revamp the schema.
 :PREFIX_OBJ_ID: 86754ab7-6153-4131-a373-f53916ec8d51
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** More complex syncing - needed when client becomes more complex
-:PROPERTIES:
-:PREFIX_OBJ_ID: 91f72942-5676-40cc-a0c0-3029ecf62dbc
-:PREFIX_OBJ_VERSION: 1504574498
-:END:
-**** [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20compare%20the%20document%20also%20as%20it%20contains%20the%20order%20of%20the%20ids][compare document also]]
-:PROPERTIES:
-:PREFIX_OBJ_ID: 529be40c-fe1b-43cc-a169-046dc0166501
-:PREFIX_OBJ_VERSION: 1504577559
-:END:
-**** sync - calculate the deleted items and remove objects
-:PROPERTIES:
-:PREFIX_OBJ_ID: 4491c74c-a1e0-4517-8c81-fa3d82eeed81
-:PREFIX_OBJ_VERSION: 1504568348
-:END:
-**** Update the version on the server
-:PROPERTIES:
-:PREFIX_OBJ_ID: 036eede3-ebc0-44b9-94b6-83bac6c73a8d
-:PREFIX_OBJ_VERSION: 1504549576
-:END:
-Not sure if this will help. We still don't know if we modified an object locally or not. 
 *** Notifications
 :PROPERTIES:
 :PREFIX_OBJ_ID: 279bb6fc-3a9e-4882-8a02-a2dd05c30171
@@ -1784,6 +1773,38 @@ Upload file -> import -> conflict items -> export -> return {new_file, conflicts
       - make sure the item that is being updated has same version => last-modify time in unixtime utc. On sync, replace with max(device_time, server_time)
       - Can't use version number. Concurrency - multiple people could have modified the item. Clocks not good enough.
       - Version could be a JSON CRDT to enable merging, but need to make emacs module also
+*** More complex syncing - needed when client becomes more complex
+:PROPERTIES:
+:PREFIX_OBJ_ID: 91f72942-5676-40cc-a0c0-3029ecf62dbc
+:PREFIX_OBJ_VERSION: 1504574498
+:END:
+**** [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20compare%20the%20document%20also%20as%20it%20contains%20the%20order%20of%20the%20ids][compare document also]]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 529be40c-fe1b-43cc-a169-046dc0166501
+:PREFIX_OBJ_VERSION: 1504577559
+:END:
+**** sync - calculate the deleted items and remove objects
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4491c74c-a1e0-4517-8c81-fa3d82eeed81
+:PREFIX_OBJ_VERSION: 1504568348
+:END:
+**** Update the version on the server
+:PROPERTIES:
+:PREFIX_OBJ_ID: 036eede3-ebc0-44b9-94b6-83bac6c73a8d
+:PREFIX_OBJ_VERSION: 1504549576
+:END:
+Not sure if this will help. We still don't know if we modified an object locally or not. 
+
+**** An actual sync client - diff local copy + backup => last modified for obj
+:PROPERTIES:
+:PREFIX_OBJ_ID: 293f062c-7d79-44ac-bcdf-d5cea64b1005
+:PREFIX_OBJ_VERSION: 1504580938
+:END:
+This actually would be useful for full collaboration / multiple parties.
+But probably don't need it for single user mode.
+In most cases, user is either on mobile or machine. On machine, run sync immediately and be happy. 
+Use-case - modifying a file and a notifications comes in. Say it's done => but modified the file local and mobile.
+This is when sync client makes sense. 
 *** Add an editor?
 :PROPERTIES:
 :PREFIX_OBJ_ID: 4a9e1f1e-95f0-4edf-8778-7615ebb424e1

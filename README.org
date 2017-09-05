@@ -1394,6 +1394,19 @@ CLOCK: [2017-09-04 Mon 08:00]--[2017-09-04 Mon 10:50] =>  2:50
 2) Show api needs options to add id
 3) Backups of files synced
    
+*** DONE Sync bugs
+    CLOSED: [2017-09-04 Mon 19:19]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1bc1e75b-457c-4124-9fe6-0e5a037d7ab0
+:PREFIX_OBJ_VERSION: 1504577559
+:END:
+:LOGBOOK:
+CLOCK: [2017-09-04 Mon 19:18]--[2017-09-04 Mon 19:19] =>  0:01
+CLOCK: [2017-09-04 Mon 18:00]--[2017-09-04 Mon 19:18] =>  1:18
+:END:
+Document downloaded, nuke the server.
+When uploading, the new sync algorithm comparison is wrong, should upload, but skips instead.
+
 *** App - How to move between SPA and PHX?
 :PROPERTIES:
 :PREFIX_OBJ_ID: 056561e5-a3d0-40d8-aa7d-0c810c8b973c
@@ -1420,6 +1433,31 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 :PROPERTIES:
 :PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
 :PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** App - Display agenda :ms.agenda:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** UI Display
+:PROPERTIES:
+:PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** Onclick and onslide events - increment version
+:PROPERTIES:
+:PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+**** Onedit - increment version
+:PROPERTIES:
+:PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Syncing via - [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20need%20f_last_modified%20from%20disk%20and%20f_last_sync%20times%20to%20do%20this%20properly][f_last_modified and f_last_synced]]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 89bff9ee-2e4e-418d-9d1d-26492c001db9
+:PREFIX_OBJ_VERSION: 1504577559
 :END:
 *** Pick and schedule things onto agenda :ms.agenda:
 :PROPERTIES:
@@ -1516,7 +1554,7 @@ echo '{"data": {"id": "hash3" , "description": "tjtest", "status": "TODO", "titl
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 **** DONE Bugs with syncing new items show conflicts
-     CLOSED: [2017-09-04 Mon 18:40]
+CLOSED: [2017-09-04 Mon 18:40]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 9190ac66-3a08-4863-acd2-d572720978e5
 :PREFIX_OBJ_VERSION: 1504575249
@@ -1654,6 +1692,10 @@ Need to revamp the schema.
 :PREFIX_OBJ_VERSION: 1504574498
 :END:
 **** [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20compare%20the%20document%20also%20as%20it%20contains%20the%20order%20of%20the%20ids][compare document also]]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 529be40c-fe1b-43cc-a169-046dc0166501
+:PREFIX_OBJ_VERSION: 1504577559
+:END:
 **** sync - calculate the deleted items and remove objects
 :PROPERTIES:
 :PREFIX_OBJ_ID: 4491c74c-a1e0-4517-8c81-fa3d82eeed81
@@ -1665,33 +1707,12 @@ Need to revamp the schema.
 :PREFIX_OBJ_VERSION: 1504549576
 :END:
 Not sure if this will help. We still don't know if we modified an object locally or not. 
-*** App - Display agenda :ms.agenda:
-:PROPERTIES:
-:PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-**** UI Display
-:PROPERTIES:
-:PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-**** Onclick and onslide events - increment version
-:PROPERTIES:
-:PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-**** Onedit - increment version
-:PROPERTIES:
-:PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
 *** Notifications
 :PROPERTIES:
 :PREFIX_OBJ_ID: 279bb6fc-3a9e-4882-8a02-a2dd05c30171
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 - If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
-*** Syncing via - [[file:lib/ttl/parse/import.ex::#%20TODO%20-%20need%20f_last_modified%20from%20disk%20and%20f_last_sync%20times%20to%20do%20this%20properly][f_last_modified and f_last_synced]]
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
 :PROPERTIES:
 :PREFIX_OBJ_ID: d557e25c-6fb5-49da-a402-6266db0aec94

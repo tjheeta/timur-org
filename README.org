@@ -1007,7 +1007,7 @@ With great regret, moved phx to kinto. Massive refactor needed to not expose the
 
 This stage looking to sync from server to local disk cleanly and a functional agenda. 
 
-*** DONE Thoughts
+*** DONE Thoughts :product:brainstorm:
 CLOSED: [2017-09-01 Fri 17:47]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 4b74dbe6-fa86-4e21-8388-02b9c1ee60ac
@@ -1030,7 +1030,7 @@ This, however, won't help with changes.
 - Make a document a record. Then will have to parse and create the agenda each time. That sucks.
 - Have tasks be replicated into an inbox bucket for a user. This doesn't really work except for maybe 2-way.  
 - Build a custom offline cache and replication. Need to replicate everything that a user has access to, not just by bucket or collection. That sucks.
-- Instead of each document being a collection, have a document collection and an object collection. Get a full list of objects to build an agenda. Ignore anything about a document. When sharing, can move the object into a shared bucket location and can still have reference to it? No, will have build problem again. 
+- Instead of each document being a collection, have a document collection and an object collection. Get a full list of objects to build an agenda. Ignore anything about a document. When sharing, can move the object into a shared bucket location and can still have reference to it? No, will have build problem again.
 - A dedicated group for collaboration with org-mode could have a bucket with group perms. After that, each can take objects offline, work, change state, etc.
 - Move permissions directly onto the object itself.
 - All objects for all users are in a single collection (could be sharded).
@@ -1038,7 +1038,7 @@ This, however, won't help with changes.
 - Product usage. No one is going to partially share a document. The atomic unit for collaboration is the document, not the object. If anything, an object and children should be able to be moved to another document, with a reference back if necessary. Kinto does sharding by buckets => can represent a group. No one would share a subtree and get comments.
 - Are comments objects? For instance, a collection of these objects can also represent a forum thread. A comment could be represented by a headline. Could put comments into their own collection? Maybe want to turn comments into objects. 
   
-*** DONE Conclusion
+*** DONE Conclusion :product:brainstorm:
 CLOSED: [2017-09-01 Fri 18:01]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 0453b393-cf0e-4496-a126-2b4610181583
@@ -1059,7 +1059,11 @@ CLOSED: [2017-09-01 Fri 18:01]
    - Moving groups from public to private - offline stuff would still exist, but could remove keys from keychain?
    - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
-
+3) Enterprise
+   - Removing access to a group or document needs to be guaranteed.
+   - Maybe only default bucket is synced, and everything else is server-side 
+   - Based on encryption keys, then if it gets re-synced, it will remove access.
+   - Need variety of authorization mechanism oauth, etc.
 *** DONE Braindump - Elixir to Kinto
 CLOSED: [2017-09-02 Sat 17:59]
 :PROPERTIES:
@@ -1204,12 +1208,14 @@ CLOSED: [2017-09-03 Sun 01:25]
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 
-*** Patch kinto-http.js
+*** DONE Patch kinto-http.js
+    CLOSED: [2017-09-05 Tue 01:52]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 1cba1049-da0d-415b-ad2f-966ee8a0d2ff
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-
+[[*installing npm modules for kinto-http][installing npm modules for kinto-http]]
+Done in the cljs - build should be the same though
 line 164 of src/http.js - setting default credentials to same-origin should fix it
   async request(url, request = { headers: {} }, options = { retry: 0 }, credentials = 'same-origin') {
     // Ensure default request headers are always set                            
@@ -1407,7 +1413,8 @@ CLOCK: [2017-09-04 Mon 18:00]--[2017-09-04 Mon 19:18] =>  1:18
 Document downloaded, nuke the server.
 When uploading, the new sync algorithm comparison is wrong, should upload, but skips instead.
 
-*** App - How to move between SPA and PHX?
+*** DONE App - How to move between SPA and PHX?
+    CLOSED: [2017-09-05 Tue 04:52]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 056561e5-a3d0-40d8-aa7d-0c810c8b973c
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1434,11 +1441,210 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 :PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** Agenda - use todoapp and display records
+*** DONE Agenda - use todoapp and display records
+    CLOSED: [2017-09-05 Tue 04:53]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 454da379-91d5-43e2-941f-a10426638809
 :PREFIX_OBJ_VERSION: 1504580938
 :END:
+Filtering: 
+  state.tasks.list({filters: {state: "TODO"}, order: "scheduled"} )
+Can filter everything by tags - that would be reasonably straight forward. 
+How would you display the same todo shell with different filters? 
+Looks like everything needs to be done post-facto in memory.
+
+*** Clojurescript
+**** DONE Learning
+     CLOSED: [2017-09-06 Wed 21:52]
+http://www.lispcast.com/core-async-browser-motivation
+(js/console.log "test")
+(js/log "test")
+https://lambdaisland.com/episodes/clojurescript-interop
+http://swannodette.github.io/2014/07/26/transit-clojurescript
+**** DONE Understanding front end frameworks
+     CLOSED: [2017-09-06 Wed 21:52]
+https://staltz.com/unidirectional-user-interface-architectures.html
+
+https://www.reddit.com/r/Clojure/comments/3vk58p/a_rant_on_om_next/
+- Reframe subscriptions take data and return a ratom that is a projected view of that data. The problem is, the relationship between the component, and the subscribed path is in code, or more correctly in the closed overs of the function. Why not just expose the subscription paths themselves? That's all Om.Next is really doing, structuring an app around a single source of truth, then expressing subscriptions to parts of the data state via data that represents paths.
+
+https://github.com/roman01la/citrus/issues/10
+https://medium.com/@julienetienne_/declarative-templates-a-better-javascript-view-layer-f6a6ab5a7aa7
+
+Kinto returns a promise. 
+
+Todo status changed:
+-> send the event and value -> 
+-> StateController(e, v, state) -> 
+     send_event to listeners
+     (:ok, :noreply, state) 
+-> 
+| React + Redux                                            | SAM                                                 | Rum + Citrus            |
+|----------------------------------------------------------+-----------------------------------------------------+-------------------------|
+| Single State Tree                                        | Single Model Tree                                   | Single Reconciler State |
+| State is read-only                                       | Model is presented with new proposed values         | State RO in reconciler  |
+| Reducers are pure functions                              | Actions are pure with respect to the model          | Controllers pure        |
+| Reducers have access to state when processing actions    | Actions have no access to model state               | Controllers have access |
+| Store is updated with the output of the reducer function | State (not "state") created after model has mutated | State is an auto-effect |
+| Listeners are notified of the update                     | NAP evaluates whether action needs to be triggered  |                         |
+| View is a function of the state                          | State representation is a function of the model     | Components = f(state)   |
+| Next action predicate (nap) is implemented as a Saga     | NAP = f(model) => {state, nextactions}              | NAP done earlier        |
+|----------------------------------------------------------+-----------------------------------------------------+-------------------------|
+
+The model being presented with new proposed values. 
+
+OK, what is important? 
+1) If there are multiple events occurring on a page, there is only one central authority that can change it. Can't mutate directly
+2) Some way to do side-effects like http with pure-functions
+3) A way to add new dependent components without littering with hardcoded paths. 
+Ex with microservices - adding service B. 
+a) Distributed transaction - need to modify A (not good). 
+b) Polling for changes on service(A) - is there an equivalent in UI? Subscrition?
+c) Publish/subscribe - event sourcing model
+
+Too much theory. Does citrus work for now or not?
+
+**** DONE installing npm modules for kinto-http
+     CLOSED: [2017-09-05 Tue 01:54]
+http://blob.tomerweller.com/reagent-import-react-components-from-npm
+
+Cloned - https://github.com/ClubExpressions/poc2
+Modify package.json - "kinto-http": "tjheeta/kinto-http.js"
+poc2 uses webpack - which is executed via "npm run build" and actually does  ./node_modules/.bin/webpack -p 
+"./node_modules/.bin/webpack -p --display-error-detail" is handy
+#+BEGIN_SRC shell :results output
+cd ~/repos/self/clojure
+git clone https://github.com/ClubExpressions/poc2
+mkdir node_modules
+git clone https://github.com/tjheeta/kinto-http.js node_modules/kinto-http
+cd node_modules/kinto-http
+npm install && npm run build # builds the library
+#+END_SRC
+
+Now for the project
+Add "kinto-http": "tjheeta/kinto-http.js" to package.json
+
+#+BEGIN_SRC shell :results output
+cd ~/repos/self/clojure/poc2
+npm install
+npm build run
+lein do clean, figwheel
+#+END_SRC
+
+**** DONE getting kinto to proxy through via the credentials cookie
+     CLOSED: [2017-09-05 Tue 01:54]
+Ran lein-figwheel setup on port 4001
+It is constantly building in /home/tjheeta/repos/self/clojure/poc2/resources/public
+That is symlinked:
+$ pwd 
+/home/tjheeta/repos/self/ttl/priv/static
+$ ls -l poc2
+lrwxrwxrwx 1 tjheeta tjheeta 54 Sep  5 01:49 poc2 -> /home/tjheeta/repos/self/clojure/poc2/resources/public
+http://localhost:4000/poc2/index.html has successful access
+
+**** DONE setup figwheel + datascript-todo + kinto
+     CLOSED: [2017-09-06 Wed 21:53]
+     :LOGBOOK:
+     CLOCK: [2017-09-06 Wed 13:21]--[2017-09-06 Wed 13:46] =>  0:25
+     CLOCK: [2017-09-06 Wed 12:51]--[2017-09-06 Wed 13:16] =>  0:25
+     CLOCK: [2017-09-06 Wed 12:12]--[2017-09-06 Wed 12:37] =>  0:25
+     CLOCK: [2017-09-06 Wed 11:46]--[2017-09-06 Wed 12:11] =>  0:25
+     CLOCK: [2017-09-06 Wed 11:11]--[2017-09-06 Wed 11:36] =>  0:25
+     CLOCK: [2017-09-06 Wed 10:30]--[2017-09-06 Wed 11:11] =>  0:41
+     :END:
+***** DONE setup webpack
+      CLOSED: [2017-09-06 Wed 11:16]
+npm install
+npm run build
+***** DONE setting a date in js
+      CLOSED: [2017-09-06 Wed 12:05]
+**** DONE Need to setup citrus and repeat the steps
+     CLOSED: [2017-09-07 Thu 15:55]
+**** DONE Kinto pattern
+     CLOSED: [2017-09-07 Thu 22:18]
+     :LOGBOOK:
+     CLOCK: [2017-09-07 Thu 18:00]--[2017-09-07 Thu 22:19] =>  4:19
+     :END:
+**** DONE Get kinto working with counter
+     CLOSED: [2017-09-08 Fri 14:06]
+**** DONE kinto-list - [[file:~/data/repos/self/clojure/cljs-rum-realworld-example-app/src/conduit/effects.cljs::(defn%20kinto-list%20%5Breconciler%20ctrl-name%20{:keys%20%5Boptions%20on-success%20on-error%5D}%5D][need to fetch the actual data]]
+     CLOSED: [2017-09-08 Fri 14:06]
+[[file:~/data/repos/self/clojure/cljs-rum-realworld-example-app/src/conduit/effects.cljs::%5Bpromesa.core%20:as%20p%5D))][test project file]]
+
+Also, can wire up every controller to have a side-effect of re-calculating "state"
+Already working in :
+[[file:~/data/repos/self/clojure/poc2/src/simple/core.cljs::(fn%20%5B%5D][poc2 project from github]]
+**** DONE kinto sets a promise
+     CLOSED: [2017-09-08 Fri 14:06]
+In the js spa, after promise.then ( update the view atom )
+Maybe use?
+https://stackoverflow.com/questions/39732076/how-to-bind-the-resolved-value-of-javascript-promise-in-clojurescript
+- https://github.com/jamesmacaulay/cljs-promises
+**** DONE kinto just needs to communicate to 8888, no need to do the cookie
+     CLOSED: [2017-09-08 Fri 14:06]
+- currently stuck on then on retrieving after getting kinto promise from collection
+**** DONE react - how to handle a form?
+     CLOSED: [2017-09-08 Fri 23:09]
+- do we subscribe to the state data in the form?
+- to have validation on the form, we need to constantly change the state
+  - need an on-change event to update the state, then subscribe back
+
+when using rum with this code:
+    ;               :on-key-down #{action-object-update-state (extract-object)}
+extract-object gets run on the page load with the event on-key-down
+
+http://www.servicedenuages.fr/en/jedit-bugs-getting-off-the-ground
+
+kinto is our datastore. if we were submitting to a rest api, we would not persist the data directly each time to the database. 
+user state is in-memory and react updates based on in-memory subscriptions
+
+Flow:
+user updates some form element
+  - is this onchange and we have the elements updating? 
+    - we don't need to do this, so don't try to figure it out
+  - is this onsubmit to update the actual db?
+    - how do we get the form input back if something went wrong? do we submit all and then return all?
+    - how do we clear the form?
+      - if we're doing this reactively:
+        - then the form elements need to subscribe to the in-memory
+        - we send the on-submit, on-success we clear the form state, on-failure we set some fail-state variable
+        - https://github.com/tonsky/rum/blob/gh-pages/examples/rum/examples/form_validation.cljs
+  - are we submitting the values of the forms or is it being read from the memory?
+    - right now we are trying to submit the value of the form, but it doesn't work onchange with anon function evaluation
+form element updates atom in memory
+form gets submitted to the controller which validates and updates the db/model
+  - on-success - we need to mutate the in-memory state
+
+subscriptions update the values on the page
+
+**** DONE datascript and https://github.com/metasoarous/datsync ?
+     CLOSED: [2017-09-09 Sat 04:23]
+We are already doing filtering in kinto, no point having yet another dependency and synchronization point 
+At least for the agenda view, it will be overkill. 
+Datomic license not fully open 
+**** test the datascript-todo on the phone for errors
+**** add action and create in kinto with form data
+**** separate controller for objects 
+then agenda and other components can use same controller for create/list/update?
+**** display kinto data
+http://blog.wjlr.org.uk/2015/01/17/fast-string-interpolation-cljs.html
+**** update kinto data
+**** Pick a routing framework
+- https://github.com/funcool/bide - super simple
+- https://github.com/gf3/secretary - this the main one?
+http://www.lispcast.com/mastering-client-side-routing-with-secretary-and-goog-history
+**** Storage framework?
+https://github.com/tonsky/rum/issues/39
+**** template to start?
+https://github.com/plexus/chestnut
+**** todo app http://tonsky.me/datascript-todo/
+**** https://github.com/bhauman/lein-figwheel/wiki/Quick-Start
+
+*** cleanup app
+***** form input
+the react element gets redrawn and then input is lost on the first entry
+possible fix is forceupdate
+https://github.com/tonsky/rum/blob/gh-pages/examples/rum/examples/form_validation.cljs
 *** App - Display agenda :ms.agenda:
 :PROPERTIES:
 :PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
@@ -1449,6 +1655,7 @@ https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 :PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
+Have all todos but can filter by tags at the top
 **** Onclick and onslide events - increment version
 :PROPERTIES:
 :PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
@@ -1763,6 +1970,12 @@ Updates
 :PREFIX_OBJ_ID: 9282f3e7-02b1-479f-b5b8-900f56983a55
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
+*** Collaboration - sharing documents and getting comments  :ms.shared:
+- [[*Conclusion][Conclusion]]
+The model we have is that documents and objects are in kinto and are synced offline. 
+For collaboration, we also want an Inbox and Comments
+How do we want to support groups of documents? Does having a single master document represent a group make sense?
+What will happen when people add/delete/rename objects?
 *** Sync upgrades, testing, and performance
 :PROPERTIES:
 :PREFIX_OBJ_ID: c1b9b8a6-5ca8-4711-bfe3-ef072fe6ff52
@@ -1805,7 +2018,7 @@ But probably don't need it for single user mode.
 In most cases, user is either on mobile or machine. On machine, run sync immediately and be happy. 
 Use-case - modifying a file and a notifications comes in. Say it's done => but modified the file local and mobile.
 This is when sync client makes sense. 
-*** Add an editor?
+*** Prerequisite? - Add a document view and editor?
 :PROPERTIES:
 :PREFIX_OBJ_ID: 4a9e1f1e-95f0-4edf-8778-7615ebb424e1
 :PREFIX_OBJ_VERSION: 1504545916
@@ -2077,12 +2290,12 @@ https://github.com/standardfile
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 #+BEGIN: clocktable :maxlevel 5 :scope file
-#+CAPTION: Clock summary at [2017-09-04 Mon 01:07]
+#+CAPTION: Clock summary at [2017-09-04 Mon 20:20]
 | Headline                                         | Time       |          |         |       |      |
 |--------------------------------------------------+------------+----------+---------+-------+------|
-| *Total time*                                     | *3d 14:56* |          |         |       |      |
+| *Total time*                                     | *3d 22:59* |          |         |       |      |
 |--------------------------------------------------+------------+----------+---------+-------+------|
-| Ttl                                              | 3d 14:56   |          |         |       |      |
+| Ttl                                              | 3d 22:59   |          |         |       |      |
 | \_  MVP1                                         |            | 2d 12:56 |         |       |      |
 | \_    import/export to api.                      |            |          | 1d 4:50 |       |      |
 | \_      consolidate sections                     |            |          |         |  2:07 |      |
@@ -2105,7 +2318,7 @@ https://github.com/standardfile
 | \_      Refactor parse                           |            |          |         |  3:19 |      |
 | \_    POC - display UI for agenda                |            |          | 1d 4:47 |       |      |
 | \_      Kinto                                    |            |          |         |  4:48 |      |
-| \_  MVP2                                         |            | 1d 2:00  |         |       |      |
+| \_  MVP2                                         |            | 1d 8:45  |         |       |      |
 | \_    Braindump - Elixir to Kinto                |            |          |    2:22 |       |      |
 | \_    Elixir to Kinto                            |            |          |    7:14 |       |      |
 | \_    Security model for kinto and replication   |            |          |    6:46 |       |      |
@@ -2119,6 +2332,10 @@ https://github.com/standardfile
 | \_      delete document (delete)                 |            |          |         |  0:54 |      |
 | \_    Import/Export Bugs                         |            |          |    2:01 |       |      |
 | \_      Regenerate org-file - scheduled date...  |            |          |         |  2:01 |      |
-| \_    Secondary collection for tags              |            |          |    0:25 |       |      |
+| \_    Recursive sync testing                     |            |          |    3:54 |       |      |
+| \_    Sync REST client - python?                 |            |          |    2:50 |       |      |
+| \_    Sync bugs                                  |            |          |    1:19 |       |      |
+| \_    Secondary collection for tags and...       |            |          |    0:25 |       |      |
+| \_  MVPX                                         |            | 1:18     |         |       |      |
 | \_    Production Authorization                   |            |          |    1:18 |       |      |
 #+END:

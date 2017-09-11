@@ -190,10 +190,15 @@ https://github.com/novoid/Memacs
 https://turtlapp.com/
 http://www.makeuseof.com/tag/lightweight-onenote-evernote-alternatives/
 https://github.com/scripting/concord
+http://forum.gtdnext.com/
+
+https://github.com/twostairs/paperwork
+https://github.com/Laverna/laverna
+
 Personal knowledge base:
 https://news.ycombinator.com/item?id=8270759
     
-  
+
 *** Org-mode for editors
 :PROPERTIES:
 :PREFIX_OBJ_ID: 1af09e1a-d5ba-446f-a8d5-c4ec09faeb28
@@ -997,7 +1002,8 @@ CLOSED: [2017-08-31 Thu 23:37]
 :PREFIX_OBJ_ID: 212f7942-e4e5-4f49-aa4d-aed1b3688e34
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-** MVP2
+** DONE MVP2
+   CLOSED: [2017-09-09 Sat 21:24]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 05dd8759-e124-420d-93c4-a3ac4cc7cb0c
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1005,7 +1011,7 @@ CLOSED: [2017-08-31 Thu 23:37]
 Last state:
 With great regret, moved phx to kinto. Massive refactor needed to not expose the data layer, copy and paste everywhere to get things working. Performance gone to hell also, for the hopes that the kinto sync is robust. Regardless, it will only need a rewrite between 100-1000 concurrent users depending on how expensive the sync is and that means it will need 5x-10x actual users. All to avoid having to write a sync library and figure out indexeddb. 
 
-This stage looking to sync from server to local disk cleanly and a functional agenda. 
+This stage looking to sync from server to local disk cleanly.
 
 *** DONE Thoughts :product:brainstorm:
 CLOSED: [2017-09-01 Fri 17:47]
@@ -1059,6 +1065,11 @@ CLOSED: [2017-09-01 Fri 18:01]
    - Moving groups from public to private - offline stuff would still exist, but could remove keys from keychain?
    - Syncing multiple buckets for sharing allows interesting E2E encryption possibilities.
    - Search - do we do it in the browser if everything is encrypted - depends on transform on sync + indexeddb performance
+   - Maybe can include documents in other documents like a build system? Everyone editing a project page for instance.
+     - How would 2017.1 be executed? 
+     - Want to have a summary of the diffs in the document at a glance so we know what has changed? Maybe a summary based on the heading rather than tableau / jira. 
+     - What permissions would each person have to modify the document? Some object level? Some include?
+     - Looks like we'd need a diff set to monitor the changes in the document / state to see the level of progress. 
 3) Enterprise
    - Removing access to a group or document needs to be guaranteed.
    - Maybe only default bucket is synced, and everything else is server-side 
@@ -1209,7 +1220,7 @@ CLOSED: [2017-09-03 Sun 01:25]
 :END:
 
 *** DONE Patch kinto-http.js
-    CLOSED: [2017-09-05 Tue 01:52]
+CLOSED: [2017-09-05 Tue 01:52]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 1cba1049-da0d-415b-ad2f-966ee8a0d2ff
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1414,55 +1425,55 @@ Document downloaded, nuke the server.
 When uploading, the new sync algorithm comparison is wrong, should upload, but skips instead.
 
 *** DONE App - How to move between SPA and PHX?
-    CLOSED: [2017-09-05 Tue 04:52]
+CLOSED: [2017-09-05 Tue 04:52]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 056561e5-a3d0-40d8-aa7d-0c810c8b973c
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 Or remove all html on PHX? Just have PHX be a pure API. 
-*** App - Pre and post syncing data immediately / retries / backoffs
+
+** MVP3 - SPA
+Focussing on the SPA.
+
+Last state: 
+Cljs, kinto, routing, basic view working
+
+*** DONE App - How to include different files
+    CLOSED: [2017-09-09 Sat 21:26]
 :PROPERTIES:
-:PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
+:PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** App - How to have multiple pages/routes without going insane.
-:PROPERTIES:
-:PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-*** App - Components
+*** DONE App - Components
+    CLOSED: [2017-09-09 Sat 21:26]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 28874fb3-77d9-4fe0-ac0e-b99ed88495d2
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
-*** App - How to include different files
+*** DONE Clojurescript
+    CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
-:PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
-:PREFIX_OBJ_VERSION: 1504545916
+:PREFIX_OBJ_ID: 88147913-2fae-4256-ba5f-c6ae7ac7112e
+:PREFIX_OBJ_VERSION: 1504973292
 :END:
-*** DONE Agenda - use todoapp and display records
-    CLOSED: [2017-09-05 Tue 04:53]
-:PROPERTIES:
-:PREFIX_OBJ_ID: 454da379-91d5-43e2-941f-a10426638809
-:PREFIX_OBJ_VERSION: 1504580938
-:END:
-Filtering: 
-  state.tasks.list({filters: {state: "TODO"}, order: "scheduled"} )
-Can filter everything by tags - that would be reasonably straight forward. 
-How would you display the same todo shell with different filters? 
-Looks like everything needs to be done post-facto in memory.
-
-*** Clojurescript
 **** DONE Learning
-     CLOSED: [2017-09-06 Wed 21:52]
+CLOSED: [2017-09-06 Wed 21:52]
+:PROPERTIES:
+:PREFIX_OBJ_ID: c4f1f861-f172-4d09-9b37-6911368bb883
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 http://www.lispcast.com/core-async-browser-motivation
 (js/console.log "test")
 (js/log "test")
 https://lambdaisland.com/episodes/clojurescript-interop
 http://swannodette.github.io/2014/07/26/transit-clojurescript
 **** DONE Understanding front end frameworks
-     CLOSED: [2017-09-06 Wed 21:52]
+CLOSED: [2017-09-06 Wed 21:52]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 90177008-2b3b-4501-b489-4dc0f035ef16
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 https://staltz.com/unidirectional-user-interface-architectures.html
 
 https://www.reddit.com/r/Clojure/comments/3vk58p/a_rant_on_om_next/
@@ -1505,7 +1516,11 @@ c) Publish/subscribe - event sourcing model
 Too much theory. Does citrus work for now or not?
 
 **** DONE installing npm modules for kinto-http
-     CLOSED: [2017-09-05 Tue 01:54]
+CLOSED: [2017-09-05 Tue 01:54]
+:PROPERTIES:
+:PREFIX_OBJ_ID: ff6e98b1-377b-4c9e-86c1-529c9609295a
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 http://blob.tomerweller.com/reagent-import-react-components-from-npm
 
 Cloned - https://github.com/ClubExpressions/poc2
@@ -1532,7 +1547,11 @@ lein do clean, figwheel
 #+END_SRC
 
 **** DONE getting kinto to proxy through via the credentials cookie
-     CLOSED: [2017-09-05 Tue 01:54]
+CLOSED: [2017-09-05 Tue 01:54]
+:PROPERTIES:
+:PREFIX_OBJ_ID: aa005a65-5643-4674-ad4c-69ac7fc01240
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 Ran lein-figwheel setup on port 4001
 It is constantly building in /home/tjheeta/repos/self/clojure/poc2/resources/public
 That is symlinked:
@@ -1543,7 +1562,11 @@ lrwxrwxrwx 1 tjheeta tjheeta 54 Sep  5 01:49 poc2 -> /home/tjheeta/repos/self/cl
 http://localhost:4000/poc2/index.html has successful access
 
 **** DONE setup figwheel + datascript-todo + kinto
-     CLOSED: [2017-09-06 Wed 21:53]
+CLOSED: [2017-09-06 Wed 21:53]
+:PROPERTIES:
+:PREFIX_OBJ_ID: d35aedf6-d62d-4cc2-b78b-f79f1eac22c1
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-06 Wed 13:21]--[2017-09-06 Wed 13:46] =>  0:25
      CLOCK: [2017-09-06 Wed 12:51]--[2017-09-06 Wed 13:16] =>  0:25
@@ -1553,38 +1576,74 @@ http://localhost:4000/poc2/index.html has successful access
      CLOCK: [2017-09-06 Wed 10:30]--[2017-09-06 Wed 11:11] =>  0:41
      :END:
 ***** DONE setup webpack
-      CLOSED: [2017-09-06 Wed 11:16]
+CLOSED: [2017-09-06 Wed 11:16]
+:PROPERTIES:
+:PREFIX_OBJ_ID: bb0600ac-aa29-4bec-854c-bc615c0b17d9
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 npm install
 npm run build
 ***** DONE setting a date in js
-      CLOSED: [2017-09-06 Wed 12:05]
+CLOSED: [2017-09-06 Wed 12:05]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 5aeb9412-7219-43c7-a440-a5d4044db000
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 **** DONE Need to setup citrus and repeat the steps
-     CLOSED: [2017-09-07 Thu 15:55]
+CLOSED: [2017-09-07 Thu 15:55]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1c95caee-06ba-4ed7-9e4c-ead9daf307c6
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 **** DONE Kinto pattern
-     CLOSED: [2017-09-07 Thu 22:18]
+CLOSED: [2017-09-07 Thu 22:18]
+:PROPERTIES:
+:PREFIX_OBJ_ID: d3150577-5e84-456f-bf00-ff9e9aac1705
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
      :LOGBOOK:
      CLOCK: [2017-09-07 Thu 18:00]--[2017-09-07 Thu 22:19] =>  4:19
      :END:
 **** DONE Get kinto working with counter
-     CLOSED: [2017-09-08 Fri 14:06]
+CLOSED: [2017-09-08 Fri 14:06]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4abee591-db45-416d-9ed0-82556e943c5c
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 **** DONE kinto-list - [[file:~/data/repos/self/clojure/cljs-rum-realworld-example-app/src/conduit/effects.cljs::(defn%20kinto-list%20%5Breconciler%20ctrl-name%20{:keys%20%5Boptions%20on-success%20on-error%5D}%5D][need to fetch the actual data]]
-     CLOSED: [2017-09-08 Fri 14:06]
+CLOSED: [2017-09-08 Fri 14:06]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 11f9c01a-d101-4c23-a10e-4cf5d440866f
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 [[file:~/data/repos/self/clojure/cljs-rum-realworld-example-app/src/conduit/effects.cljs::%5Bpromesa.core%20:as%20p%5D))][test project file]]
 
 Also, can wire up every controller to have a side-effect of re-calculating "state"
 Already working in :
 [[file:~/data/repos/self/clojure/poc2/src/simple/core.cljs::(fn%20%5B%5D][poc2 project from github]]
 **** DONE kinto sets a promise
-     CLOSED: [2017-09-08 Fri 14:06]
+CLOSED: [2017-09-08 Fri 14:06]
+:PROPERTIES:
+:PREFIX_OBJ_ID: c3e8481e-2531-444e-abf5-4dfe27b5e7c5
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 In the js spa, after promise.then ( update the view atom )
 Maybe use?
 https://stackoverflow.com/questions/39732076/how-to-bind-the-resolved-value-of-javascript-promise-in-clojurescript
 - https://github.com/jamesmacaulay/cljs-promises
 **** DONE kinto just needs to communicate to 8888, no need to do the cookie
-     CLOSED: [2017-09-08 Fri 14:06]
+CLOSED: [2017-09-08 Fri 14:06]
+:PROPERTIES:
+:PREFIX_OBJ_ID: cd0256d5-f74f-45d9-8841-9834ad31f6c0
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 - currently stuck on then on retrieving after getting kinto promise from collection
 **** DONE react - how to handle a form?
-     CLOSED: [2017-09-08 Fri 23:09]
+CLOSED: [2017-09-08 Fri 23:09]
+:PROPERTIES:
+:PREFIX_OBJ_ID: f282817c-c88c-4b78-bece-986fe10edca2
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 - do we subscribe to the state data in the form?
 - to have validation on the form, we need to constantly change the state
   - need an on-change event to update the state, then subscribe back
@@ -1618,54 +1677,194 @@ form gets submitted to the controller which validates and updates the db/model
 subscriptions update the values on the page
 
 **** DONE datascript and https://github.com/metasoarous/datsync ?
-     CLOSED: [2017-09-09 Sat 04:23]
+CLOSED: [2017-09-09 Sat 04:23]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 04b3d42e-109f-40ab-b99b-5757bbaed56e
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 We are already doing filtering in kinto, no point having yet another dependency and synchronization point 
 At least for the agenda view, it will be overkill. 
 Datomic license not fully open 
 **** test the datascript-todo on the phone for errors
-**** add action and create in kinto with form data
-**** separate controller for objects 
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1febbd0b-ea42-461c-be70-d30c89e5e868
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+**** DONE add action and create in kinto with form data
+     CLOSED: [2017-09-09 Sat 21:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 80e78353-a932-483d-ae80-153d9046130d
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+**** separate controller for objects
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2d2274c6-4cab-4b01-b256-863f28f8c10b
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 then agenda and other components can use same controller for create/list/update?
-**** display kinto data
+**** DONE display kinto data
+     CLOSED: [2017-09-09 Sat 21:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 2ca6c83e-9c9c-47ea-87c3-8e23842cf3a5
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 http://blog.wjlr.org.uk/2015/01/17/fast-string-interpolation-cljs.html
-**** update kinto data
-**** Pick a routing framework
+**** DONE update kinto data
+     CLOSED: [2017-09-09 Sat 21:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: d673533d-6740-4211-95f0-2dedae04caf8
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+**** DONE Pick a routing framework
+     CLOSED: [2017-09-09 Sat 21:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 5fce0637-4f21-42e7-a814-392a7dc28519
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 - https://github.com/funcool/bide - super simple
 - https://github.com/gf3/secretary - this the main one?
 http://www.lispcast.com/mastering-client-side-routing-with-secretary-and-goog-history
-**** Storage framework?
+**** DONE Storage framework?
+     CLOSED: [2017-09-09 Sat 21:22]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 476820ef-63d9-4bdf-acfc-d18d248e8b4f
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 https://github.com/tonsky/rum/issues/39
 **** template to start?
+:PROPERTIES:
+:PREFIX_OBJ_ID: f7a05595-33e9-4268-9c9f-da7ea0ff6971
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 https://github.com/plexus/chestnut
 **** todo app http://tonsky.me/datascript-todo/
-**** https://github.com/bhauman/lein-figwheel/wiki/Quick-Start
-
-*** cleanup app
-***** form input
-the react element gets redrawn and then input is lost on the first entry
-possible fix is forceupdate
-https://github.com/tonsky/rum/blob/gh-pages/examples/rum/examples/form_validation.cljs
-*** App - Display agenda :ms.agenda:
 :PROPERTIES:
-:PREFIX_OBJ_ID: 644bbc5f-7995-4f01-ab01-570a03a6f524
+:PREFIX_OBJ_ID: 635ec704-c3cb-40de-9a44-2be227e96cc8
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+**** https://github.com/bhauman/lein-figwheel/wiki/Quick-Start
+:PROPERTIES:
+:PREFIX_OBJ_ID: 3a712263-7b8f-4b92-877c-ff802fdfd651
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+
+*** DONE App - How to have multiple pages/routes without going insane.
+    CLOSED: [2017-09-09 Sat 21:24]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-**** UI Display
+*** DONE Agenda - use todoapp and display records
+CLOSED: [2017-09-05 Tue 04:53]
+:PROPERTIES:
+:PREFIX_OBJ_ID: 454da379-91d5-43e2-941f-a10426638809
+:PREFIX_OBJ_VERSION: 1504580938
+:END:
+Filtering: 
+  state.tasks.list({filters: {state: "TODO"}, order: "scheduled"} )
+Can filter everything by tags - that would be reasonably straight forward. 
+How would you display the same todo shell with different filters? 
+Looks like everything needs to be done post-facto in memory.
+
+*** Move SPA into the ttl project to sync 
+*** Get the data from server to local 
+*** Display the correct data
+- First UI, just a list of all todos 
+*** UI Display                                            :design:brainstorm:
 :PROPERTIES:
 :PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 Have all todos but can filter by tags at the top
-**** Onclick and onslide events - increment version
-:PROPERTIES:
-:PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
-**** Onedit - increment version?
+Want several filters. View of everything. A view by document. Views by tags.
+
+Filters:
+ - All
+ - By document
+ - By common tags
+ - Deferred -> Cleanup
+Anything overdue gets re-scheduled, if it is deferred x times, it moves to someday.
+
+Agenda: 
+  - list of important things for the day
+  - tags across the top (all, habits-includes health/workout, work, home, projects)
+Object view:
+  - this is showing the object + notes + clock time. 
+Review view 
+  - what got done, journal, review anything for tomorrow, weekly, etc.
+Settings
+  - Auto-assign nextaction based on deadline, priority, etc.
+  - Review times
+
+New object: 
+  - same as object view, but can pick capture templates
+Document view 
+  - this is the editor.
+Empty time (binpack view)
+  - after notify
+  - pick an appropriate nextaction (or set project to review in evening)
+  - log what is being done through tag interface
+  - cycle and pick through important tasks
+  
+Basic GTD for org-mode:
+http://cachestocaches.com/2016/9/my-workflow-org-agenda/
+http://forum.gtdnext.com/t/some-thoughts-on-gtdnext-next-action-logic/65/10
+http://sliderulesoftware.com/glassplanner/tutorials
+https://github.com/galfarragem/hamster-gtd
+
+*** CSS
+https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/introduction/
+https://github.com/brillout/awesome-react-components#responsive
+https://news.ycombinator.com/item?id=12939232
+*** Webpack sizes
+
+  testproj git:(master ls -l  ./resources/public/js/compiled/out/public/js/bundle.js public/js/bundle.js
+- react, react-dom, kinto
+-rw-rw-r-- 1 tjheeta tjheeta 338291 Sep 10 00:35 public/js/bundle.js 
+- preact, preact-compat, kinto
+-rw-rw-r-- 1 tjheeta tjheeta 633808 Sep  6 11:16 ./resources/public/js/compiled/out/public/js/bundle.js  
+
+       - preact, preact-compat, kinto, kinto-http
+*** Notes on potentially building and using ext react components
+https://stackoverflow.com/questions/35489797/using-react-components-in-reagent
+https://stackoverflow.com/questions/45201315/a-is-undefined-when-compiling-a-cljs-prj-with-an-npm-module-under-prod-profil
+
+*** Onedit - increment version?
 :PROPERTIES:
 :PREFIX_OBJ_ID: f4a1e1ba-8f0b-4f00-b2c4-b9812d76e2e2
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
+*** Onclick and onslide events - increment version
+:PROPERTIES:
+:PREFIX_OBJ_ID: 50862a5d-0a26-43b9-b6a8-3418d6e7c90b
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Filters
+*** App - Pre and post syncing data immediately / retries / backoffs
+:PROPERTIES:
+:PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
+:PREFIX_OBJ_VERSION: 1504545916
+:END:
+*** Add new items followed by syncing 
+*** cleanup app
+:PROPERTIES:
+:PREFIX_OBJ_ID: d8babb27-907d-4852-9d76-4dd61a2329a7
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+**** form input
+:PROPERTIES:
+:PREFIX_OBJ_ID: 8c11be76-ca2c-469d-b463-afaa77b91acc
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
+the react element gets redrawn and then input is lost on the first entry
+possible fix is forceupdate
+https://github.com/tonsky/rum/blob/gh-pages/examples/rum/examples/form_validation.cljs
+
+Not all fields are screwed up though. Tags works fine. Date works especially badly. text field screw up once
+Possibly extract-object screwing things up. 
+It was extract-object
+**** Extra entries on pressing enter on mobile firefox/chrome
+https://stackoverflow.com/questions/10321323/form-submitted-twice-using-submit-on-keyup
 *** Mobile deletes an object - has to reflect in document
 :PROPERTIES:
 :PREFIX_OBJ_ID: b1a3d99f-cc1c-4ff3-b267-32f5b212f620
@@ -1909,6 +2108,7 @@ Need to revamp the schema.
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 - If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
+*** Notes - org-mode style storage
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
 :PROPERTIES:
 :PREFIX_OBJ_ID: d557e25c-6fb5-49da-a402-6266db0aec94
@@ -1945,11 +2145,6 @@ Need to revamp the schema.
 :PREFIX_OBJ_ID: ad2aa3e2-5b64-492e-ac24-f78416cc2467
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** notifications
-:PROPERTIES:
-:PREFIX_OBJ_ID: 67c1191d-6438-4799-9ac3-946fbeac1e60
-:PREFIX_OBJ_VERSION: 1504545916
-:END:
 *** App - UI Tests
 :PROPERTIES:
 :PREFIX_OBJ_ID: 02ed58fd-1d92-4e80-80cf-2b3830f3812e
@@ -1970,7 +2165,11 @@ Updates
 :PREFIX_OBJ_ID: 9282f3e7-02b1-479f-b5b8-900f56983a55
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** Collaboration - sharing documents and getting comments  :ms.shared:
+*** Collaboration - sharing documents and getting comments :ms.shared:
+:PROPERTIES:
+:PREFIX_OBJ_ID: 114d18aa-39cc-4c66-9d7d-7f404da0db05
+:PREFIX_OBJ_VERSION: 1504973292
+:END:
 - [[*Conclusion][Conclusion]]
 The model we have is that documents and objects are in kinto and are synced offline. 
 For collaboration, we also want an Inbox and Comments

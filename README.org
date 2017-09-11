@@ -1003,7 +1003,7 @@ CLOSED: [2017-08-31 Thu 23:37]
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 ** DONE MVP2
-   CLOSED: [2017-09-09 Sat 21:24]
+CLOSED: [2017-09-09 Sat 21:24]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 05dd8759-e124-420d-93c4-a3ac4cc7cb0c
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1433,26 +1433,30 @@ CLOSED: [2017-09-05 Tue 04:52]
 Or remove all html on PHX? Just have PHX be a pure API. 
 
 ** MVP3 - SPA
+:PROPERTIES:
+:PREFIX_OBJ_ID: 81e66344-3867-4c51-97d9-d6838cf758f4
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 Focussing on the SPA.
 
 Last state: 
 Cljs, kinto, routing, basic view working
 
 *** DONE App - How to include different files
-    CLOSED: [2017-09-09 Sat 21:26]
+CLOSED: [2017-09-09 Sat 21:26]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 6f7d68ac-ade5-4ee7-875b-4614f786b7c9
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 *** DONE App - Components
-    CLOSED: [2017-09-09 Sat 21:26]
+CLOSED: [2017-09-09 Sat 21:26]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 28874fb3-77d9-4fe0-ac0e-b99ed88495d2
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 https://github.com/hyperapp/hyperapp/issues/238#issuecomment-310999839
 *** DONE Clojurescript
-    CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 88147913-2fae-4256-ba5f-c6ae7ac7112e
 :PREFIX_OBJ_VERSION: 1504973292
@@ -1691,7 +1695,7 @@ Datomic license not fully open
 :PREFIX_OBJ_VERSION: 1504973292
 :END:
 **** DONE add action and create in kinto with form data
-     CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 80e78353-a932-483d-ae80-153d9046130d
 :PREFIX_OBJ_VERSION: 1504973292
@@ -1703,20 +1707,20 @@ Datomic license not fully open
 :END:
 then agenda and other components can use same controller for create/list/update?
 **** DONE display kinto data
-     CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 2ca6c83e-9c9c-47ea-87c3-8e23842cf3a5
 :PREFIX_OBJ_VERSION: 1504973292
 :END:
 http://blog.wjlr.org.uk/2015/01/17/fast-string-interpolation-cljs.html
 **** DONE update kinto data
-     CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: d673533d-6740-4211-95f0-2dedae04caf8
 :PREFIX_OBJ_VERSION: 1504973292
 :END:
 **** DONE Pick a routing framework
-     CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 5fce0637-4f21-42e7-a814-392a7dc28519
 :PREFIX_OBJ_VERSION: 1504973292
@@ -1725,7 +1729,7 @@ http://blog.wjlr.org.uk/2015/01/17/fast-string-interpolation-cljs.html
 - https://github.com/gf3/secretary - this the main one?
 http://www.lispcast.com/mastering-client-side-routing-with-secretary-and-goog-history
 **** DONE Storage framework?
-     CLOSED: [2017-09-09 Sat 21:22]
+CLOSED: [2017-09-09 Sat 21:22]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 476820ef-63d9-4bdf-acfc-d18d248e8b4f
 :PREFIX_OBJ_VERSION: 1504973292
@@ -1749,7 +1753,7 @@ https://github.com/plexus/chestnut
 :END:
 
 *** DONE App - How to have multiple pages/routes without going insane.
-    CLOSED: [2017-09-09 Sat 21:24]
+CLOSED: [2017-09-09 Sat 21:24]
 :PROPERTIES:
 :PREFIX_OBJ_ID: 304af833-0523-484e-a033-eac67ea2841e
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1766,11 +1770,23 @@ Can filter everything by tags - that would be reasonably straight forward.
 How would you display the same todo shell with different filters? 
 Looks like everything needs to be done post-facto in memory.
 
-*** Move SPA into the ttl project to sync 
-*** Get the data from server to local 
+*** Move SPA into the ttl project to sync
+:PROPERTIES:
+:PREFIX_OBJ_ID: b1783e69-c0ed-4df6-9181-5980ffab2502
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
+*** Get the data from server to local
+:PROPERTIES:
+:PREFIX_OBJ_ID: 01578d4a-9d3e-4fce-a6da-85fa98e9dbbd
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 *** Display the correct data
+:PROPERTIES:
+:PREFIX_OBJ_ID: a0cb9ecd-b43f-4271-9206-c6d2fcfcd1a0
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 - First UI, just a list of all todos 
-*** UI Display                                            :design:brainstorm:
+*** UI Display :design:brainstorm:
 :PROPERTIES:
 :PREFIX_OBJ_ID: c3829cfc-1f7c-489e-9a61-b23123b5f645
 :PREFIX_OBJ_VERSION: 1504545916
@@ -1813,10 +1829,18 @@ http://sliderulesoftware.com/glassplanner/tutorials
 https://github.com/galfarragem/hamster-gtd
 
 *** CSS
+:PROPERTIES:
+:PREFIX_OBJ_ID: 769a2f46-7153-4669-8555-24415f7fc509
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/introduction/
 https://github.com/brillout/awesome-react-components#responsive
 https://news.ycombinator.com/item?id=12939232
 *** Webpack sizes
+:PROPERTIES:
+:PREFIX_OBJ_ID: d81e0f0d-1f43-4b3b-b7e4-39434bd3de9d
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 
   testproj git:(master ls -l  ./resources/public/js/compiled/out/public/js/bundle.js public/js/bundle.js
 - react, react-dom, kinto
@@ -1826,6 +1850,10 @@ https://news.ycombinator.com/item?id=12939232
 
        - preact, preact-compat, kinto, kinto-http
 *** Notes on potentially building and using ext react components
+:PROPERTIES:
+:PREFIX_OBJ_ID: a241aa7d-f4af-478f-9fef-4eac08b76c94
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 https://stackoverflow.com/questions/35489797/using-react-components-in-reagent
 https://stackoverflow.com/questions/45201315/a-is-undefined-when-compiling-a-cljs-prj-with-an-npm-module-under-prod-profil
 
@@ -1840,12 +1868,20 @@ https://stackoverflow.com/questions/45201315/a-is-undefined-when-compiling-a-clj
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
 *** Filters
+:PROPERTIES:
+:PREFIX_OBJ_ID: c60b4d4a-d3ee-4df3-a793-48f622560223
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 *** App - Pre and post syncing data immediately / retries / backoffs
 :PROPERTIES:
 :PREFIX_OBJ_ID: 4ce23fe4-415e-4028-abbf-2a90d579b100
 :PREFIX_OBJ_VERSION: 1504545916
 :END:
-*** Add new items followed by syncing 
+*** Add new items followed by syncing
+:PROPERTIES:
+:PREFIX_OBJ_ID: 79b38ba7-8172-44c4-928e-527da28b53a6
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 *** cleanup app
 :PROPERTIES:
 :PREFIX_OBJ_ID: d8babb27-907d-4852-9d76-4dd61a2329a7
@@ -1864,6 +1900,10 @@ Not all fields are screwed up though. Tags works fine. Date works especially bad
 Possibly extract-object screwing things up. 
 It was extract-object
 **** Extra entries on pressing enter on mobile firefox/chrome
+:PROPERTIES:
+:PREFIX_OBJ_ID: ce076ebf-1a9f-4ff6-b923-10ef08becdaf
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 https://stackoverflow.com/questions/10321323/form-submitted-twice-using-submit-on-keyup
 *** Mobile deletes an object - has to reflect in document
 :PROPERTIES:
@@ -2109,6 +2149,10 @@ Need to revamp the schema.
 :END:
 - If these end up having to be via the server, perhaps bin-packing / re-scheduling also on the server.
 *** Notes - org-mode style storage
+:PROPERTIES:
+:PREFIX_OBJ_ID: 1c2eff56-c01e-489f-bba4-02a3295709ed
+:PREFIX_OBJ_VERSION: 1505097163
+:END:
 *** Need to namespace buckets based on org/groupname/id? :ms.shared:
 :PROPERTIES:
 :PREFIX_OBJ_ID: d557e25c-6fb5-49da-a402-6266db0aec94
